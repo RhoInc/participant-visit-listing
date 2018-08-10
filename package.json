@@ -1,0 +1,44 @@
+{
+    "name": "participant-visit-listing",
+    "version": "0.1.0",
+    "description": "an interactive listing of the schedule of events of a clinical trial by participant",
+    "homepage": "https://github.com/RhoInc/participant-visit-listing#readme",
+    "main": "./participantVisitListing.js",
+    "module": "./src/index.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/RhoInc/participant-visit-listing.git"
+    },
+    "keywords": [
+        "schedule of events",
+        "visit listing",
+        "clinical trial",
+        "participant compliance"
+    ],
+    "author": "Rho, Inc.",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/RhoInc/participant-visit-listing/issues"
+    },
+    "dependencies": {
+        "d3": "^3",
+        "webcharts": "^1"
+    },
+    "scripts": {
+        "build": "npm run bundle && npm run format",
+        "bundle": "rollup -c",
+        "format": "npm run format-src && npm run format-bundle",
+        "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/!(*layout|*styles).js\"",
+        "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./participantVisitListing.js",
+        "watch": "rollup -c -w"
+    },
+    "devDependencies": {
+        "babel-plugin-external-helpers": "^6.22.0",
+        "babel-preset-env": "^1.6.0",
+        "babel-register": "^6.26.0",
+        "prettier": "^1.7.4",
+        "rollup": "^0.50.0",
+        "rollup-plugin-babel": "^3.0.2",
+        "rollup-watch": "^4.3.1"
+    }
+}

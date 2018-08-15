@@ -6,6 +6,8 @@ export default function rendererSettings() {
         visit_col: 'visit_name',
         visit_order_col: 'Visit_number',
         visit_status_col: 'description',
-        visit_color_col: 'description_color'
+        visit_color_col: 'description_color',
+        pagination: false,
+        exports: ['xlsx', 'csv'],
     };
 }

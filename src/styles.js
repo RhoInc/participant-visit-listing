@@ -12,15 +12,45 @@ export default function styles() {
         '    width: 100%;' +
         '}',
         '.pvl-controls {' +
+        '    height: 5vh;' +
         '}',
         '.pvl-legend {' +
         '}',
         '.pvl-listing {' +
         '}',
-        '.pvl-listing table {' +
+        '.pvl-listing .wc-table {' +
+        '    overflow: auto;' +
+        '    height: 80vh;' +
+        '}',
+        '.pvl-listing .wc-table table {' +
         '    width: 100%;' +
         '    display: table;' +
         '}',
+        '.pvl-listing .wc-table table thead {' +
+        '    border: 2px solid black;' +
+        '    outline: 2px solid black;' +
+        '    background: #fff;' +
+        '}',
+        '.pvl-listing .wc-table table thead tr {' +
+        '}',
+        '.pvl-listing .wc-table table thead tr th {' +
+        '}',
+        //'.pvl-listing thead,' +
+        //'.pvl-listing tbody,' +
+        //'.pvl-listing tr,' +
+        //'.pvl-listing td,' +
+        //'.pvl-listing th {' +
+        //'}',
+        //'.pvl-listing tbody {' +
+        //'    height: 120px;' +
+        //'    overflow-y: auto;' +
+        //'}',
+        //'.pvl-listing tr:after {' +
+        //'    content: " ";' +
+        //'    display: block;' +
+        //'    visibility: hidden;' +
+        //'    clear: both;' +
+        //'}',
     ];
 
     //Attach styles to DOM.

@@ -1,6 +1,7 @@
 export default function transposeData() {
     this.data.sets.id_col.forEach(id => {
-        const id_data = this.data.raw.filter(d => d[this.settings.rendererSynced.id_col] === id);
+        const id_data = this.data.raw
+            .filter(d => d[this.settings.rendererSynced.id_col] === id);
         const datum = {
             id,
             site: id_data[0][this.settings.rendererSynced.site_col],
@@ -13,6 +14,9 @@ export default function transposeData() {
             );
             datum[visit] = visit_datum
                 ? visit_datum[this.settings.rendererSynced.visit_status_col]
+                : null;
+            datum[`${visit}-color`] = visit_datum
+                ? visit_datum[this.settings.rendererSynced.visit_color_col]
                 : null;
         });
         this.data.transposed.push(datum);

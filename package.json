@@ -22,6 +22,7 @@
     },
     "dependencies": {
         "d3": "^3",
+        "jspdf": "^1.4.1",
         "webcharts": "^1"
     },
     "scripts": {

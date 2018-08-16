@@ -7,13 +7,15 @@ export default function onDraw() {
             row.selectAll('td')
                 .each(function(di,j) {
                     const cell = d3.select(this);
-                    const color = d[`${di.col}-color`];
+                    di.color = (d[`${di.col}-color`] || 'white').toLowerCase();
 
-                    //Apply cell coloring.
-                    if (!/black/i.test(color)) {
-                        cell.style('color', color);
-                        cell.style('border', `1px solid ${color}`);
-                    }
+                    //Apply cell border coloring.
+                    if (!/white/.test(di.color))
+                        cell.style('border-bottom', `2px solid ${di.color === 'black' ? '#ccc' : di.color}`);
+
+                    //Apply cell text coloring.
+                    if (!/black|white/.test(di.color))
+                        cell.style('color', di.color);
                 });
         });
 
@@ -21,14 +23,18 @@ export default function onDraw() {
     this.thead
         .selectAll('th')
         .on('mouseover', function(d,i) {
-            const th = d3.select(this);
-            d3.selectAll(`tr td:nth-child(${i})`)
-                .style('outline', '2px solid black');
+            const th = d3.select(this)
+                .style('outline', '1px solid black');
+            d3.selectAll(`tr td:nth-child(${i+1})`)
+                .style('border-left', '1px solid black')
+                .style('border-right', '1px solid black');
         })
         .on('mouseout', function(d,i) {
-            const th = d3.select(this);
-            d3.selectAll(`tr td:nth-child(${i})`)
+            const th = d3.select(this)
                 .style('outline', 'none');
+            d3.selectAll(`tr td:nth-child(${i+1})`)
+                .style('border-left', 'none')
+                .style('border-right', 'none');
         });
 
     //Float table header as user scrolls.
@@ -37,4 +43,20 @@ export default function onDraw() {
             const thead = this.querySelector('thead');
             thead.style.transform = `translate(0,${this.scrollTop}px)`;
         });
+var doc = new jsPDF();          
+var elementHandler = {
+  '#ignorePDF': function (element, renderer) {
+    return true;
+  }
+};
+var source = window.document.getElementsByTagName("body")[0];
+doc.fromHTML(
+    source,
+    15,
+    15,
+    {
+      'width': 180,'elementHandlers': elementHandler
+    });
+
+doc.output("dataurlnewwindow");
 }

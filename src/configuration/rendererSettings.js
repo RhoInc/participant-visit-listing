@@ -5,8 +5,10 @@ export default function rendererSettings() {
         id_status_col: 'status',
         visit_col: 'visit_name',
         visit_order_col: 'Visit_number',
-        visit_status_col: 'description',
-        visit_color_col: 'description_color',
+        visit_status_col: 'visit_status',
+        visit_status_order_col: 'status_order',
+        visit_text_col: 'description',
+        visit_text_color_col: 'description_color',
         pagination: false,
         exports: ['xlsx', 'csv'],
     };

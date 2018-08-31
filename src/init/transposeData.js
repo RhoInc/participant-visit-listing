@@ -13,10 +13,13 @@ export default function transposeData() {
                 d => d[this.settings.rendererSynced.visit_col] === visit
             );
             datum[visit] = visit_datum
+                ? visit_datum[this.settings.rendererSynced.visit_text_col]
+                : null;
+            datum[`${visit}-status`] = visit_datum
                 ? visit_datum[this.settings.rendererSynced.visit_status_col]
                 : null;
             datum[`${visit}-color`] = visit_datum
-                ? visit_datum[this.settings.rendererSynced.visit_color_col]
+                ? visit_datum[this.settings.rendererSynced.visit_text_color_col]
                 : null;
         });
         this.data.transposed.push(datum);

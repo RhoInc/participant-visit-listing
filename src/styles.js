@@ -10,11 +10,27 @@ export default function styles() {
         '}',
         '.participant-visit-listing > * {' +
         '    width: 100%;' +
+        '    display: inline-block;' +
         '}',
         '.pvl-controls {' +
         '    height: 5vh;' +
         '}',
+        '.pvl-controls .wc-controls {' +
+        '    float: right;' +
+        '}',
         '.pvl-legend {' +
+        '}',
+        '.pvl-legend__ul {' +
+        '    list-style-type: none;' +
+        '    margin: 0;' +
+        '    padding: 0;' +
+        '    overflow: hidden;' +
+        '}',
+        '.pvl-legend__li {' +
+        '    float: left;' +
+        '    margin-right: 10px;' +
+        '    width: 100px;' +
+        '    text-align: center;' +
         '}',
         '.pvl-listing {' +
         '}',

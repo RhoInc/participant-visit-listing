@@ -11,6 +11,7 @@ export default function listing() {
         this.settings.rendererSynced,
         this.controls
     );
+    this.listing.parent = this;
 
     //Define callbacks.
     this.listing.on('init', onInit);

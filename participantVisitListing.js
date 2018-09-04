@@ -137,6 +137,7 @@ function rendererSettings() {
         visit_status_order_col: 'status_order',
         visit_text_col: 'description',
         visit_text_color_col: 'description_color',
+        date_format: '%d-%b-%y',
         pagination: false,
         exports: ['xlsx', 'csv']
     };
@@ -206,9 +207,24 @@ function controls() {
     this.controls = new webCharts.createControls(this.containers.controls.node(), this.settings.controlsSynced);
 }
 
-function onInit() {}
+function onInit() {
+    var _this = this;
 
-function onLayout() {}
+    this.data.raw.forEach(function (d) {
+        _this.parent.data.sets.visit_col.forEach(function (visit) {
+            try {
+                d[visit + "_date"] = d3.time.format(_this.config.date_format).parse(d[visit]);
+            } catch (error) {
+                d[visit + "_date"] = null;
+            }
+        });
+    });
+    this.data.initial = this.data.raw.slice();
+}
+
+function onLayout() {
+    this.config.sortable = false;
+}
 
 function addHeaderHover() {
     //Highlight column when hovering over column header.
@@ -249,9 +265,221 @@ function addCellFormatting() {
     });
 }
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+
+
+
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+function sortData(data) {
+    var _this = this;
+
+    this.data.raw = this.data.raw.sort(function (a, b) {
+        var order = 0;
+
+        _this.sortable.order.forEach(function (item) {
+            var aCell = a[item.col + '_date'] ? a[item.col + '_date'] : a[item.col];
+            console.log(aCell);
+            console.log(typeof aCell === 'undefined' ? 'undefined' : _typeof(aCell));
+            var bCell = b[item.col + '_date'] ? b[item.col + '_date'] : b[item.col];
+            console.log(bCell);
+
+            if (order === 0) {
+                if (aCell !== null && bCell !== null) {
+                    if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) order = -1;else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) order = 1;
+                } else if (aCell === null) order = 2;else if (bCell === null) order = -2;
+            }
+        });
+
+        return order;
+    });
+}
+
+function onClick(th, header) {
+    var context = this,
+        selection = d3.select(th),
+        col = this.config.cols[this.config.headers.indexOf(header)];
+
+    //Check if column is already a part of current sort order.
+    var sortItem = this.sortable.order.filter(function (item) {
+        return item.col === col;
+    })[0];
+
+    //If it isn't, add it to sort order.
+    if (!sortItem) {
+        sortItem = {
+            col: col,
+            direction: 'ascending',
+            wrap: this.sortable.wrap.append('div').datum({ key: col }).classed('wc-button sort-box', true).text(header)
+        };
+        sortItem.wrap.append('span').classed('sort-direction', true).html('&darr;');
+        sortItem.wrap.append('span').classed('remove-sort', true).html('&#10060;');
+        this.sortable.order.push(sortItem);
+    } else {
+        //Otherwise reverse its sort direction.
+        sortItem.direction = sortItem.direction === 'ascending' ? 'descending' : 'ascending';
+        sortItem.wrap.select('span.sort-direction').html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
+    }
+
+    //Hide sort instructions.
+    this.sortable.wrap.select('.instruction').classed('hidden', true);
+
+    //Add sort container deletion functionality.
+    this.sortable.order.forEach(function (item, i) {
+        item.wrap.on('click', function (d) {
+            //Remove column's sort container.
+            d3.select(this).remove();
+
+            //Remove column from sort.
+            context.sortable.order.splice(context.sortable.order.map(function (d) {
+                return d.col;
+            }).indexOf(d.key), 1);
+
+            //Display sorting instruction.
+            context.sortable.wrap.select('.instruction').classed('hidden', context.sortable.order.length);
+
+            //Redraw chart.
+            if (context.sortable.order.length) sortData.call(context);else context.data.raw = context.data.initial.slice();
+            context.draw();
+        });
+    });
+
+    //Redraw chart.
+    sortData.call(this);
+    this.draw();
+}
+
+function sortChronologically() {
+    var context = this;
+
+    this.thead_cells.on('click', function (header) {
+        onClick.call(context, this, header);
+    });
+}
+
 function onDraw() {
     //Highlight column when hovering over column header.
     addHeaderHover.call(this);
+
+    //Sort columns on click chronologically.
+    sortChronologically.call(this);
 
     //Float table header as user scrolls.
     floatHeader.call(this);
@@ -265,6 +493,7 @@ function onDestroy() {}
 function listing() {
     //Define listing.
     this.listing = new webCharts.createTable(this.containers.listing.node(), this.settings.rendererSynced, this.controls);
+    this.listing.parent = this;
 
     //Define callbacks.
     this.listing.on('init', onInit);

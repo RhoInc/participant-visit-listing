@@ -9,6 +9,7 @@ export default function rendererSettings() {
         visit_status_order_col: 'status_order',
         visit_text_col: 'description',
         visit_text_color_col: 'description_color',
+        date_format: '%d-%b-%y',
         pagination: false,
         exports: ['xlsx', 'csv'],
     };

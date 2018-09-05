@@ -213,7 +213,7 @@ function onInit() {
     this.data.raw.forEach(function (d) {
         _this.parent.data.sets.visit_col.forEach(function (visit) {
             try {
-                d[visit + "_date"] = d3.time.format(_this.config.date_format).parse(d[visit]);
+                d[visit + "_date"] = d3.time.format(_this.config.date_format).parse(d[visit]).getTime().toString();
             } catch (error) {
                 d[visit + "_date"] = null;
             }
@@ -265,129 +265,6 @@ function addCellFormatting() {
     });
 }
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
-
-
-
-
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
-    }
-
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
-    }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
-
 function sortData(data) {
     var _this = this;
 
@@ -396,15 +273,20 @@ function sortData(data) {
 
         _this.sortable.order.forEach(function (item) {
             var aCell = a[item.col + '_date'] ? a[item.col + '_date'] : a[item.col];
-            console.log(aCell);
-            console.log(typeof aCell === 'undefined' ? 'undefined' : _typeof(aCell));
             var bCell = b[item.col + '_date'] ? b[item.col + '_date'] : b[item.col];
-            console.log(bCell);
 
             if (order === 0) {
                 if (aCell !== null && bCell !== null) {
-                    if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) order = -1;else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) order = 1;
-                } else if (aCell === null) order = 2;else if (bCell === null) order = -2;
+                    if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) {
+                        order = -1;
+                    } else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) {
+                        order = 1;
+                    }
+                } else if (aCell === null) {
+                    order = 2;
+                } else if (bCell === null) {
+                    order = -2;
+                }
             }
         });
 

@@ -19,8 +19,14 @@ export default function onClick(th, header) {
                 .classed('wc-button sort-box', true)
                 .text(header)
         };
-        sortItem.wrap.append('span').classed('sort-direction', true).html('&darr;');
-        sortItem.wrap.append('span').classed('remove-sort', true).html('&#10060;');
+        sortItem.wrap
+            .append('span')
+            .classed('sort-direction', true)
+            .html('&darr;');
+        sortItem.wrap
+            .append('span')
+            .classed('remove-sort', true)
+            .html('&#10060;');
         this.sortable.order.push(sortItem);
     } else {
         //Otherwise reverse its sort direction.
@@ -48,10 +54,8 @@ export default function onClick(th, header) {
                 .classed('hidden', context.sortable.order.length);
 
             //Redraw chart.
-            if (context.sortable.order.length)
-                sortData.call(context);
-            else
-                context.data.raw = context.data.initial.slice();
+            if (context.sortable.order.length) sortData.call(context);
+            else context.data.raw = context.data.initial.slice();
             context.draw();
         });
     });

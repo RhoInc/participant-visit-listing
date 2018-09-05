@@ -1,6 +1,7 @@
 import addHeaderHover from './onDraw/addHeaderHover';
 import floatHeader from './onDraw/floatHeader';
 import addCellFormatting from './onDraw/addCellFormatting';
+import addSummaries from './onDraw/addSummaries';
 import sortChronologically from './onDraw/sortChronologically';
 
 export default function onDraw() {
@@ -12,6 +13,9 @@ export default function onDraw() {
 
     //Float table header as user scrolls.
     floatHeader.call(this);
+
+    //Add row and column summaries.
+    addSummaries.call(this);
 
     //Add data-driven cell formatting.
     addCellFormatting.call(this);

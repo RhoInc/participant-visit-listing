@@ -6,6 +6,7 @@ import addLegend from './init/addLegend';
 export default function init(data) {
     this.data = {
         raw: data,
+        filtered: data,
         sets: {},
         transposed: []
     };

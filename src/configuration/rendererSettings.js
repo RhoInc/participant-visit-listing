@@ -11,6 +11,6 @@ export default function rendererSettings() {
         visit_text_color_col: 'description_color',
         date_format: '%d-%b-%y',
         pagination: false,
-        exports: ['xlsx', 'csv'],
+        exports: ['xlsx', 'csv']
     };
 }

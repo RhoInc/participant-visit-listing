@@ -1,6 +1,6 @@
 {
     "name": "participant-visit-listing",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "description": "an interactive listing of the schedule of events of a clinical trial by participant",
     "homepage": "https://github.com/RhoInc/participant-visit-listing#readme",
     "main": "./participantVisitListing.js",
@@ -31,6 +31,7 @@
         "format": "npm run format-src && npm run format-bundle",
         "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/!(*layout|*styles).js\"",
         "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./participantVisitListing.js",
+        "test-page": "start chrome ./test-page/index.html && start firefox ./test-page/index.html && start iexplore file://%CD%/test-page/index.html",
         "watch": "rollup -c -w"
     },
     "devDependencies": {

@@ -29,7 +29,7 @@ export default function styles() {
         '.pvl-legend__li {' +
         '    float: left;' +
         '    margin-right: 10px;' +
-        '    width: 100px;' +
+        '    width: 150px;' +
         '    text-align: center;' +
         '}',
         '.pvl-listing {' +
@@ -50,6 +50,14 @@ export default function styles() {
         '.pvl-listing .wc-table table thead tr {' +
         '}',
         '.pvl-listing .wc-table table thead tr th {' +
+        '}',
+        '.pvl-listing .wc-table table thead tr th:first-child {' +
+        '}',
+        '.pvl-listing .wc-table table tbody tr td {' +
+        '    cursor: default;' +
+        '}',
+        '.pvl-listing .wc-table table tbody tr td:first-child {' +
+        '    cursor: help;' +
         '}',
         //'.pvl-listing thead,' +
         //'.pvl-listing tbody,' +

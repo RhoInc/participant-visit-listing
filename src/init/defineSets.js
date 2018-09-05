@@ -27,13 +27,14 @@ export default function defineSets() {
                         this.data.raw.map(
                             d =>
                                 `${d[this.settings.rendererSynced.visit_status_order_col]}:|:${
-                                    d[this.settings.rendererSynced.visit_status_col]}:|:${
-                                    d[this.settings.rendererSynced.visit_text_color_col].toLowerCase()
-                                }`
+                                    d[this.settings.rendererSynced.visit_status_col]
+                                }:|:${d[
+                                    this.settings.rendererSynced.visit_text_color_col
+                                ].toLowerCase()}`
                         )
                     )
                     .values()
-                    .sort((a,b) => +(a.split(':|:')[0]) - +(b.split(':|:')[0]));
+                    .sort((a, b) => +a.split(':|:')[0] - +b.split(':|:')[0]);
                 break;
             default:
                 this.data.sets[col] = d3

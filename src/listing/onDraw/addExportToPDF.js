@@ -1,5 +1,5 @@
 export default function addExportToPDF() {
-    //var doc = new jsPDF();          
+    //var doc = new jsPDF();
     //var elementHandler = {
     //  '#ignorePDF': function (element, renderer) {
     //    return true;

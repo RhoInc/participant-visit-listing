@@ -3,6 +3,7 @@ import floatHeader from './onDraw/floatHeader';
 import addCellFormatting from './onDraw/addCellFormatting';
 import addSummaries from './onDraw/addSummaries';
 import sortChronologically from './onDraw/sortChronologically';
+import exportToXLSX from './onDraw/exportToXLSX';
 
 export default function onDraw() {
     //Highlight column when hovering over column header.
@@ -19,4 +20,7 @@ export default function onDraw() {
 
     //Add data-driven cell formatting.
     addCellFormatting.call(this);
+
+    //Add styled export to .xlsx.
+    exportToXLSX.call(this);
 }

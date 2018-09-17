@@ -12,7 +12,7 @@ export default function onDraw() {
     sortChronologically.call(this);
 
     //Float table header as user scrolls.
-    floatHeader.call(this);
+    //floatHeader.call(this);
 
     //Add row and column summaries.
     addSummaries.call(this);

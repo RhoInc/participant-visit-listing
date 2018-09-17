@@ -258,7 +258,7 @@
             '.pvl-listing .wc-table table thead tr th {' + '}',
             '.pvl-listing .wc-table table thead tr th:first-child {' + '}',
             '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '}',
-            '.pvl-listing .wc-table table tbody tr td:first-child {' + '    cursor: help;' + '}'
+            '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}'
         ];
 
         //Attach styles to DOM.
@@ -276,11 +276,13 @@
             return (
                 d[1] +
                 ' (' +
-                d3.format('%')(
-                    _this.data.filtered.filter(function(di) {
-                        return di[_this.settings.rendererSynced.visit_status_col] === d[1];
-                    }).length / _this.data.filtered.length
-                ) +
+                (_this.data.filtered.length
+                    ? d3.format('%')(
+                          _this.data.filtered.filter(function(di) {
+                              return di[_this.settings.rendererSynced.visit_status_col] === d[1];
+                          }).length / _this.data.filtered.length
+                      )
+                    : 'N/A') +
                 ')'
             );
         });
@@ -361,7 +363,7 @@
         this.tbody.selectAll('tr').each(function(d, i) {
             var row = d3.select(this);
 
-            row.selectAll('td:not(:first-child)').each(function(di, j) {
+            row.selectAll('td:nth-child(n+4)').each(function(di, j) {
                 var cell = d3.select(this);
 
                 //Add tooltip to cells.
@@ -408,7 +410,7 @@
                 .entries(id_data);
             var id_cell = _this.table
                 .selectAll('tbody tr')
-                .selectAll('td:first-child')
+                .selectAll('td:nth-child(2)')
                 .filter(function(d) {
                     return d.text.indexOf(id) > -1;
                 }) // define a more rigid selector here
@@ -683,7 +685,7 @@
     }
 
     function defineColumns() {
-        this.listing.config.cols = ['Site/ID'].concat(this.data.sets.visit_col);
+        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
     }
 
     function transposeData() {
@@ -694,15 +696,14 @@
                 return d[_this.settings.rendererSynced.id_col] === id;
             });
             var datum = {};
-            datum[_this.settings.rendererSynced.id_col] = id;
             datum[_this.settings.rendererSynced.site_col] =
                 id_data[0][_this.settings.rendererSynced.site_col];
+            datum['Site'] = datum[_this.settings.rendererSynced.site_col];
+            datum[_this.settings.rendererSynced.id_col] = id;
+            datum['ID'] = datum[_this.settings.rendererSynced.id_col];
             datum[_this.settings.rendererSynced.id_status_col] =
                 id_data[0][_this.settings.rendererSynced.id_status_col];
-            datum['Site/ID'] =
-                datum[_this.settings.rendererSynced.site_col] +
-                '/' +
-                datum[_this.settings.rendererSynced.id_col];
+            datum['Status'] = datum[_this.settings.rendererSynced.id_status_col];
             _this.data.sets.visit_col.forEach(function(visit) {
                 var visit_datum = id_data.find(function(d) {
                     return d[_this.settings.rendererSynced.visit_col] === visit;

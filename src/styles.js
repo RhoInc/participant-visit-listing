@@ -56,7 +56,7 @@ export default function styles() {
         '.pvl-listing .wc-table table tbody tr td {' +
         '    cursor: default;' +
         '}',
-        '.pvl-listing .wc-table table tbody tr td:first-child {' +
+        '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' +
         '    cursor: help;' +
         '}',
         //'.pvl-listing thead,' +

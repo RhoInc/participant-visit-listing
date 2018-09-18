@@ -454,6 +454,279 @@ function sortChronologically() {
     });
 }
 
+var headerStyle = {
+    font: {
+        bold: true
+    },
+    fill: {
+        fgColor: { rgb: 'FFcccccc' }
+    },
+    alignment: {
+        wrapText: true
+    }
+};
+
+var bodyStyle = {
+    font: {
+        sz: 10,
+        color: {
+            rgb: null // set in defineXLSX
+        }
+    },
+    fill: {
+        fgColor: {
+            rgb: 'FFeeeeee'
+        }
+    },
+    alignment: {
+        wrapText: true
+    },
+    border: {
+        bottom: {
+            style: 'thick',
+            color: {
+                rgb: null // set in defineXLSX
+            }
+        }
+    }
+};
+
+function workBook() {
+    this.SheetNames = [];
+    this.Sheets = {};
+}
+
+function updateRange(range, row, col) {
+    if (range.s.r > row) range.s.r = row;
+    if (range.s.c > col) range.s.c = col;
+    if (range.e.r < row) range.e.r = row;
+    if (range.e.c < col) range.e.c = col;
+}
+
+function addCell(wb, ws, value, type, styles, range, row, col) {
+    updateRange(range, row, col);
+    styles.fill.fgColor.rgb = row > 0 && row % 2 ? 'FFffffff' : styles.fill.fgColor.rgb;
+    var cell = { v: value, t: type, s: styles };
+    var cell_ref = XLSX.utils.encode_cell({ c: col, r: row });
+    ws[cell_ref] = cell;
+}
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
+
+
+
+
+var asyncGenerator = function () {
+  function AwaitValue(value) {
+    this.value = value;
+  }
+
+  function AsyncGenerator(gen) {
+    var front, back;
+
+    function send(key, arg) {
+      return new Promise(function (resolve, reject) {
+        var request = {
+          key: key,
+          arg: arg,
+          resolve: resolve,
+          reject: reject,
+          next: null
+        };
+
+        if (back) {
+          back = back.next = request;
+        } else {
+          front = back = request;
+          resume(key, arg);
+        }
+      });
+    }
+
+    function resume(key, arg) {
+      try {
+        var result = gen[key](arg);
+        var value = result.value;
+
+        if (value instanceof AwaitValue) {
+          Promise.resolve(value.value).then(function (arg) {
+            resume("next", arg);
+          }, function (arg) {
+            resume("throw", arg);
+          });
+        } else {
+          settle(result.done ? "return" : "normal", result.value);
+        }
+      } catch (err) {
+        settle("throw", err);
+      }
+    }
+
+    function settle(type, value) {
+      switch (type) {
+        case "return":
+          front.resolve({
+            value: value,
+            done: true
+          });
+          break;
+
+        case "throw":
+          front.reject(value);
+          break;
+
+        default:
+          front.resolve({
+            value: value,
+            done: false
+          });
+          break;
+      }
+
+      front = front.next;
+
+      if (front) {
+        resume(front.key, front.arg);
+      } else {
+        back = null;
+      }
+    }
+
+    this._invoke = send;
+
+    if (typeof gen.return !== "function") {
+      this.return = undefined;
+    }
+  }
+
+  if (typeof Symbol === "function" && Symbol.asyncIterator) {
+    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
+      return this;
+    };
+  }
+
+  AsyncGenerator.prototype.next = function (arg) {
+    return this._invoke("next", arg);
+  };
+
+  AsyncGenerator.prototype.throw = function (arg) {
+    return this._invoke("throw", arg);
+  };
+
+  AsyncGenerator.prototype.return = function (arg) {
+    return this._invoke("return", arg);
+  };
+
+  return {
+    wrap: function (fn) {
+      return function () {
+        return new AsyncGenerator(fn.apply(this, arguments));
+      };
+    },
+    await: function (value) {
+      return new AwaitValue(value);
+    }
+  };
+}();
+
+function clone(obj) {
+    var copy = void 0;
+
+    //boolean, number, string, null, undefined
+    if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj) return obj;
+
+    //date
+    if (obj instanceof Date) {
+        copy = new Date();
+        copy.setTime(obj.getTime());
+        return copy;
+    }
+
+    //array
+    if (obj instanceof Array) {
+        copy = [];
+        for (var i = 0, len = obj.length; i < len; i++) {
+            copy[i] = clone(obj[i]);
+        }
+        return copy;
+    }
+
+    //object
+    if (obj instanceof Object) {
+        copy = {};
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+        }
+        return copy;
+    }
+
+    throw new Error('Unable to copy [obj]! Its type is not supported.');
+}
+
+function defineXLSX(listing) {
+    var name = 'Participant Visit Listing';
+    var wb = new workBook();
+    var ws = {};
+    var cols = [];
+    var range = { s: { c: 10000000, r: 10000000 }, e: { c: 0, r: 0 } };
+    var wbOptions = {
+        bookType: 'xlsx',
+        bookSST: true,
+        type: 'binary'
+    };
+
+    var filterRange = 'A1:' + String.fromCharCode(64 + listing.config.cols.length) + (listing.data.filtered.length + 1);
+
+    //Header row
+    listing.config.headers.forEach(function (header, col) {
+        addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
+    });
+
+    //Data rows
+    listing.data.filtered.forEach(function (d, row) {
+        listing.config.cols.forEach(function (variable, col) {
+            var cellStyle = clone(bodyStyle);
+            var color = d[variable + '-color'];
+            var fontColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FF000000';
+            var borderColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FFCCCCCC';
+            if (col > 2) {
+                cellStyle.font.color.rgb = fontColor;
+                cellStyle.border.bottom.color.rgb = borderColor;
+            } else {
+                delete cellStyle.font.color.rgb;
+                delete cellStyle.border.bottom;
+            }
+            addCell(wb, ws, d[variable] || '', 'c', cellStyle, range, row + 1, col);
+        });
+    });
+
+    //Define column widths.
+    var tr = listing.tbody.selectAll('tr')
+    //.filter(function() {
+    //    return d3.select(this).style('display') === 'table-row'; })
+    .filter(function (d, i) {
+        return i === 0;
+    });
+    tr.selectAll('td').each(function (d, i) {
+        cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
+    });
+
+    ws['!ref'] = XLSX.utils.encode_range(range);
+    ws['!cols'] = cols;
+    ws['!autofilter'] = { ref: filterRange };
+    //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
+
+    wb.SheetNames.push(name);
+    wb.Sheets[name] = ws;
+
+    listing.XLSX = XLSX.write(wb, wbOptions);
+}
+
 /* FileSaver.js
  * A saveAs() FileSaver implementation.
  * 1.3.8
@@ -629,286 +902,34 @@ var saveAs = saveAs || function (view) {
 	return saveAs;
 }(typeof self !== "undefined" && self || typeof window !== "undefined" && window || undefined);
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-  return typeof obj;
-} : function (obj) {
-  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-};
+//Convert XLSX file for download.
+function s2ab(s) {
+    var i = void 0;
+    if (typeof ArrayBuffer !== 'undefined') {
+        var buf = new ArrayBuffer(s.length);
+        var view = new Uint8Array(buf);
 
+        for (i = 0; i !== s.length; ++i) {
+            view[i] = s.charCodeAt(i) & 0xFF;
+        }return buf;
+    } else {
+        var buf = new Array(s.length);
 
-
-
-
-var asyncGenerator = function () {
-  function AwaitValue(value) {
-    this.value = value;
-  }
-
-  function AsyncGenerator(gen) {
-    var front, back;
-
-    function send(key, arg) {
-      return new Promise(function (resolve, reject) {
-        var request = {
-          key: key,
-          arg: arg,
-          resolve: resolve,
-          reject: reject,
-          next: null
-        };
-
-        if (back) {
-          back = back.next = request;
-        } else {
-          front = back = request;
-          resume(key, arg);
-        }
-      });
+        for (i = 0; i !== s.length; ++i) {
+            buf[i] = s.charCodeAt(i) & 0xFF;
+        }return buf;
     }
+}
 
-    function resume(key, arg) {
-      try {
-        var result = gen[key](arg);
-        var value = result.value;
-
-        if (value instanceof AwaitValue) {
-          Promise.resolve(value.value).then(function (arg) {
-            resume("next", arg);
-          }, function (arg) {
-            resume("throw", arg);
-          });
-        } else {
-          settle(result.done ? "return" : "normal", result.value);
-        }
-      } catch (err) {
-        settle("throw", err);
-      }
+function exportXLSX(listing) {
+    try {
+        saveAs(new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }), 'participant-visit-listing.xlsx');
+    } catch (error) {
+        if (typeof console !== 'undefined') console.log(error);
     }
-
-    function settle(type, value) {
-      switch (type) {
-        case "return":
-          front.resolve({
-            value: value,
-            done: true
-          });
-          break;
-
-        case "throw":
-          front.reject(value);
-          break;
-
-        default:
-          front.resolve({
-            value: value,
-            done: false
-          });
-          break;
-      }
-
-      front = front.next;
-
-      if (front) {
-        resume(front.key, front.arg);
-      } else {
-        back = null;
-      }
-    }
-
-    this._invoke = send;
-
-    if (typeof gen.return !== "function") {
-      this.return = undefined;
-    }
-  }
-
-  if (typeof Symbol === "function" && Symbol.asyncIterator) {
-    AsyncGenerator.prototype[Symbol.asyncIterator] = function () {
-      return this;
-    };
-  }
-
-  AsyncGenerator.prototype.next = function (arg) {
-    return this._invoke("next", arg);
-  };
-
-  AsyncGenerator.prototype.throw = function (arg) {
-    return this._invoke("throw", arg);
-  };
-
-  AsyncGenerator.prototype.return = function (arg) {
-    return this._invoke("return", arg);
-  };
-
-  return {
-    wrap: function (fn) {
-      return function () {
-        return new AsyncGenerator(fn.apply(this, arguments));
-      };
-    },
-    await: function (value) {
-      return new AwaitValue(value);
-    }
-  };
-}();
+}
 
 function exportToXLSX() {
-    function clone(obj) {
-        var copy = void 0;
-
-        //boolean, number, string, null, undefined
-        if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj) return obj;
-
-        //date
-        if (obj instanceof Date) {
-            copy = new Date();
-            copy.setTime(obj.getTime());
-            return copy;
-        }
-
-        //array
-        if (obj instanceof Array) {
-            copy = [];
-            for (var i = 0, len = obj.length; i < len; i++) {
-                copy[i] = clone(obj[i]);
-            }
-            return copy;
-        }
-
-        //object
-        if (obj instanceof Object) {
-            copy = {};
-            for (var attr in obj) {
-                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-            }
-            return copy;
-        }
-
-        throw new Error('Unable to copy [obj]! Its type is not supported.');
-    }
-
-    //Convert XLSX file for download.
-    function s2ab(s) {
-        var i = void 0;
-        if (typeof ArrayBuffer !== 'undefined') {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-
-            for (i = 0; i !== s.length; ++i) {
-                view[i] = s.charCodeAt(i) & 0xFF;
-            }return buf;
-        } else {
-            var buf = new Array(s.length);
-
-            for (i = 0; i !== s.length; ++i) {
-                buf[i] = s.charCodeAt(i) & 0xFF;
-            }return buf;
-        }
-    }
-
-    //Define generic workbook object.
-    function workBook() {
-        this.SheetNames = [];
-        this.Sheets = {};
-    }
-
-    //Update range when defining cells.
-    function updateRange(range, row, col) {
-        if (range.s.r > row) range.s.r = row;
-        if (range.s.c > col) range.s.c = col;
-        if (range.e.r < row) range.e.r = row;
-        if (range.e.c < col) range.e.c = col;
-    }
-
-    //Define cell.
-    function addCell(wb, ws, value, type, styles, range, row, col) {
-        updateRange(range, row, col);
-        styles.fill.fgColor.rgb = row > 0 && row % 2 ? 'FFffffff' : styles.fill.fgColor.rgb;
-        var cell = { v: value, t: type, s: styles },
-            cell_ref = XLSX.utils.encode_cell({ c: col, r: row });
-        ws[cell_ref] = cell;
-    }
-
-    //Export data to XLSX.
-    function defineXLSX(listing) {
-        var name = 'Participant Visit Listing';
-        var headerStyle = {
-            font: {
-                bold: true
-            },
-            fill: {
-                fgColor: { rgb: 'FFcccccc' }
-            },
-            alignment: {
-                wrapText: true
-            }
-        };
-        var bodyStyle = {
-            font: {
-                sz: 10
-            },
-            fill: {
-                fgColor: { rgb: 'FFeeeeee' }
-            },
-            alignment: {
-                wrapText: true
-            }
-        };
-        var wb = new workBook();
-        var ws = {};
-        var cols = [];
-        var range = { s: { c: 10000000, r: 10000000 }, e: { c: 0, r: 0 } };
-        var wbOptions = {
-            bookType: 'xlsx',
-            bookSST: true,
-            type: 'binary'
-        };
-
-        var filterRange = 'A1:' + String.fromCharCode(64 + listing.config.cols.length) + (listing.data.filtered.length + 1);
-
-        //Header row
-        listing.config.headers.forEach(function (header, col) {
-            addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
-        });
-
-        //Data rows
-        listing.data.filtered.forEach(function (d, row) {
-            listing.config.cols.forEach(function (variable, col) {
-                addCell(wb, ws, d[variable] || '', 'c', clone(bodyStyle), range, row + 1, col);
-            });
-        });
-        console.log(ws);
-
-        //Define column widths.
-        var tr = listing.tbody.selectAll('tr')
-        //.filter(function() {
-        //    return d3.select(this).style('display') === 'table-row'; })
-        .filter(function (d, i) {
-            return i === 0;
-        });
-        tr.selectAll('td').each(function (d, i) {
-            cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
-        });
-
-        ws['!ref'] = XLSX.utils.encode_range(range);
-        ws['!cols'] = cols;
-        ws['!autofilter'] = { ref: filterRange };
-        //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
-
-        wb.SheetNames.push(name);
-        wb.Sheets[name] = ws;
-
-        listing.XLSX = XLSX.write(wb, wbOptions);
-    }
-
-    function exportXLSX(listing) {
-        try {
-            saveAs(new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }), 'participant-visit-listing.xlsx');
-        } catch (error) {
-            if (typeof console != 'undefined') console.log(error);
-        }
-    }
-
     //this.wrap.select('.export#xlsx')
     //    .on('click', () => {
     defineXLSX(this);

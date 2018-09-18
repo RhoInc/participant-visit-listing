@@ -7,6 +7,8 @@ export default function init(data) {
     this.data = {
         raw: data,
         filtered: data,
+        variables: Object.keys(data[0]),
+        missingVariables: [],
         sets: {},
         transposed: []
     };

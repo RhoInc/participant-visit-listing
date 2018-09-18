@@ -2,23 +2,23 @@ export default {
     font: {
         sz: 10,
         color: {
-            rgb: null, // set in defineXLSX
-        },
+            rgb: null // set in defineXLSX
+        }
     },
     fill: {
         fgColor: {
-            rgb: 'FFeeeeee',
-        },
+            rgb: 'FFeeeeee'
+        }
     },
     alignment: {
-        wrapText: true,
+        wrapText: true
     },
     border: {
         bottom: {
             style: 'thick',
             color: {
-                rgb: null, // set in defineXLSX
-            },
-        },
-    },
+                rgb: null // set in defineXLSX
+            }
+        }
+    }
 };

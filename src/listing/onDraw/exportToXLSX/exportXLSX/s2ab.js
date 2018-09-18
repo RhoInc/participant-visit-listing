@@ -5,15 +5,13 @@ export default function s2ab(s) {
         var buf = new ArrayBuffer(s.length);
         var view = new Uint8Array(buf);
 
-        for (i = 0; i !== s.length; ++i)
-            view[i] = s.charCodeAt(i) & 0xFF;
+        for (i = 0; i !== s.length; ++i) view[i] = s.charCodeAt(i) & 0xff;
 
         return buf;
     } else {
         var buf = new Array(s.length);
 
-        for (i = 0; i !== s.length; ++i)
-            buf[i] = s.charCodeAt(i) & 0xFF;
+        for (i = 0; i !== s.length; ++i) buf[i] = s.charCodeAt(i) & 0xff;
 
         return buf;
     }

@@ -3,7 +3,7 @@ export default {
         bold: true
     },
     fill: {
-        fgColor: {rgb: 'FFcccccc'}
+        fgColor: { rgb: 'FFcccccc' }
     },
     alignment: {
         wrapText: true

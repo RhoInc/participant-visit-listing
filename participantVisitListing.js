@@ -139,7 +139,7 @@
             visit_status_col: 'visit_status',
             visit_status_order_col: 'status_order',
             visit_text_col: 'description',
-            visit_text_color_col: 'description_color',
+            visit_text_color_col: 'description_color', // must be hex RGB
             date_format: '%d-%b-%y',
             pagination: false,
             exports: ['xlsx', 'csv']
@@ -988,7 +988,8 @@
                 },
                 force_saveable_type = 'application/octet-stream',
                 // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-                arbitrary_revoke_timeout = 1000 * 40, // in ms
+                arbitrary_revoke_timeout = 1000 * 40,
+                // in ms
                 revoke = function revoke(file) {
                     var revoker = function revoker() {
                         if (typeof file === 'string') {
@@ -1162,11 +1163,12 @@
     }
 
     function exportToXLSX() {
-        //this.wrap.select('.export#xlsx')
-        //    .on('click', () => {
-        defineXLSX(this);
-        exportXLSX(this);
-        //    });
+        var _this = this;
+
+        this.wrap.select('.export#xlsx').on('click', function() {
+            defineXLSX(_this);
+            exportXLSX(_this);
+        });
     }
 
     function onDraw() {

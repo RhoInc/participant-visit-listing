@@ -499,10 +499,28 @@
     function participant() {
         var _this = this;
 
+        // create dictionary of id columns
+        var chart = this;
+        var newNest = d3
+            .nest()
+            .key(function(d) {
+                return d[chart.parent.settings.rendererSynced.id_col];
+            })
+            .rollup(function(d) {
+                return d;
+            })
+            .map(chart.parent.data.raw); //filtered_data?
+
+        // get all the cells
+        var cells = chart.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
+
+        // Store the appropriate td cell within the first row of for each subject's nested data
+        Object.keys(newNest).map(function(objectKey, index) {
+            newNest[objectKey][0].cell = cells[index][0];
+        });
+
         this.parent.data.sets.id_col.forEach(function(id) {
-            var id_data = _this.parent.data.raw.filter(function(d) {
-                return d[_this.parent.settings.rendererSynced.id_col] === id;
-            });
+            var id_data = newNest[id];
             var id_summary = d3
                 .nest()
                 .key(function(d) {
@@ -512,16 +530,8 @@
                     return d3.format('%')(d.length / id_data.length);
                 })
                 .entries(id_data);
-            var id_cell = _this.table
-                .selectAll('tbody tr')
-                .selectAll('td:nth-child(2)')
-                .filter(function(d) {
-                    return d.text.indexOf(id) > -1;
-                }) // define a more rigid selector here
-                .filter(function(d, i) {
-                    return i === 0;
-                });
-            id_cell.attr(
+            var id_cell = newNest[id][0].cell;
+            d3.select(id_cell).attr(
                 'title',
                 id_summary
                     .map(function(status) {
@@ -1229,7 +1239,6 @@
 
     function onDestroy() {}
 
-    //import onPreprocess from './onPreprocess';
     function listing() {
         //Define listing.
         this.listing = new webCharts.createTable(

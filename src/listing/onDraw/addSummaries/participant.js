@@ -1,6 +1,7 @@
 export default function participant() {
-    // create dictionary of id columns
     const chart = this;
+
+    // create dictionary of id columns
     const idDict = d3
         .nest()
         .key(d => d[chart.parent.settings.rendererSynced.id_col])
@@ -10,20 +11,28 @@ export default function participant() {
     // get all the cells
     const cells = chart.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
-    // Store the appropriate td cell within the first row of for each subject's nested data
-    Object.keys(idDict).map(function(objectKey, index) {
-        idDict[objectKey][0].cell = cells[index][0];
-    });
+    // create ditionary of table cells
+    const cellDict = d3
+        .nest()
+        .key(function(d) {
+            return d[0].__data__.text;
+        })
+        .rollup(d => d[0])
+        .map(cells);
 
-    this.parent.data.sets.id_col.forEach(id => {
+    // get ids
+    const id_cols = d3
+        .set(chart.data.filtered.map(d => d[chart.parent.settings.rendererSynced.id_col]))
+        .values();
+
+    id_cols.forEach(id => {
         const id_data = idDict[id];
         const id_summary = d3
             .nest()
             .key(d => d[this.parent.settings.rendererSynced.visit_status_col])
             .rollup(d => d3.format('%')(d.length / id_data.length))
             .entries(id_data);
-        const id_cell = idDict[id][0].cell;
-        d3.select(id_cell).attr(
+        d3.select(cellDict[id][0]).attr(
             'title',
             id_summary.map(status => `${status.key} (${status.values})`).join('\n')
         );

@@ -499,8 +499,9 @@
     function participant() {
         var _this = this;
 
-        // create dictionary of id columns
         var chart = this;
+
+        // create dictionary of id columns
         var idDict = d3
             .nest()
             .key(function(d) {
@@ -514,12 +515,27 @@
         // get all the cells
         var cells = chart.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
-        // Store the appropriate td cell within the first row of for each subject's nested data
-        Object.keys(idDict).map(function(objectKey, index) {
-            idDict[objectKey][0].cell = cells[index][0];
-        });
+        // create ditionary of table cells
+        var cellDict = d3
+            .nest()
+            .key(function(d) {
+                return d[0].__data__.text;
+            })
+            .rollup(function(d) {
+                return d[0];
+            })
+            .map(cells);
 
-        this.parent.data.sets.id_col.forEach(function(id) {
+        // get ids
+        var id_cols = d3
+            .set(
+                chart.data.filtered.map(function(d) {
+                    return d[chart.parent.settings.rendererSynced.id_col];
+                })
+            )
+            .values();
+
+        id_cols.forEach(function(id) {
             var id_data = idDict[id];
             var id_summary = d3
                 .nest()
@@ -530,8 +546,7 @@
                     return d3.format('%')(d.length / id_data.length);
                 })
                 .entries(id_data);
-            var id_cell = idDict[id][0].cell;
-            d3.select(id_cell).attr(
+            d3.select(cellDict[id][0]).attr(
                 'title',
                 id_summary
                     .map(function(status) {
@@ -1239,7 +1254,6 @@
 
     function onDestroy() {}
 
-    //import onPreprocess from './onPreprocess';
     function listing() {
         //Define listing.
         this.listing = new webCharts.createTable(

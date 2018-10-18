@@ -55,8 +55,13 @@ export default function styles() {
         '.pvl-legend__li {' +
         '    float: left;' +
         '    margin-right: 10px;' +
-        '    width: 150px;' +
+        '    width: 155px;' +
         '    text-align: center;' +
+        '}',
+        '.pvl-legend-item-info-icon {' +
+        '    margin-left: 4px;' +
+        '    font-weight: bold;' +
+        '    cursor: help;' +
         '}',
         '.pvl-listing {' +
         '}',

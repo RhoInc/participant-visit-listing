@@ -288,8 +288,13 @@
             '.pvl-legend__li {' +
                 '    float: left;' +
                 '    margin-right: 10px;' +
-                '    width: 150px;' +
+                '    width: 155px;' +
                 '    text-align: center;' +
+                '}',
+            '.pvl-legend-item-info-icon {' +
+                '    margin-left: 4px;' +
+                '    font-weight: bold;' +
+                '    cursor: help;' +
                 '}',
             '.pvl-listing {' + '}',
             '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
@@ -382,7 +387,7 @@
     function update() {
         var _this = this;
 
-        this.containers.legendItems.text(function(d) {
+        this.containers.legendItems.select('.pvl-legend-item-label').text(function(d) {
             return (
                 d[1] +
                 ' (' +
@@ -1387,6 +1392,40 @@
                     return d[2];
                 }
             });
+        this.containers.legendItems.each(function(d) {
+            var legendItem = d3.select(this);
+            legendItem.append('span').classed('pvl-legend-item-label', true);
+            legendItem
+                .append('span')
+                .classed('pvl-legend-item-info-icon', true)
+                .html('&#9432')
+                .style({
+                    color: function color(d) {
+                        return d[2];
+                    }
+                })
+                .attr('title', function(d) {
+                    var infoText = void 0;
+                    switch (d[1]) {
+                        case 'In Window':
+                            infoText = 'Visits in black have occurred.';
+                            break;
+                        case 'Expected':
+                            infoText = 'Dates in blue are expected dates for future visits.';
+                            break;
+                        case 'Overdue':
+                            infoText = 'Dates in Red are expected dates for overdue visits.';
+                            break;
+                        case 'Part':
+                            infoText = '"Part" a visit partially entered into EDC.';
+                            break;
+                        default:
+                            infoText = d[1];
+                            break;
+                    }
+                    return infoText;
+                });
+        });
         update.call(this);
     }
 

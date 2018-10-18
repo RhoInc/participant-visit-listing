@@ -3,15 +3,11 @@ export default function addHeaderHover() {
     this.thead
         .selectAll('th')
         .on('mouseover', function(d, i) {
-            const th = d3.select(this).style('outline', '1px solid black');
-            d3.selectAll(`tr td:nth-child(${i + 1})`)
-                .style('border-left', '1px solid black')
-                .style('border-right', '1px solid black');
+            d3.select(this).classed('pvl-header-hover', true);
+            d3.selectAll(`tr td:nth-child(${i + 1})`).classed('pvl-header-hover', true);
         })
         .on('mouseout', function(d, i) {
-            const th = d3.select(this).style('outline', 'none');
-            d3.selectAll(`tr td:nth-child(${i + 1})`)
-                .style('border-left', 'none')
-                .style('border-right', 'none');
+            d3.select(this).classed('pvl-header-hover', false);
+            d3.selectAll(`tr td:nth-child(${i + 1})`).classed('pvl-header-hover', false);
         });
 }

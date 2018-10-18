@@ -2,14 +2,14 @@ export default function transposeData() {
     this.data.sets.id_col.forEach(id => {
         const id_data = this.data.raw.filter(d => d[this.settings.rendererSynced.id_col] === id);
         const datum = {};
-        datum[this.settings.rendererSynced.id_col] = id;
         datum[this.settings.rendererSynced.site_col] =
             id_data[0][this.settings.rendererSynced.site_col];
+        datum['Site'] = datum[this.settings.rendererSynced.site_col];
+        datum[this.settings.rendererSynced.id_col] = id;
+        datum['ID'] = datum[this.settings.rendererSynced.id_col];
         datum[this.settings.rendererSynced.id_status_col] =
             id_data[0][this.settings.rendererSynced.id_status_col];
-        datum['Site/ID'] = `${datum[this.settings.rendererSynced.site_col]}/${
-            datum[this.settings.rendererSynced.id_col]
-        }`;
+        datum['Status'] = datum[this.settings.rendererSynced.id_status_col];
         this.data.sets.visit_col.forEach(visit => {
             const visit_datum = id_data.find(
                 d => d[this.settings.rendererSynced.visit_col] === visit

@@ -1,7 +1,6 @@
 export default function styles() {
     this.styles = [
         'body {' +
-        '    overflow-y: scroll;' +
         '}',
         '.participant-visit-listing {' +
         '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' +
@@ -12,13 +11,35 @@ export default function styles() {
         '    width: 100%;' +
         '    display: inline-block;' +
         '}',
+        '.pvl-row--upper {' +
+        '    border-bottom: 2px solid #eee;' +
+        '    padding-bottom: 12px;' +
+        '}',
+        '.pvl-row--upper > * {' +
+        '    width: 45%;' +
+        '    vertical-align: bottom;' +
+        '}',
         '.pvl-controls {' +
-        '    height: 5vh;' +
+        '    display: inline-block;' +
+        '    width: 45%;' +
+        '    float: right;' +
         '}',
         '.pvl-controls .wc-controls {' +
         '    float: right;' +
+        '    margin-bottom: 0;' +
+        '}',
+        '.pvl-controls .wc-controls .control-group {' +
+        '    margin-bottom: 0;' +
+        '}',
+        '.pvl-controls .wc-controls .control-group > * {' +
+        '    display: inline-block;' +
+        '}',
+        '.pvl-controls .wc-controls .control-group .wc-control-label {' +
+        '    margin-right: 5px;' +
         '}',
         '.pvl-legend {' +
+        '    width: 45%;' +
+        '    float: left;' +
         '}',
         '.pvl-legend__ul {' +
         '    list-style-type: none;' +
@@ -35,46 +56,90 @@ export default function styles() {
         '.pvl-listing {' +
         '}',
         '.pvl-listing .wc-table {' +
-        '    overflow: auto;' +
-        '    height: 80vh;' +
-        '}',
-        '.pvl-listing .wc-table table {' +
         '    width: 100%;' +
-        '    display: table;' +
+        '    overflow-x: scroll;' +
         '}',
-        '.pvl-listing .wc-table table thead {' +
-        '    border: 2px solid black;' +
-        '    outline: 2px solid black;' +
-        '    background: #fff;' +
-        '}',
-        '.pvl-listing .wc-table table thead tr {' +
-        '}',
-        '.pvl-listing .wc-table table thead tr th {' +
-        '}',
-        '.pvl-listing .wc-table table thead tr th:first-child {' +
-        '}',
-        '.pvl-listing .wc-table table tbody tr td {' +
-        '    cursor: default;' +
-        '}',
-        '.pvl-listing .wc-table table tbody tr td:first-child {' +
-        '    cursor: help;' +
-        '}',
-        //'.pvl-listing thead,' +
-        //'.pvl-listing tbody,' +
-        //'.pvl-listing tr,' +
-        //'.pvl-listing td,' +
-        //'.pvl-listing th {' +
-        //'}',
-        //'.pvl-listing tbody {' +
-        //'    height: 120px;' +
-        //'    overflow-y: auto;' +
-        //'}',
-        //'.pvl-listing tr:after {' +
-        //'    content: " ";' +
-        //'    display: block;' +
-        //'    visibility: hidden;' +
-        //'    clear: both;' +
-        //'}',
+
+        /***--------------------------------------------------------------------------------------\
+          table
+        \--------------------------------------------------------------------------------------***/
+
+            '.pvl-listing .wc-table table {' +
+            '    display: table;' +
+            '    border: 0;' +
+            '    border-collapse: collapse;' +
+            '}',
+
+            /****---------------------------------------------------------------------------------\
+              thead
+            \---------------------------------------------------------------------------------****/
+
+                '.pvl-listing .wc-table table thead {' +
+                '}',
+                '.pvl-listing .wc-table table thead tr:after {' +
+                '    content: "";' +
+                '    overflow-y: scroll;' +
+                '    visibility: hidden;' +
+                '    height: 0;' +
+                '}',
+                '.pvl-listing .wc-table table thead tr th {' +
+                '    flex: 1 auto;' +
+                '    display: block;' +
+                '    border-top: 2px solid white;' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
+
+            /****---------------------------------------------------------------------------------\
+              tbody
+            \---------------------------------------------------------------------------------****/
+
+                '.pvl-listing .wc-table table tbody {' +
+                '    display: block;' +
+                '    width: 100%;' +
+                '    overflow-y: auto;' +
+                '    height: 66vh;' +
+                '}',
+                '.pvl-listing .wc-table table tbody tr td {' +
+                '    cursor: default;' +
+                '    flex: 1 auto;' +
+                '    word-wrap: break;' +
+                '}',
+                '.pvl-listing .wc-table table tr:nth-child(odd) td {' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
+                '.pvl-listing .wc-table table tr:nth-child(even) td {' +
+                '    border-right: 2px solid #eee;' +
+                '    border-left: 2px solid #eee;' +
+                '}',
+                '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' +
+                '    cursor: help;' +
+                '}',
+
+            /****---------------------------------------------------------------------------------\
+              t-agnostic
+            \---------------------------------------------------------------------------------****/
+
+                '.pvl-listing .wc-table table tr {' +
+                '    display: flex;' +
+                '}',
+                '.pvl-listing .wc-table table th,' +
+                '.pvl-listing .wc-table table td {' +
+                '    flex: 1 auto;' +
+                '    width: 100px;' +
+                '}',
+                '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                '    border-right: 2px solid blue;' +
+                '    border-left: 2px solid blue;' +
+                '}',
+                '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                '    border-top: 2px solid blue;' +
+                '}',
+                '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                '    border-bottom: 2px solid blue !important;' +
+                '}',
     ];
 
     //Attach styles to DOM.

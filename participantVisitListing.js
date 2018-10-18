@@ -221,7 +221,7 @@
 
     function styles() {
         this.styles = [
-            'body {' + '    overflow-y: scroll;' + '}',
+            'body {' + '}',
             '.participant-visit-listing {' +
                 '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' +
                 '    font-size: 16px;' +
@@ -231,9 +231,23 @@
                 '    width: 100%;' +
                 '    display: inline-block;' +
                 '}',
-            '.pvl-controls {' + '    height: 5vh;' + '}',
-            '.pvl-controls .wc-controls {' + '    float: right;' + '}',
-            '.pvl-legend {' + '}',
+            '.pvl-row--upper {' +
+                '    border-bottom: 2px solid #eee;' +
+                '    padding-bottom: 12px;' +
+                '}',
+            '.pvl-row--upper > * {' + '    width: 45%;' + '    vertical-align: bottom;' + '}',
+            '.pvl-controls {' +
+                '    display: inline-block;' +
+                '    width: 45%;' +
+                '    float: right;' +
+                '}',
+            '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group {' + '    margin-bottom: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group > * {' + '    display: inline-block;' + '}',
+            '.pvl-controls .wc-controls .control-group .wc-control-label {' +
+                '    margin-right: 5px;' +
+                '}',
+            '.pvl-legend {' + '    width: 45%;' + '    float: left;' + '}',
             '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
                 '    margin: 0;' +
@@ -247,18 +261,83 @@
                 '    text-align: center;' +
                 '}',
             '.pvl-listing {' + '}',
-            '.pvl-listing .wc-table {' + '    overflow: auto;' + '    height: 80vh;' + '}',
-            '.pvl-listing .wc-table table {' + '    width: 100%;' + '    display: table;' + '}',
-            '.pvl-listing .wc-table table thead {' +
-                '    border: 2px solid black;' +
-                '    outline: 2px solid black;' +
-                '    background: #fff;' +
+            '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+
+            /***--------------------------------------------------------------------------------------\
+              table
+            \--------------------------------------------------------------------------------------***/
+
+            '.pvl-listing .wc-table table {' +
+                '    display: table;' +
+                '    border: 0;' +
+                '    border-collapse: collapse;' +
                 '}',
-            '.pvl-listing .wc-table table thead tr {' + '}',
-            '.pvl-listing .wc-table table thead tr th {' + '}',
-            '.pvl-listing .wc-table table thead tr th:first-child {' + '}',
-            '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '}',
-            '.pvl-listing .wc-table table tbody tr td:first-child {' + '    cursor: help;' + '}'
+
+            /****---------------------------------------------------------------------------------\
+              thead
+            \---------------------------------------------------------------------------------****/
+
+            '.pvl-listing .wc-table table thead {' + '}',
+            '.pvl-listing .wc-table table thead tr:after {' +
+                '    content: "";' +
+                '    overflow-y: scroll;' +
+                '    visibility: hidden;' +
+                '    height: 0;' +
+                '}',
+            '.pvl-listing .wc-table table thead tr th {' +
+                '    flex: 1 auto;' +
+                '    display: block;' +
+                '    border-top: 2px solid white;' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
+
+            /****---------------------------------------------------------------------------------\
+              tbody
+            \---------------------------------------------------------------------------------****/
+
+            '.pvl-listing .wc-table table tbody {' +
+                '    display: block;' +
+                '    width: 100%;' +
+                '    overflow-y: auto;' +
+                '    height: 66vh;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr td {' +
+                '    cursor: default;' +
+                '    flex: 1 auto;' +
+                '    word-wrap: break;' +
+                '}',
+            '.pvl-listing .wc-table table tr:nth-child(odd) td {' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
+            '.pvl-listing .wc-table table tr:nth-child(even) td {' +
+                '    border-right: 2px solid #eee;' +
+                '    border-left: 2px solid #eee;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}',
+
+            /****---------------------------------------------------------------------------------\
+              t-agnostic
+            \---------------------------------------------------------------------------------****/
+
+            '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}',
+            '.pvl-listing .wc-table table th,' +
+                '.pvl-listing .wc-table table td {' +
+                '    flex: 1 auto;' +
+                '    width: 100px;' +
+                '}',
+            '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                '    border-right: 2px solid blue;' +
+                '    border-left: 2px solid blue;' +
+                '}',
+            '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                '    border-top: 2px solid blue;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                '    border-bottom: 2px solid blue !important;' +
+                '}'
         ];
 
         //Attach styles to DOM.
@@ -276,11 +355,13 @@
             return (
                 d[1] +
                 ' (' +
-                d3.format('%')(
-                    _this.data.filtered.filter(function(di) {
-                        return di[_this.settings.rendererSynced.visit_status_col] === d[1];
-                    }).length / _this.data.filtered.length
-                ) +
+                (_this.data.filtered.length
+                    ? d3.format('%')(
+                          _this.data.filtered.filter(function(di) {
+                              return di[_this.settings.rendererSynced.visit_status_col] === d[1];
+                          }).length / _this.data.filtered.length
+                      )
+                    : 'N/A') +
                 ')'
             );
         });
@@ -335,24 +416,13 @@
         this.thead
             .selectAll('th')
             .on('mouseover', function(d, i) {
-                var th = d3.select(this).style('outline', '1px solid black');
-                d3.selectAll('tr td:nth-child(' + (i + 1) + ')')
-                    .style('border-left', '1px solid black')
-                    .style('border-right', '1px solid black');
+                d3.select(this).classed('pvl-header-hover', true);
+                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', true);
             })
             .on('mouseout', function(d, i) {
-                var th = d3.select(this).style('outline', 'none');
-                d3.selectAll('tr td:nth-child(' + (i + 1) + ')')
-                    .style('border-left', 'none')
-                    .style('border-right', 'none');
+                d3.select(this).classed('pvl-header-hover', false);
+                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', false);
             });
-    }
-
-    function floatHeader() {
-        this.wrap.on('scroll', function() {
-            var thead = this.querySelector('thead');
-            thead.style.transform = 'translate(0,' + this.scrollTop + 'px)';
-        });
     }
 
     function addCellFormatting() {
@@ -361,7 +431,7 @@
         this.tbody.selectAll('tr').each(function(d, i) {
             var row = d3.select(this);
 
-            row.selectAll('td:not(:first-child)').each(function(di, j) {
+            row.selectAll('td:nth-child(n+4)').each(function(di, j) {
                 var cell = d3.select(this);
 
                 //Add tooltip to cells.
@@ -408,7 +478,7 @@
                 .entries(id_data);
             var id_cell = _this.table
                 .selectAll('tbody tr')
-                .selectAll('td:first-child')
+                .selectAll('td:nth-child(2)')
                 .filter(function(d) {
                     return d.text.indexOf(id) > -1;
                 }) // define a more rigid selector here
@@ -589,7 +659,7 @@
         sortChronologically.call(this);
 
         //Float table header as user scrolls.
-        floatHeader.call(this);
+        //floatHeader.call(this);
 
         //Add row and column summaries.
         addSummaries.call(this);
@@ -683,7 +753,7 @@
     }
 
     function defineColumns() {
-        this.listing.config.cols = ['Site/ID'].concat(this.data.sets.visit_col);
+        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
     }
 
     function transposeData() {
@@ -694,15 +764,14 @@
                 return d[_this.settings.rendererSynced.id_col] === id;
             });
             var datum = {};
-            datum[_this.settings.rendererSynced.id_col] = id;
             datum[_this.settings.rendererSynced.site_col] =
                 id_data[0][_this.settings.rendererSynced.site_col];
+            datum['Site'] = datum[_this.settings.rendererSynced.site_col];
+            datum[_this.settings.rendererSynced.id_col] = id;
+            datum['ID'] = datum[_this.settings.rendererSynced.id_col];
             datum[_this.settings.rendererSynced.id_status_col] =
                 id_data[0][_this.settings.rendererSynced.id_status_col];
-            datum['Site/ID'] =
-                datum[_this.settings.rendererSynced.site_col] +
-                '/' +
-                datum[_this.settings.rendererSynced.id_col];
+            datum['Status'] = datum[_this.settings.rendererSynced.id_status_col];
             _this.data.sets.visit_col.forEach(function(visit) {
                 var visit_datum = id_data.find(function(d) {
                     return d[_this.settings.rendererSynced.visit_col] === visit;

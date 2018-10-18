@@ -499,10 +499,42 @@
     function participant() {
         var _this = this;
 
-        this.parent.data.sets.id_col.forEach(function(id) {
-            var id_data = _this.parent.data.raw.filter(function(d) {
-                return d[_this.parent.settings.rendererSynced.id_col] === id;
-            });
+        // create dictionary of id columns
+        var idDict = d3
+            .nest()
+            .key(function(d) {
+                return d[_this.parent.settings.rendererSynced.id_col];
+            })
+            .rollup(function(d) {
+                return d;
+            })
+            .map(this.parent.data.raw);
+
+        // get all the cells
+        var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
+
+        // create ditionary of table cells
+        var cellDict = d3
+            .nest()
+            .key(function(d) {
+                return d[0].__data__.text;
+            })
+            .rollup(function(d) {
+                return d[0];
+            })
+            .map(cells);
+
+        // get ids
+        var id_cols = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.parent.settings.rendererSynced.id_col];
+                })
+            )
+            .values();
+
+        id_cols.forEach(function(id) {
+            var id_data = idDict[id];
             var id_summary = d3
                 .nest()
                 .key(function(d) {
@@ -512,16 +544,7 @@
                     return d3.format('%')(d.length / id_data.length);
                 })
                 .entries(id_data);
-            var id_cell = _this.table
-                .selectAll('tbody tr')
-                .selectAll('td:nth-child(2)')
-                .filter(function(d) {
-                    return d.text.indexOf(id) > -1;
-                }) // define a more rigid selector here
-                .filter(function(d, i) {
-                    return i === 0;
-                });
-            id_cell.attr(
+            d3.select(cellDict[id][0]).attr(
                 'title',
                 id_summary
                     .map(function(status) {

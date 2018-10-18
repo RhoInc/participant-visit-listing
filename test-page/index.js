@@ -1,6 +1,5 @@
 d3.csv(
-    'https://rawgit.com/RhoInc/participant-visit-listing/master/test-page/DMV_Visits.csv',
-    //'./DMV_Visits.csv', // to improve speed use local data file in development
+    './DMV_Visits.csv',
     function(d) {
         return d;
     },

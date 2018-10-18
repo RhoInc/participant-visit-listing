@@ -4,7 +4,7 @@ export default function addCellFormatting() {
     this.tbody.selectAll('tr').each(function(d, i) {
         const row = d3.select(this);
 
-        row.selectAll('td:not(:first-child)').each(function(di, j) {
+        row.selectAll('td:nth-child(n+4)').each(function(di, j) {
             const cell = d3.select(this);
 
             //Add tooltip to cells.

@@ -1,6 +1,6 @@
 {
     "name": "participant-visit-listing",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "an interactive listing of the schedule of events of a clinical trial by participant",
     "homepage": "https://github.com/RhoInc/participant-visit-listing#readme",
     "main": "./participantVisitListing.js",
@@ -23,7 +23,8 @@
     "dependencies": {
         "d3": "^3",
         "jspdf": "^1.4.1",
-        "webcharts": "^1"
+        "webcharts": "^1",
+        "xlsx-style": "^0.8.13"
     },
     "scripts": {
         "build": "npm run bundle && npm run format",

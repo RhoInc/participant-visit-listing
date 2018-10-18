@@ -10,7 +10,7 @@ export default function participant() {
             .entries(id_data);
         const id_cell = this.table
             .selectAll('tbody tr')
-            .selectAll('td:first-child')
+            .selectAll('td:nth-child(2)')
             .filter(d => d.text.indexOf(id) > -1) // define a more rigid selector here
             .filter((d, i) => i === 0);
         id_cell.attr(

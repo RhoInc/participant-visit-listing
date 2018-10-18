@@ -1,28 +1,24 @@
 export default function participant() {
-    const chart = this;
-
     // create dictionary of id columns
     const idDict = d3
         .nest()
-        .key(d => d[chart.parent.settings.rendererSynced.id_col])
+        .key(d => d[this.parent.settings.rendererSynced.id_col])
         .rollup(d => d)
-        .map(chart.parent.data.raw);
+        .map(this.parent.data.raw);
 
     // get all the cells
-    const cells = chart.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
+    const cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
     // create ditionary of table cells
     const cellDict = d3
         .nest()
-        .key(function(d) {
-            return d[0].__data__.text;
-        })
+        .key(d => d[0].__data__.text)
         .rollup(d => d[0])
         .map(cells);
 
     // get ids
     const id_cols = d3
-        .set(chart.data.filtered.map(d => d[chart.parent.settings.rendererSynced.id_col]))
+        .set(this.data.filtered.map(d => d[this.parent.settings.rendererSynced.id_col]))
         .values();
 
     id_cols.forEach(id => {

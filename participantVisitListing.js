@@ -499,21 +499,19 @@
     function participant() {
         var _this = this;
 
-        var chart = this;
-
         // create dictionary of id columns
         var idDict = d3
             .nest()
             .key(function(d) {
-                return d[chart.parent.settings.rendererSynced.id_col];
+                return d[_this.parent.settings.rendererSynced.id_col];
             })
             .rollup(function(d) {
                 return d;
             })
-            .map(chart.parent.data.raw);
+            .map(this.parent.data.raw);
 
         // get all the cells
-        var cells = chart.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
+        var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
         // create ditionary of table cells
         var cellDict = d3
@@ -529,8 +527,8 @@
         // get ids
         var id_cols = d3
             .set(
-                chart.data.filtered.map(function(d) {
-                    return d[chart.parent.settings.rendererSynced.id_col];
+                this.data.filtered.map(function(d) {
+                    return d[_this.parent.settings.rendererSynced.id_col];
                 })
             )
             .values();
@@ -1254,6 +1252,7 @@
 
     function onDestroy() {}
 
+    //import onPreprocess from './onPreprocess';
     function listing() {
         //Define listing.
         this.listing = new webCharts.createTable(

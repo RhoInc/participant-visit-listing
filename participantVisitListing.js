@@ -135,12 +135,13 @@
             id_col: 'subjectnameoridentifier',
             id_status_col: 'status',
             visit_col: 'visit_name',
-            visit_order_col: 'Visit_number',
+            visit_order_col: 'visit_number',
             visit_status_col: 'visit_status',
             visit_status_order_col: 'status_order',
             visit_text_col: 'description',
             visit_text_color_col: 'description_color', // must be hex RGB
             date_format: '%d-%b-%y',
+            filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'],
             pagination: false,
             exports: ['xlsx', 'csv']
         };
@@ -168,6 +169,8 @@
     }
 
     function syncControls() {
+        var _this = this;
+
         //Sync site filter.
         var siteFilter = this.settings.controls.inputs.find(function(control) {
             return control.label === 'Site';
@@ -179,6 +182,26 @@
             return control.label === 'Participant Status';
         });
         idStatusFilter.value_col = this.settings.rendererSynced.id_status_col;
+
+        //Add user-specified filters.
+        if (
+            Array.isArray(this.settings.rendererSynced.filter_cols) &&
+            this.settings.rendererSynced.filter_cols
+        ) {
+            var labels = {
+                subset1: 'Analysis Subset 1',
+                subset2: 'Analysis Subset 2',
+                subset3: 'Analysis Subset 3',
+                overdue2: '>1 Overdue Visits'
+            };
+            this.settings.rendererSynced.filter_cols.forEach(function(filter_col) {
+                _this.settings.controls.inputs.push({
+                    type: 'subsetter',
+                    label: labels[filter_col] || filter_col,
+                    value_col: filter_col
+                });
+            });
+        }
 
         this.settings.controlsSynced = this.settings.controls;
     }
@@ -235,19 +258,27 @@
                 '    border-bottom: 2px solid #eee;' +
                 '    padding-bottom: 12px;' +
                 '}',
-            '.pvl-row--upper > * {' + '    width: 45%;' + '    vertical-align: bottom;' + '}',
-            '.pvl-controls {' +
+            '.pvl-row--upper > * {' +
+                '    vertical-align: bottom;' +
                 '    display: inline-block;' +
-                '    width: 45%;' +
-                '    float: right;' +
                 '}',
+            '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}',
             '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
-            '.pvl-controls .wc-controls .control-group {' + '    margin-bottom: 0;' + '}',
-            '.pvl-controls .wc-controls .control-group > * {' + '    display: inline-block;' + '}',
+            '.pvl-controls .wc-controls .control-group {' +
+                '    margin-bottom: 0;' +
+                '    width: 125px;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
             '.pvl-controls .wc-controls .control-group .wc-control-label {' +
                 '    margin-right: 5px;' +
+                '    text-align: right;' +
                 '}',
-            '.pvl-legend {' + '    width: 45%;' + '    float: left;' + '}',
+            '.pvl-legend {' +
+                '    width: 44%;' +
+                '    float: left;' +
+                '    padding-top: 16px;' +
+                '}',
             '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
                 '    margin: 0;' +
@@ -1279,8 +1310,23 @@
         this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
     }
 
+    function checkFilterCols(filterCol) {
+        this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
+        if (!this.data.missingVariables[filterCol])
+            this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+    }
+
     function transposeData() {
         var _this = this;
+
+        checkFilterCols.call(this, 'subset1');
+        checkFilterCols.call(this, 'subset2');
+        checkFilterCols.call(this, 'subset3');
+        checkFilterCols.call(this, 'overdue2');
 
         this.data.sets.id_col.forEach(function(id) {
             var id_data = _this.data.raw.filter(function(d) {
@@ -1295,6 +1341,9 @@
             datum[_this.settings.rendererSynced.id_status_col] =
                 id_data[0][_this.settings.rendererSynced.id_status_col];
             datum['Status'] = datum[_this.settings.rendererSynced.id_status_col];
+
+            if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
+
             _this.data.sets.visit_col.forEach(function(visit) {
                 var visit_datum = id_data.find(function(d) {
                     return d[_this.settings.rendererSynced.visit_col] === visit;
@@ -1308,6 +1357,10 @@
                 datum[visit + '-color'] = visit_datum
                     ? visit_datum[_this.settings.rendererSynced.visit_text_color_col]
                     : null;
+
+                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
+                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
+                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
             });
             _this.data.transposed.push(datum);
         });
@@ -1341,6 +1394,8 @@
         this.data = {
             raw: data,
             filtered: data,
+            variables: Object.keys(data[0]),
+            missingVariables: [],
             sets: {},
             transposed: []
         };

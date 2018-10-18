@@ -16,12 +16,11 @@ export default function styles() {
         '    padding-bottom: 12px;' +
         '}',
         '.pvl-row--upper > * {' +
-        '    width: 45%;' +
         '    vertical-align: bottom;' +
+        '    display: inline-block;' +
         '}',
         '.pvl-controls {' +
-        '    display: inline-block;' +
-        '    width: 45%;' +
+        '    width: 55%;' +
         '    float: right;' +
         '}',
         '.pvl-controls .wc-controls {' +
@@ -30,16 +29,22 @@ export default function styles() {
         '}',
         '.pvl-controls .wc-controls .control-group {' +
         '    margin-bottom: 0;' +
+        '    width: 125px;' +
+        '}',
+        '.pvl-controls .wc-controls .control-group:last-child {' +
+        '    margin-right: 0;' +
         '}',
         '.pvl-controls .wc-controls .control-group > * {' +
-        '    display: inline-block;' +
+        '    width: 100%;' +
         '}',
         '.pvl-controls .wc-controls .control-group .wc-control-label {' +
         '    margin-right: 5px;' +
+        '    text-align: right;' +
         '}',
         '.pvl-legend {' +
-        '    width: 45%;' +
+        '    width: 44%;' +
         '    float: left;' +
+        '    padding-top: 16px;' +
         '}',
         '.pvl-legend__ul {' +
         '    list-style-type: none;' +

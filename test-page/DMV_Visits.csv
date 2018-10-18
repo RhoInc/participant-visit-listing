@@ -1,4 +1,4 @@
-site_name,subjectnameoridentifier,status,visit_name,Visit_number,visit_status,status_order,status_color,description,description_color,Subset1,Subset2,Subset3,Overdue2
+site_name,subjectnameoridentifier,status,visit_name,visit_number,visit_status,status_order,status_color,description,description_color,subset1,subset2,subset3,overdue2
 Site 1,10102,Screen Failure,SCRN,0,In Window,1,#8da0cb,Done,Black,,,Interim3,
 Site 1,10103,Screen Failure,SCRN,0,In Window,1,#8da0cb,Done,Black,Interim1,,,
 Site 1,10104,Screen Failure,SCRN,0,In Window,1,#8da0cb,Done,Black,,,,

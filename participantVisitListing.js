@@ -139,7 +139,7 @@
             visit_status_col: 'visit_status',
             visit_status_order_col: 'status_order',
             visit_text_col: 'description',
-            visit_text_color_col: 'description_color',
+            visit_text_color_col: 'description_color', // must be hex RGB
             date_format: '%d-%b-%y',
             pagination: false,
             exports: ['xlsx', 'csv']
@@ -651,6 +651,526 @@
         });
     }
 
+    var headerStyle = {
+        font: {
+            bold: true
+        },
+        fill: {
+            fgColor: { rgb: 'FFcccccc' }
+        },
+        alignment: {
+            wrapText: true
+        }
+    };
+
+    var bodyStyle = {
+        font: {
+            sz: 10,
+            color: {
+                rgb: null // set in defineXLSX
+            }
+        },
+        fill: {
+            fgColor: {
+                rgb: 'FFeeeeee'
+            }
+        },
+        alignment: {
+            wrapText: true
+        },
+        border: {
+            bottom: {
+                style: 'thick',
+                color: {
+                    rgb: null // set in defineXLSX
+                }
+            }
+        }
+    };
+
+    function workBook() {
+        this.SheetNames = [];
+        this.Sheets = {};
+    }
+
+    function updateRange(range, row, col) {
+        if (range.s.r > row) range.s.r = row;
+        if (range.s.c > col) range.s.c = col;
+        if (range.e.r < row) range.e.r = row;
+        if (range.e.c < col) range.e.c = col;
+    }
+
+    function addCell(wb, ws, value, type, styles, range, row, col) {
+        updateRange(range, row, col);
+        styles.fill.fgColor.rgb = row > 0 && row % 2 ? 'FFffffff' : styles.fill.fgColor.rgb;
+        var cell = { v: value, t: type, s: styles };
+        var cell_ref = XLSX.utils.encode_cell({ c: col, r: row });
+        ws[cell_ref] = cell;
+    }
+
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
+
+    var asyncGenerator = (function() {
+        function AwaitValue(value) {
+            this.value = value;
+        }
+
+        function AsyncGenerator(gen) {
+            var front, back;
+
+            function send(key, arg) {
+                return new Promise(function(resolve, reject) {
+                    var request = {
+                        key: key,
+                        arg: arg,
+                        resolve: resolve,
+                        reject: reject,
+                        next: null
+                    };
+
+                    if (back) {
+                        back = back.next = request;
+                    } else {
+                        front = back = request;
+                        resume(key, arg);
+                    }
+                });
+            }
+
+            function resume(key, arg) {
+                try {
+                    var result = gen[key](arg);
+                    var value = result.value;
+
+                    if (value instanceof AwaitValue) {
+                        Promise.resolve(value.value).then(
+                            function(arg) {
+                                resume('next', arg);
+                            },
+                            function(arg) {
+                                resume('throw', arg);
+                            }
+                        );
+                    } else {
+                        settle(result.done ? 'return' : 'normal', result.value);
+                    }
+                } catch (err) {
+                    settle('throw', err);
+                }
+            }
+
+            function settle(type, value) {
+                switch (type) {
+                    case 'return':
+                        front.resolve({
+                            value: value,
+                            done: true
+                        });
+                        break;
+
+                    case 'throw':
+                        front.reject(value);
+                        break;
+
+                    default:
+                        front.resolve({
+                            value: value,
+                            done: false
+                        });
+                        break;
+                }
+
+                front = front.next;
+
+                if (front) {
+                    resume(front.key, front.arg);
+                } else {
+                    back = null;
+                }
+            }
+
+            this._invoke = send;
+
+            if (typeof gen.return !== 'function') {
+                this.return = undefined;
+            }
+        }
+
+        if (typeof Symbol === 'function' && Symbol.asyncIterator) {
+            AsyncGenerator.prototype[Symbol.asyncIterator] = function() {
+                return this;
+            };
+        }
+
+        AsyncGenerator.prototype.next = function(arg) {
+            return this._invoke('next', arg);
+        };
+
+        AsyncGenerator.prototype.throw = function(arg) {
+            return this._invoke('throw', arg);
+        };
+
+        AsyncGenerator.prototype.return = function(arg) {
+            return this._invoke('return', arg);
+        };
+
+        return {
+            wrap: function(fn) {
+                return function() {
+                    return new AsyncGenerator(fn.apply(this, arguments));
+                };
+            },
+            await: function(value) {
+                return new AwaitValue(value);
+            }
+        };
+    })();
+
+    function clone(obj) {
+        var copy = void 0;
+
+        //boolean, number, string, null, undefined
+        if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj)
+            return obj;
+
+        //date
+        if (obj instanceof Date) {
+            copy = new Date();
+            copy.setTime(obj.getTime());
+            return copy;
+        }
+
+        //array
+        if (obj instanceof Array) {
+            copy = [];
+            for (var i = 0, len = obj.length; i < len; i++) {
+                copy[i] = clone(obj[i]);
+            }
+            return copy;
+        }
+
+        //object
+        if (obj instanceof Object) {
+            copy = {};
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+            }
+            return copy;
+        }
+
+        throw new Error('Unable to copy [obj]! Its type is not supported.');
+    }
+
+    function defineXLSX(listing) {
+        var name = 'Participant Visit Listing';
+        var wb = new workBook();
+        var ws = {};
+        var cols = [];
+        var range = { s: { c: 10000000, r: 10000000 }, e: { c: 0, r: 0 } };
+        var wbOptions = {
+            bookType: 'xlsx',
+            bookSST: true,
+            type: 'binary'
+        };
+
+        var filterRange =
+            'A1:' +
+            String.fromCharCode(64 + listing.config.cols.length) +
+            (listing.data.filtered.length + 1);
+
+        //Header row
+        listing.config.headers.forEach(function(header, col) {
+            addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
+        });
+
+        //Data rows
+        listing.data.filtered.forEach(function(d, row) {
+            listing.config.cols.forEach(function(variable, col) {
+                var cellStyle = clone(bodyStyle);
+                var color = d[variable + '-color'];
+                var fontColor = /^#[a-z0-9]{6}$/i.test(color)
+                    ? color.replace('#', 'FF')
+                    : 'FF000000';
+                var borderColor = /^#[a-z0-9]{6}$/i.test(color)
+                    ? color.replace('#', 'FF')
+                    : 'FFCCCCCC';
+                if (col > 2) {
+                    cellStyle.font.color.rgb = fontColor;
+                    cellStyle.border.bottom.color.rgb = borderColor;
+                } else {
+                    delete cellStyle.font.color.rgb;
+                    delete cellStyle.border.bottom;
+                }
+                addCell(wb, ws, d[variable] || '', 'c', cellStyle, range, row + 1, col);
+            });
+        });
+
+        //Define column widths.
+        var tr = listing.tbody
+            .selectAll('tr')
+            //.filter(function() {
+            //    return d3.select(this).style('display') === 'table-row'; })
+            .filter(function(d, i) {
+                return i === 0;
+            });
+        tr.selectAll('td').each(function(d, i) {
+            cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
+        });
+
+        ws['!ref'] = XLSX.utils.encode_range(range);
+        ws['!cols'] = cols;
+        ws['!autofilter'] = { ref: filterRange };
+        //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
+
+        wb.SheetNames.push(name);
+        wb.Sheets[name] = ws;
+
+        listing.XLSX = XLSX.write(wb, wbOptions);
+    }
+
+    /* FileSaver.js
+ * A saveAs() FileSaver implementation.
+ * 1.3.8
+ * 2018-03-22 14:03:47
+ *
+ * By Eli Grey, https://eligrey.com
+ * License: MIT
+ *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
+ */
+
+    /*global self */
+    /*jslint bitwise: true, indent: 4, laxbreak: true, laxcomma: true, smarttabs: true, plusplus: true */
+
+    /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
+
+    var saveAs =
+        saveAs ||
+        (function(view) {
+            'use strict';
+            // IE <10 is explicitly unsupported
+
+            if (
+                typeof view === 'undefined' ||
+                (typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent))
+            ) {
+                return;
+            }
+            var doc = view.document,
+                // only get URL when necessary in case Blob.js hasn't overridden it yet
+                get_URL = function get_URL() {
+                    return view.URL || view.webkitURL || view;
+                },
+                save_link = doc.createElementNS('http://www.w3.org/1999/xhtml', 'a'),
+                can_use_save_link = 'download' in save_link,
+                click = function click(node) {
+                    var event = new MouseEvent('click');
+                    node.dispatchEvent(event);
+                },
+                is_safari = /constructor/i.test(view.HTMLElement) || view.safari,
+                is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent),
+                setImmediate = view.setImmediate || view.setTimeout,
+                throw_outside = function throw_outside(ex) {
+                    setImmediate(function() {
+                        throw ex;
+                    }, 0);
+                },
+                force_saveable_type = 'application/octet-stream',
+                // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
+                arbitrary_revoke_timeout = 1000 * 40,
+                // in ms
+                revoke = function revoke(file) {
+                    var revoker = function revoker() {
+                        if (typeof file === 'string') {
+                            // file is an object URL
+                            get_URL().revokeObjectURL(file);
+                        } else {
+                            // file is a File
+                            file.remove();
+                        }
+                    };
+                    setTimeout(revoker, arbitrary_revoke_timeout);
+                },
+                dispatch = function dispatch(filesaver, event_types, event) {
+                    event_types = [].concat(event_types);
+                    var i = event_types.length;
+                    while (i--) {
+                        var listener = filesaver['on' + event_types[i]];
+                        if (typeof listener === 'function') {
+                            try {
+                                listener.call(filesaver, event || filesaver);
+                            } catch (ex) {
+                                throw_outside(ex);
+                            }
+                        }
+                    }
+                },
+                auto_bom = function auto_bom(blob) {
+                    // prepend BOM for UTF-8 XML and text/* types (including HTML)
+                    // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
+                    if (
+                        /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
+                            blob.type
+                        )
+                    ) {
+                        return new Blob([String.fromCharCode(0xfeff), blob], { type: blob.type });
+                    }
+                    return blob;
+                },
+                FileSaver = function FileSaver(blob, name, no_auto_bom) {
+                    if (!no_auto_bom) {
+                        blob = auto_bom(blob);
+                    }
+                    // First try a.download, then web filesystem, then object URLs
+                    var filesaver = this,
+                        type = blob.type,
+                        force = type === force_saveable_type,
+                        object_url,
+                        dispatch_all = function dispatch_all() {
+                            dispatch(filesaver, 'writestart progress write writeend'.split(' '));
+                        },
+                        // on any filesys errors revert to saving with object URLs
+                        fs_error = function fs_error() {
+                            if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
+                                // Safari doesn't allow downloading of blob urls
+                                var reader = new FileReader();
+                                reader.onloadend = function() {
+                                    var url = is_chrome_ios
+                                        ? reader.result
+                                        : reader.result.replace(
+                                              /^data:[^;]*;/,
+                                              'data:attachment/file;'
+                                          );
+                                    var popup = view.open(url, '_blank');
+                                    if (!popup) view.location.href = url;
+                                    url = undefined; // release reference before dispatching
+                                    filesaver.readyState = filesaver.DONE;
+                                    dispatch_all();
+                                };
+                                reader.readAsDataURL(blob);
+                                filesaver.readyState = filesaver.INIT;
+                                return;
+                            }
+                            // don't create more object URLs than needed
+                            if (!object_url) {
+                                object_url = get_URL().createObjectURL(blob);
+                            }
+                            if (force) {
+                                view.location.href = object_url;
+                            } else {
+                                var opened = view.open(object_url, '_blank');
+                                if (!opened) {
+                                    // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
+                                    view.location.href = object_url;
+                                }
+                            }
+                            filesaver.readyState = filesaver.DONE;
+                            dispatch_all();
+                            revoke(object_url);
+                        };
+                    filesaver.readyState = filesaver.INIT;
+
+                    if (can_use_save_link) {
+                        object_url = get_URL().createObjectURL(blob);
+                        setImmediate(function() {
+                            save_link.href = object_url;
+                            save_link.download = name;
+                            click(save_link);
+                            dispatch_all();
+                            revoke(object_url);
+                            filesaver.readyState = filesaver.DONE;
+                        }, 0);
+                        return;
+                    }
+
+                    fs_error();
+                },
+                FS_proto = FileSaver.prototype,
+                saveAs = function saveAs(blob, name, no_auto_bom) {
+                    return new FileSaver(blob, name || blob.name || 'download', no_auto_bom);
+                };
+
+            // IE 10+ (native saveAs)
+            if (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob) {
+                return function(blob, name, no_auto_bom) {
+                    name = name || blob.name || 'download';
+
+                    if (!no_auto_bom) {
+                        blob = auto_bom(blob);
+                    }
+                    return navigator.msSaveOrOpenBlob(blob, name);
+                };
+            }
+
+            // todo: detect chrome extensions & packaged apps
+            //save_link.target = "_blank";
+
+            FS_proto.abort = function() {};
+            FS_proto.readyState = FS_proto.INIT = 0;
+            FS_proto.WRITING = 1;
+            FS_proto.DONE = 2;
+
+            FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
+
+            return saveAs;
+        })(
+            (typeof self !== 'undefined' && self) ||
+                (typeof window !== 'undefined' && window) ||
+                undefined
+        );
+
+    //Convert XLSX file for download.
+    function s2ab(s) {
+        var i = void 0;
+        if (typeof ArrayBuffer !== 'undefined') {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
+
+            for (i = 0; i !== s.length; ++i) {
+                view[i] = s.charCodeAt(i) & 0xff;
+            }
+            return buf;
+        } else {
+            var buf = new Array(s.length);
+
+            for (i = 0; i !== s.length; ++i) {
+                buf[i] = s.charCodeAt(i) & 0xff;
+            }
+            return buf;
+        }
+    }
+
+    function exportXLSX(listing) {
+        try {
+            saveAs(
+                new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }),
+                'participant-visit-listing.xlsx'
+            );
+        } catch (error) {
+            if (typeof console !== 'undefined') console.log(error);
+        }
+    }
+
+    function exportToXLSX() {
+        var _this = this;
+
+        this.wrap.select('.export#xlsx').on('click', function() {
+            defineXLSX(_this);
+            exportXLSX(_this);
+        });
+    }
+
     function onDraw() {
         //Highlight column when hovering over column header.
         addHeaderHover.call(this);
@@ -666,6 +1186,9 @@
 
         //Add data-driven cell formatting.
         addCellFormatting.call(this);
+
+        //Add styled export to .xlsx.
+        exportToXLSX.call(this);
     }
 
     function onDestroy() {}

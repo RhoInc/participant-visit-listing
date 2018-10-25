@@ -241,7 +241,7 @@
                   table
                 \--------------------------------------------------------------------------------------***/
 
-                '.pvl-listing .wc-table table {' + '    display: table;' + '    border: 0;' + '    border-collapse: collapse;' + '}',
+                '.pvl-listing .wc-table table {' + '    display: table;' + '    border: 0;' + '    border-collapse: collapse;' + '    min-width: 100%;' + '}',
 
                 /****---------------------------------------------------------------------------------\
                   thead

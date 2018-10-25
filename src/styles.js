@@ -78,6 +78,7 @@ export default function styles() {
             '    display: table;' +
             '    border: 0;' +
             '    border-collapse: collapse;' +
+            '    min-width: 100%;' +
             '}',
 
             /****---------------------------------------------------------------------------------\

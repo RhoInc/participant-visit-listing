@@ -23,27 +23,7 @@ export default function addLegend() {
             .style({
                 color: d => d[2]
             })
-            .attr('title', d => {
-                let infoText;
-                switch (d[1]) {
-                    case 'In Window':
-                        infoText = 'Visits in black have occurred.';
-                        break;
-                    case 'Expected':
-                        infoText = 'Dates in blue are expected dates for future visits.';
-                        break;
-                    case 'Overdue':
-                        infoText = 'Dates in Red are expected dates for overdue visits.';
-                        break;
-                    case 'Part':
-                        infoText = '"Part" a visit partially entered into EDC.';
-                        break;
-                    default:
-                        infoText = d[1];
-                        break;
-                }
-                return infoText;
-            });
+            .attr('title', d => d[3]);
     });
     update.call(this);
 }

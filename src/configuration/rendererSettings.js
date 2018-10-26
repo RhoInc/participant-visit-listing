@@ -15,9 +15,11 @@ export default function rendererSettings() {
         visit_text_color_col: 'visit_status_color', // must be hex RGB
         visit_status_description_col: 'visit_status_description',
         visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
+        visit_status_exclusion_col: 'plot_exclude',
+        visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
-        date_format: '%d-%b-%y', // format of visit dates
+        date_format: '%Y-%m-%d', // format of visit dates
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
         pagination: false, // turn off pagination to view all IDs at the same time
         exports: ['xlsx', 'csv'] // default exports are to .xlsx and .csv

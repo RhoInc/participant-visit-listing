@@ -5,7 +5,7 @@ export default function addLegend() {
         .append('ul')
         .classed('pvl-legend__ul', true)
         .selectAll('li.pvl-legend__li')
-        .data(this.data.sets.visit_status_col.map(visit_status => visit_status.split(':|:')))
+        .data(this.data.sets.legend.map(visit_status => visit_status.split(':|:')))
         .enter()
         .append('li')
         .classed('pvl-legend__li', true)

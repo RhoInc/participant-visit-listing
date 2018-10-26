@@ -54,8 +54,8 @@ export default function styles() {
         '}',
         '.pvl-legend__li {' +
         '    float: left;' +
-        '    margin-right: 10px;' +
-        '    width: 155px;' +
+        '    margin-right: 1%;' +
+        '    width: 24%;' +
         '    text-align: center;' +
         '}',
         '.pvl-legend-item-info-icon {' +
@@ -126,6 +126,9 @@ export default function styles() {
                 '}',
                 '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' +
                 '    cursor: help;' +
+                '}',
+                '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' +
+                '    font-weight: bold;' +
                 '}',
 
             /****---------------------------------------------------------------------------------\

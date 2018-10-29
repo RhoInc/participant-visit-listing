@@ -7,7 +7,7 @@ export default function update() {
     ).length;
     this.containers.legendItems.select('.pvl-legend-item-label').text(d => {
         const numerator = this.data.filtered.filter(
-            di => di[this.settings.rendererSynced.visit_status_col] === d[1]
+            di => di[this.settings.visit_status_col] === d[1]
         ).length;
         return `${d[1]} (${denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A'})`;
     });

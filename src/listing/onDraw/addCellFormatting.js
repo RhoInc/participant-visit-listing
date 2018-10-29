@@ -12,9 +12,9 @@ export default function addCellFormatting() {
             if (d[di.col] !== null)
                 cell.attr(
                     'title',
-                    `${d[context.parent.settings.rendererSynced.id_col]} - ${di.col} (${
-                        di.date
-                    }): ${d[`${di.col}-status`]}`
+                    `${d[context.parent.settings.id_col]} - ${di.col} (${di.date}): ${
+                        d[`${di.col}-status`]
+                    }`
                 );
 
             //Apply cell formmating.

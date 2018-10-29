@@ -1,10 +1,5 @@
-import checkFilterCols from './transposeData/checkFilterCols';
-
 export default function transposeData() {
-    checkFilterCols.call(this, 'subset1');
-    checkFilterCols.call(this, 'subset2');
-    checkFilterCols.call(this, 'subset3');
-    checkFilterCols.call(this, 'overdue2');
+    this.data.transposed = [];
 
     this.data.sets.id_col.forEach((id, i) => {
         const id_data = this.data.raw.filter(d => d[this.settings.id_col] === id);

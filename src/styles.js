@@ -7,6 +7,9 @@ export default function styles() {
         '    font-size: 16px;' +
         '    line-height: normal;' +
         '}',
+        //'.pvl-hidden {' +
+        //'    display: none;' +
+        //'}',
         '.participant-visit-listing > * {' +
         '    width: 100%;' +
         '    display: inline-block;' +

@@ -19,6 +19,9 @@ export default function layout() {
     this.containers.lowerRow = this.containers.main
         .append('div')
         .classed('pvl-row pvl-row--lower', true);
+        this.containers.chart = this.containers.lowerRow
+            .append('div')
+            .classed('pvl-chart pvl-hidden', true);
         this.containers.listing = this.containers.lowerRow
             .append('div')
             .classed('pvl-listing', true);

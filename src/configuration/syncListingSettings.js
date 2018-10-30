@@ -1,5 +1,5 @@
-export default function syncSettings() {
-    const settings = this.settings.rendererMerged;
+export default function syncListingSettings() {
+    const settings = this.settings.listingMerged;
 
     //Convert visit_exclusion_pattern from string to regular expression.
     if (
@@ -15,6 +15,6 @@ export default function syncSettings() {
     }
 
     //Assign settings to settings object.
-    this.settings.rendererSynced = settings;
+    this.settings.listingSynced = settings;
     Object.assign(this.settings, settings);
 }

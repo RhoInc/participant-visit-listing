@@ -1,11 +1,15 @@
-import rendererSettings from './rendererSettings';
-import syncSettings from './syncSettings';
+import listingSettings from './listingSettings';
+import syncListingSettings from './syncListingSettings';
+import chartSettings from './chartSettings';
+import syncChartSettings from './syncChartSettings';
 import controlsSettings from './controlsSettings';
-import syncControls from './syncControls';
+import syncControlsSettings from './syncControlsSettings';
 
 export default {
-    rendererSettings,
-    syncSettings,
+    listingSettings,
+    syncListingSettings,
+    chartSettings,
+    syncChartSettings,
     controlsSettings,
-    syncControls
+    syncControlsSettings,
 };

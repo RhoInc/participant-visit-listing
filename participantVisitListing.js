@@ -124,7 +124,7 @@
         });
     }
 
-    function rendererSettings() {
+    function listingSettings() {
         return {
             //ID-level variables
             site_col: 'site_name',
@@ -152,8 +152,8 @@
         };
     }
 
-    function syncSettings() {
-        var settings = this.settings.rendererMerged;
+    function syncListingSettings() {
+        var settings = this.settings.listingMerged;
 
         //Convert visit_exclusion_pattern from string to regular expression.
         if (typeof settings.visit_exclusion_pattern === 'string' && settings.visit_exclusion_pattern !== '') {
@@ -163,8 +163,63 @@
         }
 
         //Assign settings to settings object.
-        this.settings.rendererSynced = settings;
+        this.settings.listingSynced = settings;
         Object.assign(this.settings, settings);
+    }
+
+    function chartSettings() {
+        return {
+            x: { type: 'time',
+                label: 'Visit Date',
+                value_col: null, // set in ./syncSettings.js
+                format: '%b %y'
+            },
+            y: { type: 'ordinal',
+                label: 'Participant ID',
+                value_col: null // set in ./syncSettings.js
+            },
+            marks: [{
+                type: 'circle',
+                per: null, // set in ./syncSettings.js
+                tooltip: null, // set in ./syncSettings.js
+                radius: 4,
+                attributes: {
+                    'fill-opacity': 1
+                }
+            }],
+            color_by: null, // set in ./syncSettings.js
+            color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
+            legend: {
+                location: 'top',
+                label: 'Visit Status',
+                order: null // set in ../init/defineSets/defineVisitStatusSet.js
+            },
+            date_format: null, // set in ./syncSettings.js
+            gridlines: 'y',
+            range_band: 15
+        };
+    }
+
+    function syncChartSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var chartSettings = this.settings.chartMerged;
+
+        //Update chart settings.
+        chartSettings.x.column = listingSettings.visit_date_col;
+        chartSettings.x.label = 'Visit Date';
+        chartSettings.y.column = listingSettings.id_col;
+        chartSettings.y.label = 'Participant ID';
+        var circles = chartSettings.marks.find(function (mark) {
+            return mark.type === 'circle';
+        });
+        circles.per = [listingSettings.id_col, listingSettings.visit_date_col];
+        circles.tooltip = '[' + listingSettings.id_col + '] - [' + listingSettings.visit_col + '] ([visitDate]): [' + listingSettings.visit_status_col + ']';
+        chartSettings.color_by = listingSettings.visit_status_col;
+        chartSettings.date_format = listingSettings.date_format;
+
+        //Assign settings to settings object.
+        this.settings.chartSynced = chartSettings;
+        Object.assign(this.settings, chartSettings);
     }
 
     function controlsSettings() {
@@ -181,31 +236,32 @@
         };
     }
 
-    function syncControls() {
-        var _this = this;
+    function syncControlsSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var controlsSettings = this.settings.controlsMerged;
 
         //Sync site filter.
-        var siteFilter = this.settings.controls.inputs.find(function (control) {
+        var siteFilter = controlsSettings.inputs.find(function (control) {
             return control.label === 'Site';
         });
-        siteFilter.value_col = this.settings.site_col;
+        siteFilter.value_col = listingSettings.site_col;
 
         //Sync ID status filter.
-        var idStatusFilter = this.settings.controls.inputs.find(function (control) {
+        var idStatusFilter = controlsSettings.inputs.find(function (control) {
             return control.label === 'Participant Status';
         });
-        idStatusFilter.value_col = this.settings.id_status_col;
+        idStatusFilter.value_col = listingSettings.id_status_col;
 
         //Add user-specified filters.
-        if (Array.isArray(this.settings.filter_cols) && this.settings.filter_cols) {
+        if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols) {
             var labels = {
                 subset1: 'Analysis Subset 1',
                 subset2: 'Analysis Subset 2',
                 subset3: 'Analysis Subset 3',
                 overdue2: '>1 Overdue Visits'
             };
-            this.settings.filter_cols.forEach(function (filter_col) {
-                _this.settings.controls.inputs.push({
+            listingSettings.filter_cols.forEach(function (filter_col) {
+                controlsSettings.inputs.push({
                     type: 'subsetter',
                     label: labels[filter_col] || filter_col,
                     value_col: filter_col
@@ -213,14 +269,17 @@
             });
         }
 
-        this.settings.controlsSynced = this.settings.controls;
+        this.settings.controlsSynced = controlsSettings;
+        Object.assign(this.settings, controlsSettings);
     }
 
     var configuration = {
-        rendererSettings: rendererSettings,
-        syncSettings: syncSettings,
+        listingSettings: listingSettings,
+        syncListingSettings: syncListingSettings,
+        chartSettings: chartSettings,
+        syncChartSettings: syncChartSettings,
         controlsSettings: controlsSettings,
-        syncControls: syncControls
+        syncControlsSettings: syncControlsSettings
     };
 
     function layout() {
@@ -344,7 +403,7 @@
                 di.date = d[di.col + '-date'];
 
                 //Add tooltip to cells.
-                if (d[di.col] !== null) cell.attr('title', d[context.parent.settings.id_col] + ' - ' + di.col + ' (' + di.date + '): ' + d[di.col + '-status']);
+                if (d[di.col] !== null) cell.attr('title', d[context.pvl.settings.id_col] + ' - ' + di.col + ' (' + di.date + '): ' + d[di.col + '-status']);
 
                 //Apply cell formmating.
                 di.color = (d[di.col + '-color'] || 'white').toLowerCase();
@@ -359,10 +418,10 @@
 
         // create dictionary of id columns
         var idDict = d3.nest().key(function (d) {
-            return d[_this.parent.settings.id_col];
+            return d[_this.pvl.settings.id_col];
         }).rollup(function (d) {
             return d;
-        }).map(this.parent.data.raw);
+        }).map(this.pvl.data.raw);
 
         // get all the cells
         var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
@@ -376,7 +435,7 @@
 
         // get ids
         var id_cols = d3.set(this.data.raw.map(function (d) {
-            return d[_this.parent.settings.id_col];
+            return d[_this.pvl.settings.id_col];
         })).values();
 
         id_cols.forEach(function (id) {
@@ -384,7 +443,7 @@
             var id_cell = cellDict[id];
             if (id_data && id_cell) {
                 var id_summary = d3.nest().key(function (d) {
-                    return d[_this.parent.settings.visit_status_col];
+                    return d[_this.pvl.settings.visit_status_col];
                 }).rollup(function (d) {
                     return d3.format('%')(d.length / id_data.length);
                 }).entries(id_data);
@@ -398,12 +457,12 @@
     function visit() {
         var _this = this;
 
-        this.parent.data.sets.visit_col.forEach(function (visit) {
-            var visit_data = _this.parent.data.raw.filter(function (d) {
-                return d[_this.parent.settings.visit_col] === visit;
+        this.pvl.data.sets.visit_col.forEach(function (visit) {
+            var visit_data = _this.pvl.data.raw.filter(function (d) {
+                return d[_this.pvl.settings.visit_col] === visit;
             });
             var visit_summary = d3.nest().key(function (d) {
-                return d[_this.parent.settings.visit_status_col];
+                return d[_this.pvl.settings.visit_status_col];
             }).rollup(function (d) {
                 return d3.format('%')(d.length / visit_data.length);
             }).entries(visit_data);
@@ -902,8 +961,8 @@
 
     function listing() {
         //Define listing.
-        this.listing = new webCharts.createTable(this.containers.listing.node(), this.settings, this.controls);
-        this.listing.parent = this;
+        this.listing = new webCharts.createTable(this.containers.listing.node(), this.settings.listingSynced, this.controls);
+        this.listing.pvl = this;
 
         //Define callbacks.
         this.listing.on('init', onInit);
@@ -911,6 +970,42 @@
         this.listing.on('preprocess', onPreprocess);
         this.listing.on('draw', onDraw);
         this.listing.on('destroy', onDestroy);
+    }
+
+    function onInit$1() {
+        var _this = this;
+
+        this.raw_data.forEach(function (d) {
+            d.visitDate = d[_this.pvl.settings.visit_date_col];
+        });
+    }
+
+    function onLayout$1() {}
+
+    function onPreprocess$1() {}
+
+    function onDataTransform() {}
+
+    function onDraw$1() {}
+
+    function onResize() {}
+
+    function onDestroy$1() {}
+
+    function chart() {
+        console.log(this.settings.chartSynced);
+        //Define listing.
+        this.chart = new webCharts.createChart(this.containers.chart.node(), this.settings.chartSynced, this.controls);
+        this.chart.pvl = this;
+
+        //Define callbacks.
+        this.chart.on('init', onInit$1);
+        this.chart.on('layout', onLayout$1);
+        this.chart.on('preprocess', onPreprocess$1);
+        this.chart.on('datatransform', onDataTransform);
+        this.chart.on('draw', onDraw$1);
+        this.chart.on('resize', onResize);
+        this.chart.on('destroy', onDestroy$1);
     }
 
     function checkFilterCols(filterCol) {
@@ -961,6 +1056,15 @@
             return d[_this.settings.visit_status_order_col] + ':|:' + d[_this.settings.visit_status_col] + ':|:' + d[_this.settings.visit_text_color_col].toLowerCase() + ':|:' + d[_this.settings.visit_status_description_col];
         })).values().sort(function (a, b) {
             return +a.split(':|:')[0] - +b.split(':|:')[0];
+        });
+        this.chart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[1];
+        });
+        this.chart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[2];
+        });
+        this.chart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[1];
         });
     }
 
@@ -1119,6 +1223,7 @@
         transposeData.call(this);
         addLegend.call(this);
         this.listing.init(this.data.transposed);
+        this.chart.init(this.data.raw);
         update$1.call(this);
     }
 
@@ -1130,21 +1235,26 @@
             element: element,
             settings: {
                 user: settings,
-                renderer: configuration.rendererSettings(),
-                controls: configuration.controlsSettings()
+                controlsSettings: configuration.controlsSettings(),
+                listingSettings: configuration.listingSettings(),
+                chartSettings: configuration.chartSettings()
             },
             init: init
         };
 
         //Merge and sync user settings with default settings.
-        pvl.settings.rendererMerged = Object.assign(pvl.settings.renderer, pvl.settings.user);
-        configuration.syncSettings.call(pvl);
-        configuration.syncControls.call(pvl);
+        pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.user);
+        pvl.settings.chartMerged = Object.assign({}, pvl.settings.chartSettings, pvl.settings.user);
+        pvl.settings.controlsMerged = Object.assign({}, pvl.settings.controlsSettings, pvl.settings.user);
+        configuration.syncListingSettings.call(pvl);
+        configuration.syncChartSettings.call(pvl);
+        configuration.syncControlsSettings.call(pvl);
 
         layout.call(pvl); // attaches containers object to central object ([pvl])
         styles.call(pvl); // attaches styles object to central object ([pvl])
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
         listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
+        chart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
         return pvl;
     }

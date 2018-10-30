@@ -2,9 +2,9 @@ export default function participant() {
     // create dictionary of id columns
     const idDict = d3
         .nest()
-        .key(d => d[this.parent.settings.id_col])
+        .key(d => d[this.pvl.settings.id_col])
         .rollup(d => d)
-        .map(this.parent.data.raw);
+        .map(this.pvl.data.raw);
 
     // get all the cells
     const cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
@@ -19,7 +19,7 @@ export default function participant() {
         : [];
 
     // get ids
-    const id_cols = d3.set(this.data.raw.map(d => d[this.parent.settings.id_col])).values();
+    const id_cols = d3.set(this.data.raw.map(d => d[this.pvl.settings.id_col])).values();
 
     id_cols.forEach(id => {
         const id_data = idDict[id];
@@ -27,7 +27,7 @@ export default function participant() {
         if (id_data && id_cell) {
             const id_summary = d3
                 .nest()
-                .key(d => d[this.parent.settings.visit_status_col])
+                .key(d => d[this.pvl.settings.visit_status_col])
                 .rollup(d => d3.format('%')(d.length / id_data.length))
                 .entries(id_data);
             d3.select(id_cell[0]).attr(

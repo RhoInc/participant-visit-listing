@@ -12,7 +12,7 @@ export default function addCellFormatting() {
             if (d[di.col] !== null)
                 cell.attr(
                     'title',
-                    `${d[context.parent.settings.id_col]} - ${di.col} (${di.date}): ${
+                    `${d[context.pvl.settings.id_col]} - ${di.col} (${di.date}): ${
                         d[`${di.col}-status`]
                     }`
                 );

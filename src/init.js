@@ -21,5 +21,6 @@ export default function init(data) {
     transposeData.call(this);
     addLegend.call(this);
     this.listing.init(this.data.transposed);
+    this.chart.init(this.data.raw);
     update.call(this);
 }

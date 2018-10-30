@@ -1,4 +1,4 @@
-export default function rendererSettings() {
+export default function listingSettings() {
     return {
         //ID-level variables
         site_col: 'site_name',

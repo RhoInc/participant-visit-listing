@@ -7,13 +7,14 @@ import onResize from './onResize';
 import onDestroy from './onDestroy';
 
 export default function chart() {
+    console.log(this.settings.chartSynced);
     //Define listing.
     this.chart = new webCharts.createChart(
         this.containers.chart.node(),
-        this.settings,
+        this.settings.chartSynced,
         this.controls
     );
-    this.chart.parent = this;
+    this.chart.pvl = this;
 
     //Define callbacks.
     this.chart.on('init', onInit);

@@ -135,6 +135,7 @@
             visit_col: 'visit_name',
             visit_order_col: 'visit_number',
             visit_date_col: 'visit_date',
+            visit_day_col: 'visit_day',
             visit_status_col: 'visit_status',
             visit_status_order_col: 'visit_status_order',
             visit_text_col: 'visit_text',
@@ -167,59 +168,107 @@
         Object.assign(this.settings, settings);
     }
 
-    function chartSettings() {
+    function ordinalChartSettings() {
         return {
-            x: { type: 'time',
-                label: 'Visit Date',
-                value_col: null, // set in ./syncSettings.js
-                format: '%b %y'
+            x: {
+                type: 'ordinal',
+                label: 'Visit',
+                value_col: null, // set in ./syncOrdinalSettings.js
+                order: null // set in ../init/defineSets/defineVisitSet.js
             },
-            y: { type: 'ordinal',
+            y: {
+                type: 'ordinal',
                 label: 'Participant ID',
-                value_col: null // set in ./syncSettings.js
+                value_col: null // set in ./syncOrdinalSettings.js
             },
             marks: [{
                 type: 'circle',
-                per: null, // set in ./syncSettings.js
-                tooltip: null, // set in ./syncSettings.js
+                per: null, // set in ./syncOrdinalSettings.js
+                tooltip: null, // set in ./syncOrdinalSettings.js
                 radius: 4,
                 attributes: {
                     'fill-opacity': 1
                 }
             }],
-            color_by: null, // set in ./syncSettings.js
+            color_by: null, // set in ./syncOrdinalSettings.js
             color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
             legend: {
                 location: 'top',
                 label: 'Visit Status',
                 order: null // set in ../init/defineSets/defineVisitStatusSet.js
             },
-            date_format: null, // set in ./syncSettings.js
             gridlines: 'y',
             range_band: 15
         };
     }
 
-    function syncChartSettings() {
+    function syncOrdinalChartSettings() {
         var listingSettings = this.settings.listingSynced;
-        var chartSettings = this.settings.chartMerged;
+        var ordinalChartSettings = this.settings.ordinalChartMerged;
 
-        //Update chart settings.
-        chartSettings.x.column = listingSettings.visit_date_col;
-        chartSettings.x.label = 'Visit Date';
-        chartSettings.y.column = listingSettings.id_col;
-        chartSettings.y.label = 'Participant ID';
-        var circles = chartSettings.marks.find(function (mark) {
+        //Update ordinal chart settings.
+        ordinalChartSettings.x.column = listingSettings.visit_col;
+        ordinalChartSettings.y.column = listingSettings.id_col;
+        var circles = ordinalChartSettings.marks.find(function (mark) {
             return mark.type === 'circle';
         });
-        circles.per = [listingSettings.id_col, listingSettings.visit_date_col];
-        circles.tooltip = '[' + listingSettings.id_col + '] - [' + listingSettings.visit_col + '] ([visitDate]): [' + listingSettings.visit_status_col + ']';
-        chartSettings.color_by = listingSettings.visit_status_col;
-        chartSettings.date_format = listingSettings.date_format;
+        circles.per = [listingSettings.id_col, listingSettings.visit_col];
+        circles.tooltip = '[' + listingSettings.id_col + '] - [' + listingSettings.visit_col + '] ([' + listingSettings.visit_date_col + ']: Day [' + listingSettings.visit_day_col + ']): [' + listingSettings.visit_status_col + ']';
+        ordinalChartSettings.color_by = listingSettings.visit_status_col;
 
         //Assign settings to settings object.
-        this.settings.chartSynced = chartSettings;
-        Object.assign(this.settings, chartSettings);
+        this.settings.ordinalChartSynced = ordinalChartSettings;
+    }
+
+    function chartSettings() {
+        return {
+            x: {
+                type: 'linear',
+                label: 'Visit Day',
+                value_col: null // set in ./syncLinearSettings.js
+            },
+            y: {
+                type: 'ordinal',
+                label: 'Participant ID',
+                value_col: null // set in ./syncLinearSettings.js
+            },
+            marks: [{
+                type: 'circle',
+                per: null, // set in ./syncLinearSettings.js
+                tooltip: null, // set in ./syncLinearSettings.js
+                radius: 4,
+                attributes: {
+                    'fill-opacity': 1
+                }
+            }],
+            color_by: null, // set in ./syncLinearSettings.js
+            color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
+            legend: {
+                location: 'top',
+                label: 'Visit Status',
+                order: null // set in ../init/defineSets/defineVisitStatusSet.js
+            },
+            gridlines: 'y',
+            range_band: 15
+        };
+    }
+
+    function syncLinearChartSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var linearChartSettings = this.settings.linearChartMerged;
+
+        //Update linear chart settings.
+        linearChartSettings.x.column = listingSettings.visit_day_col;
+        linearChartSettings.y.column = listingSettings.id_col;
+        var circles = linearChartSettings.marks.find(function (mark) {
+            return mark.type === 'circle';
+        });
+        circles.per = [listingSettings.id_col, listingSettings.visit_day_col];
+        circles.tooltip = '[' + listingSettings.id_col + '] - [' + listingSettings.visit_col + '] ([' + listingSettings.visit_date_col + ']: Day [' + listingSettings.visit_day_col + ']): [' + listingSettings.visit_status_col + ']';
+        linearChartSettings.color_by = listingSettings.visit_status_col;
+
+        //Assign settings to settings object.
+        this.settings.linearChartSynced = linearChartSettings;
     }
 
     function controlsSettings() {
@@ -276,8 +325,10 @@
     var configuration = {
         listingSettings: listingSettings,
         syncListingSettings: syncListingSettings,
-        chartSettings: chartSettings,
-        syncChartSettings: syncChartSettings,
+        ordinalChartSettings: ordinalChartSettings,
+        syncOrdinalChartSettings: syncOrdinalChartSettings,
+        linearChartSettings: chartSettings,
+        syncLinearChartSettings: syncLinearChartSettings,
         controlsSettings: controlsSettings,
         syncControlsSettings: syncControlsSettings
     };
@@ -292,47 +343,55 @@
         this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
 
         this.containers.lowerRow = this.containers.main.append('div').classed('pvl-row pvl-row--lower', true);
-        this.containers.chart = this.containers.lowerRow.append('div').classed('pvl-chart pvl-hidden', true);
+        this.containers.charts = this.containers.lowerRow.append('div').classed('pvl-charts pvl-hidden', true);
+        this.containers.ordinalChart = this.containers.charts.append('div').classed('pvl-chart pvl-chart--ordinal', true);
+        this.containers.linearChart = this.containers.charts.append('div').classed('pvl-chart pvl-chart--linear', true);
         this.containers.listing = this.containers.lowerRow.append('div').classed('pvl-listing', true);
     }
 
     function styles() {
-                this.styles = ['body {' + '}', '.participant-visit-listing {' + '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' + '    font-size: 16px;' + '    line-height: normal;' + '}',
-                //'.pvl-hidden {' +
-                //'    display: none;' +
-                //'}',
-                '.participant-visit-listing > * {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-row--upper {' + '    border-bottom: 2px solid #eee;' + '    padding-bottom: 12px;' + '}', '.pvl-row--upper > * {' + '    vertical-align: bottom;' + '    display: inline-block;' + '}', '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}', '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}', '.pvl-controls .wc-controls .control-group {' + '    margin-bottom: 0;' + '    width: 125px;' + '}', '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}', '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}', '.pvl-controls .wc-controls .control-group .wc-control-label {' + '    margin-right: 5px;' + '    text-align: right;' + '}', '.pvl-legend {' + '    width: 44%;' + '    float: left;' + '    padding-top: 16px;' + '}', '.pvl-legend__ul {' + '    list-style-type: none;' + '    margin: 0;' + '    padding: 0;' + '    overflow: hidden;' + '}', '.pvl-legend__li {' + '    float: left;' + '    margin-right: 1%;' + '    width: 24%;' + '    text-align: center;' + '}', '.pvl-legend-item-info-icon {' + '    margin-left: 4px;' + '    font-weight: bold;' + '    cursor: help;' + '}', '.pvl-listing {' + '}', '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+      this.styles = ['body {' + '}', '.participant-visit-listing {' + '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' + '    font-size: 16px;' + '    line-height: normal;' + '}',
+      //'.pvl-hidden {' +
+      //'    display: none;' +
+      //'}',
+      '.participant-visit-listing > * {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-row--upper {' + '    border-bottom: 2px solid #eee;' + '    padding-bottom: 12px;' + '}', '.pvl-row--upper > * {' + '    vertical-align: bottom;' + '    display: inline-block;' + '}', '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}', '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}', '.pvl-controls .wc-controls .control-group {' + '    margin-bottom: 0;' + '    width: 125px;' + '}', '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}', '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}', '.pvl-controls .wc-controls .control-group .wc-control-label {' + '    margin-right: 5px;' + '    text-align: right;' + '}', '.pvl-legend {' + '    width: 44%;' + '    float: left;' + '    padding-top: 16px;' + '}', '.pvl-legend__ul {' + '    list-style-type: none;' + '    margin: 0;' + '    padding: 0;' + '    overflow: hidden;' + '}', '.pvl-legend__li {' + '    float: left;' + '    margin-right: 1%;' + '    width: 24%;' + '    text-align: center;' + '}', '.pvl-legend-item-info-icon {' + '    margin-left: 4px;' + '    font-weight: bold;' + '    cursor: help;' + '}',
 
-                /***--------------------------------------------------------------------------------------\
-                  table
-                \--------------------------------------------------------------------------------------***/
+      /***--------------------------------------------------------------------------------------\
+        listing
+      \--------------------------------------------------------------------------------------***/
 
-                '.pvl-listing .wc-table table {' + '    display: table;' + '    border: 0;' + '    border-collapse: collapse;' + '    min-width: 100%;' + '}',
+      '.pvl-listing {' + '}', '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}', '.pvl-listing .wc-table table {' + '    display: table;' + '    border: 0;' + '    border-collapse: collapse;' + '    min-width: 100%;' + '}',
 
-                /****---------------------------------------------------------------------------------\
-                  thead
-                \---------------------------------------------------------------------------------****/
+      /****---------------------------------------------------------------------------------\
+        thead
+      \---------------------------------------------------------------------------------****/
 
-                '.pvl-listing .wc-table table thead {' + '}', '.pvl-listing .wc-table table thead tr:after {' + '    content: "";' + '    overflow-y: scroll;' + '    visibility: hidden;' + '    height: 0;' + '}', '.pvl-listing .wc-table table thead tr th {' + '    flex: 1 auto;' + '    display: block;' + '    border-top: 2px solid white;' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}',
+      '.pvl-listing .wc-table table thead {' + '}', '.pvl-listing .wc-table table thead tr:after {' + '    content: "";' + '    overflow-y: scroll;' + '    visibility: hidden;' + '    height: 0;' + '}', '.pvl-listing .wc-table table thead tr th {' + '    flex: 1 auto;' + '    display: block;' + '    border-top: 2px solid white;' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}',
 
-                /****---------------------------------------------------------------------------------\
-                  tbody
-                \---------------------------------------------------------------------------------****/
+      /****---------------------------------------------------------------------------------\
+        tbody
+      \---------------------------------------------------------------------------------****/
 
-                '.pvl-listing .wc-table table tbody {' + '    display: block;' + '    width: 100%;' + '    overflow-y: auto;' + '    height: 66vh;' + '}', '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '    flex: 1 auto;' + '    word-wrap: break-word;' + '}', '.pvl-listing .wc-table table tr:nth-child(odd) td {' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}', '.pvl-listing .wc-table table tr:nth-child(even) td {' + '    border-right: 2px solid #eee;' + '    border-left: 2px solid #eee;' + '}', '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}', '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' + '    font-weight: bold;' + '}',
+      '.pvl-listing .wc-table table tbody {' + '    display: block;' + '    width: 100%;' + '    overflow-y: auto;' + '    height: 66vh;' + '}', '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '    flex: 1 auto;' + '    word-wrap: break-word;' + '}', '.pvl-listing .wc-table table tr:nth-child(odd) td {' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}', '.pvl-listing .wc-table table tr:nth-child(even) td {' + '    border-right: 2px solid #eee;' + '    border-left: 2px solid #eee;' + '}', '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}', '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' + '    font-weight: bold;' + '}',
 
-                /****---------------------------------------------------------------------------------\
-                  t-agnostic
-                \---------------------------------------------------------------------------------****/
+      /****---------------------------------------------------------------------------------\
+        t-agnostic
+      \---------------------------------------------------------------------------------****/
 
-                '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}', '.pvl-listing .wc-table table th,' + '.pvl-listing .wc-table table td {' + '    flex: 1 auto;' + '    width: 100px;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover,' + '.pvl-listing .wc-table table tr td.pvl-header-hover {' + '    border-right: 2px solid #aaa;' + '    border-left: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover {' + '    border-top: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' + '    border-bottom: 2px solid #aaa !important;' + '}'];
+      '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}', '.pvl-listing .wc-table table th,' + '.pvl-listing .wc-table table td {' + '    flex: 1 auto;' + '    width: 100px;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover,' + '.pvl-listing .wc-table table tr td.pvl-header-hover {' + '    border-right: 2px solid #aaa;' + '    border-left: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover {' + '    border-top: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' + '    border-bottom: 2px solid #aaa !important;' + '}',
 
-                //Attach styles to DOM.
-                this.style = document.createElement('style');
-                this.style.type = 'text/css';
-                this.style.innerHTML = this.styles.join('\n');
-                document.getElementsByTagName('head')[0].appendChild(this.style);
-                this.containers.style = d3.select(this.style);
+      /***--------------------------------------------------------------------------------------\
+        charts
+      \--------------------------------------------------------------------------------------***/
+
+      '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-chart {' + '    width: 49%;' + '    display: inline-block;' + '}', '.pvl-chart--ordinal {' + '    float: left;' + '}', '.pvl-chart--linear {' + '    float: right;' + '}'];
+
+      //Attach styles to DOM.
+      this.style = document.createElement('style');
+      this.style.type = 'text/css';
+      this.style.innerHTML = this.styles.join('\n');
+      document.getElementsByTagName('head')[0].appendChild(this.style);
+      this.containers.style = d3.select(this.style);
     }
 
     function update() {
@@ -993,19 +1052,54 @@
     function onDestroy$1() {}
 
     function chart() {
-        console.log(this.settings.chartSynced);
         //Define listing.
-        this.chart = new webCharts.createChart(this.containers.chart.node(), this.settings.chartSynced, this.controls);
-        this.chart.pvl = this;
+        this.linearChart = new webCharts.createChart(this.containers.linearChart.node(), this.settings.linearChartSynced, this.controls);
+        this.linearChart.pvl = this;
 
         //Define callbacks.
-        this.chart.on('init', onInit$1);
-        this.chart.on('layout', onLayout$1);
-        this.chart.on('preprocess', onPreprocess$1);
-        this.chart.on('datatransform', onDataTransform);
-        this.chart.on('draw', onDraw$1);
-        this.chart.on('resize', onResize);
-        this.chart.on('destroy', onDestroy$1);
+        this.linearChart.on('init', onInit$1);
+        this.linearChart.on('layout', onLayout$1);
+        this.linearChart.on('preprocess', onPreprocess$1);
+        this.linearChart.on('datatransform', onDataTransform);
+        this.linearChart.on('draw', onDraw$1);
+        this.linearChart.on('resize', onResize);
+        this.linearChart.on('destroy', onDestroy$1);
+    }
+
+    function onInit$2() {
+        var _this = this;
+
+        this.raw_data.forEach(function (d) {
+            d.visitDate = d[_this.pvl.settings.visit_date_col];
+        });
+    }
+
+    function onLayout$2() {}
+
+    function onPreprocess$2() {}
+
+    function onDataTransform$1() {}
+
+    function onDraw$2() {}
+
+    function onResize$1() {}
+
+    function onDestroy$2() {}
+
+    function ordinalChart() {
+        console.log(this.settings.ordinalChartSynced);
+        //Define listing.
+        this.ordinalChart = new webCharts.createChart(this.containers.ordinalChart.node(), this.settings.ordinalChartSynced, this.controls);
+        this.ordinalChart.pvl = this;
+
+        //Define callbacks.
+        this.ordinalChart.on('init', onInit$2);
+        this.ordinalChart.on('layout', onLayout$2);
+        this.ordinalChart.on('preprocess', onPreprocess$2);
+        this.ordinalChart.on('datatransform', onDataTransform$1);
+        this.ordinalChart.on('draw', onDraw$2);
+        this.ordinalChart.on('resize', onResize$1);
+        this.ordinalChart.on('destroy', onDestroy$2);
     }
 
     function checkFilterCols(filterCol) {
@@ -1047,6 +1141,11 @@
         }).map(function (visit) {
             return visit.split(':|:')[1];
         });
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.x.order = this.data.sets.visit_col.map(function (visit) {
+            return visit.split(':|:')[1];
+        });
     }
 
     function defineVisitStatusSet() {
@@ -1057,13 +1156,26 @@
         })).values().sort(function (a, b) {
             return +a.split(':|:')[0] - +b.split(':|:')[0];
         });
-        this.chart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
             return visit_status.split(':|:')[1];
         });
-        this.chart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.ordinalChart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
             return visit_status.split(':|:')[2];
         });
-        this.chart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.ordinalChart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[1];
+        });
+
+        //Update linear chart settings.
+        this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[1];
+        });
+        this.linearChart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
+            return visit_status.split(':|:')[2];
+        });
+        this.linearChart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
             return visit_status.split(':|:')[1];
         });
     }
@@ -1223,7 +1335,8 @@
         transposeData.call(this);
         addLegend.call(this);
         this.listing.init(this.data.transposed);
-        this.chart.init(this.data.raw);
+        this.ordinalChart.init(this.data.raw);
+        this.linearChart.init(this.data.raw);
         update$1.call(this);
     }
 
@@ -1237,17 +1350,23 @@
                 user: settings,
                 controlsSettings: configuration.controlsSettings(),
                 listingSettings: configuration.listingSettings(),
-                chartSettings: configuration.chartSettings()
+                ordinalChartSettings: configuration.ordinalChartSettings(),
+                linearChartSettings: configuration.linearChartSettings()
             },
             init: init
         };
 
         //Merge and sync user settings with default settings.
         pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.user);
-        pvl.settings.chartMerged = Object.assign({}, pvl.settings.chartSettings, pvl.settings.user);
-        pvl.settings.controlsMerged = Object.assign({}, pvl.settings.controlsSettings, pvl.settings.user);
         configuration.syncListingSettings.call(pvl);
-        configuration.syncChartSettings.call(pvl);
+
+        pvl.settings.ordinalChartMerged = Object.assign({}, pvl.settings.ordinalChartSettings, pvl.settings.user);
+        configuration.syncOrdinalChartSettings.call(pvl);
+
+        pvl.settings.linearChartMerged = Object.assign({}, pvl.settings.linearChartSettings, pvl.settings.user);
+        configuration.syncLinearChartSettings.call(pvl);
+
+        pvl.settings.controlsMerged = Object.assign({}, pvl.settings.controlsSettings, pvl.settings.user);
         configuration.syncControlsSettings.call(pvl);
 
         layout.call(pvl); // attaches containers object to central object ([pvl])
@@ -1255,6 +1374,7 @@
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
         listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
         chart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
         return pvl;
     }

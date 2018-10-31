@@ -9,4 +9,8 @@ export default function defineVisitSet() {
         .filter(visit => !this.settings.visit_exclusion_regex.test(visit))
         .sort((a, b) => a.split(':|:')[0] - b.split(':|:')[0])
         .map(visit => visit.split(':|:')[1]);
+
+    //Update ordinal chart settings.
+    this.ordinalChart.config.x.order = this.data.sets.visit_col
+        .map(visit => visit.split(':|:')[1]);
 }

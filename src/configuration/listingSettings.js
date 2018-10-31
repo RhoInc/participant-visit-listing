@@ -9,6 +9,7 @@ export default function listingSettings() {
         visit_col: 'visit_name',
         visit_order_col: 'visit_number',
         visit_date_col: 'visit_date',
+        visit_day_col: 'visit_day',
         visit_status_col: 'visit_status',
         visit_status_order_col: 'visit_status_order',
         visit_text_col: 'visit_text',

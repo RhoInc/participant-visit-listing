@@ -66,17 +66,17 @@ export default function styles() {
         '    font-weight: bold;' +
         '    cursor: help;' +
         '}',
-        '.pvl-listing {' +
-        '}',
-        '.pvl-listing .wc-table {' +
-        '    width: 100%;' +
-        '    overflow-x: scroll;' +
-        '}',
 
         /***--------------------------------------------------------------------------------------\
-          table
+          listing
         \--------------------------------------------------------------------------------------***/
 
+            '.pvl-listing {' +
+            '}',
+            '.pvl-listing .wc-table {' +
+            '    width: 100%;' +
+            '    overflow-x: scroll;' +
+            '}',
             '.pvl-listing .wc-table table {' +
             '    display: table;' +
             '    border: 0;' +
@@ -157,6 +157,25 @@ export default function styles() {
                 '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
                 '    border-bottom: 2px solid #aaa !important;' +
                 '}',
+
+        /***--------------------------------------------------------------------------------------\
+          charts
+        \--------------------------------------------------------------------------------------***/
+
+            '.pvl-charts {' +
+            '    width: 100%;' +
+            '    display: inline-block;' +
+            '}',
+            '.pvl-chart {' +
+            '    width: 49%;' +
+            '    display: inline-block;' +
+            '}',
+            '.pvl-chart--ordinal {' +
+            '    float: left;' +
+            '}',
+            '.pvl-chart--linear {' +
+            '    float: right;' +
+            '}',
     ];
 
     //Attach styles to DOM.

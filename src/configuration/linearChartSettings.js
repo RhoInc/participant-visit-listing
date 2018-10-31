@@ -1,33 +1,33 @@
 export default function chartSettings() {
     return {
-        x: {type: 'time',
-            label: 'Visit Date',
-            value_col: null, // set in ./syncSettings.js
-            format: '%b %y',
+        x: {
+            type: 'linear',
+            label: 'Visit Day',
+            value_col: null, // set in ./syncLinearSettings.js
         },
-        y: {type: 'ordinal',
+        y: {
+            type: 'ordinal',
             label: 'Participant ID',
-            value_col: null, // set in ./syncSettings.js
+            value_col: null, // set in ./syncLinearSettings.js
         },
         marks: [
             {
                 type: 'circle',
-                per: null, // set in ./syncSettings.js
-                tooltip: null, // set in ./syncSettings.js
+                per: null, // set in ./syncLinearSettings.js
+                tooltip: null, // set in ./syncLinearSettings.js
                 radius: 4,
                 attributes: {
                     'fill-opacity': 1,
                 },
             },
 		],
-		color_by: null, // set in ./syncSettings.js
+		color_by: null, // set in ./syncLinearSettings.js
 		color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
 		legend: {
             location: 'top',
             label: 'Visit Status',
             order: null, // set in ../init/defineSets/defineVisitStatusSet.js
         },
-        date_format: null, // set in ./syncSettings.js
         gridlines: 'y',
         range_band: 15,
     };

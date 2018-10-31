@@ -11,6 +11,6 @@ export default function defineVisitSet() {
         .map(visit => visit.split(':|:')[1]);
 
     //Update ordinal chart settings.
-    this.ordinalChart.config.x.order = this.data.sets.visit_col
-        .map(visit => visit.split(':|:')[1]);
+    this.ordinalChart.config.x.domain = this.data.sets.visit_col;
+    this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
 }

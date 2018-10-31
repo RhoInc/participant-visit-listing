@@ -6,21 +6,21 @@ import onDraw from './onDraw';
 import onResize from './onResize';
 import onDestroy from './onDestroy';
 
-export default function chart() {
+export default function ordinalChart() {
     //Define listing.
-    this.linearChart = new webCharts.createChart(
-        this.containers.linearChart.node(),
-        this.settings.linearChartSynced,
+    this.ordinalChart = new webCharts.createChart(
+        this.containers.ordinalChart.node(),
+        this.settings.ordinalChartSynced,
         this.controls
     );
-    this.linearChart.pvl = this;
+    this.ordinalChart.pvl = this;
 
     //Define callbacks.
-    this.linearChart.on('init', onInit);
-    this.linearChart.on('layout', onLayout);
-    this.linearChart.on('preprocess', onPreprocess);
-    this.linearChart.on('datatransform', onDatatransform);
-    this.linearChart.on('draw', onDraw);
-    this.linearChart.on('resize', onResize);
-    this.linearChart.on('destroy', onDestroy);
+    this.ordinalChart.on('init', onInit);
+    this.ordinalChart.on('layout', onLayout);
+    this.ordinalChart.on('preprocess', onPreprocess);
+    this.ordinalChart.on('datatransform', onDatatransform);
+    this.ordinalChart.on('draw', onDraw);
+    this.ordinalChart.on('resize', onResize);
+    this.ordinalChart.on('destroy', onDestroy);
 }

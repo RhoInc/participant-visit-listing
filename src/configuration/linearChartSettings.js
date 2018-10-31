@@ -7,8 +7,10 @@ export default function chartSettings() {
         },
         y: {
             type: 'ordinal',
-            label: 'Participant ID',
+            label: '',
             value_col: null, // set in ./syncLinearSettings.js
+            range_band: 15,
+            behavior: 'flex',
         },
         marks: [
             {
@@ -29,6 +31,9 @@ export default function chartSettings() {
             order: null, // set in ../init/defineSets/defineVisitStatusSet.js
         },
         gridlines: 'y',
-        range_band: 15,
+        scale_text: false,
+        margin: {
+            top: 75,
+        },
     };
 }

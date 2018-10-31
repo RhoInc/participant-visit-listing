@@ -167,13 +167,14 @@ export default function styles() {
             '    display: inline-block;' +
             '}',
             '.pvl-chart {' +
-            '    width: 49%;' +
             '    display: inline-block;' +
             '}',
             '.pvl-chart--ordinal {' +
+            '    width: 33%;' +
             '    float: left;' +
             '}',
             '.pvl-chart--linear {' +
+            '    width: 66%;' +
             '    float: right;' +
             '}',
     ];

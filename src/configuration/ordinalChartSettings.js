@@ -8,18 +8,21 @@ export default function ordinalChartSettings() {
         },
         y: {
             type: 'ordinal',
-            label: 'Participant ID',
+            label: '',
             value_col: null, // set in ./syncOrdinalSettings.js
+            range_band: 15,
+            behavior: 'flex',
         },
         marks: [
             {
                 type: 'circle',
                 per: null, // set in ./syncOrdinalSettings.js
                 tooltip: null, // set in ./syncOrdinalSettings.js
-                radius: 4,
+                radius: 5,
                 attributes: {
                     'fill-opacity': 1,
                 },
+                values: {}, // set in ../init/defineSets/defineVisitSet.js
             },
 		],
 		color_by: null, // set in ./syncOrdinalSettings.js
@@ -30,6 +33,9 @@ export default function ordinalChartSettings() {
             order: null, // set in ../init/defineSets/defineVisitStatusSet.js
         },
         gridlines: 'y',
-        range_band: 15,
+        scale_text: false,
+        margin: {
+            top: 75,
+        },
     };
 }

@@ -178,17 +178,20 @@
             },
             y: {
                 type: 'ordinal',
-                label: 'Participant ID',
-                value_col: null // set in ./syncOrdinalSettings.js
+                label: '',
+                value_col: null, // set in ./syncOrdinalSettings.js
+                range_band: 15,
+                behavior: 'flex'
             },
             marks: [{
                 type: 'circle',
                 per: null, // set in ./syncOrdinalSettings.js
                 tooltip: null, // set in ./syncOrdinalSettings.js
-                radius: 4,
+                radius: 5,
                 attributes: {
                     'fill-opacity': 1
-                }
+                },
+                values: {} // set in ../init/defineSets/defineVisitSet.js
             }],
             color_by: null, // set in ./syncOrdinalSettings.js
             color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
@@ -198,7 +201,10 @@
                 order: null // set in ../init/defineSets/defineVisitStatusSet.js
             },
             gridlines: 'y',
-            range_band: 15
+            scale_text: false,
+            margin: {
+                top: 75
+            }
         };
     }
 
@@ -229,8 +235,10 @@
             },
             y: {
                 type: 'ordinal',
-                label: 'Participant ID',
-                value_col: null // set in ./syncLinearSettings.js
+                label: '',
+                value_col: null, // set in ./syncLinearSettings.js
+                range_band: 15,
+                behavior: 'flex'
             },
             marks: [{
                 type: 'circle',
@@ -249,7 +257,10 @@
                 order: null // set in ../init/defineSets/defineVisitStatusSet.js
             },
             gridlines: 'y',
-            range_band: 15
+            scale_text: false,
+            margin: {
+                top: 75
+            }
         };
     }
 
@@ -384,7 +395,7 @@
         charts
       \--------------------------------------------------------------------------------------***/
 
-      '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-chart {' + '    width: 49%;' + '    display: inline-block;' + '}', '.pvl-chart--ordinal {' + '    float: left;' + '}', '.pvl-chart--linear {' + '    float: right;' + '}'];
+      '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-chart {' + '    display: inline-block;' + '}', '.pvl-chart--ordinal {' + '    width: 33%;' + '    float: left;' + '}', '.pvl-chart--linear {' + '    width: 66%;' + '    float: right;' + '}'];
 
       //Attach styles to DOM.
       this.style = document.createElement('style');
@@ -1039,7 +1050,10 @@
         });
     }
 
-    function onLayout$1() {}
+    function onLayout$1() {
+        this.topXAxisG = this.svg.append('g').classed('x x--top axis linear', true);
+        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+    }
 
     function onPreprocess$1() {}
 
@@ -1047,23 +1061,32 @@
 
     function onDraw$1() {}
 
-    function onResize() {}
+    function onResize() {
+        this.legend.remove();
+
+        //Draw top x-axis.
+        this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG.select('text.axis-title--top').attr({
+            transform: 'translate(' + this.plot_width / 2 + ',' + -this.margin.top / 2 + ')',
+            'text-anchor': 'middle'
+        }).text(this.config.x.label);
+    }
 
     function onDestroy$1() {}
 
-    function chart() {
+    function ordinalChart() {
         //Define listing.
-        this.linearChart = new webCharts.createChart(this.containers.linearChart.node(), this.settings.linearChartSynced, this.controls);
-        this.linearChart.pvl = this;
+        this.ordinalChart = new webCharts.createChart(this.containers.ordinalChart.node(), this.settings.ordinalChartSynced, this.controls);
+        this.ordinalChart.pvl = this;
 
         //Define callbacks.
-        this.linearChart.on('init', onInit$1);
-        this.linearChart.on('layout', onLayout$1);
-        this.linearChart.on('preprocess', onPreprocess$1);
-        this.linearChart.on('datatransform', onDataTransform);
-        this.linearChart.on('draw', onDraw$1);
-        this.linearChart.on('resize', onResize);
-        this.linearChart.on('destroy', onDestroy$1);
+        this.ordinalChart.on('init', onInit$1);
+        this.ordinalChart.on('layout', onLayout$1);
+        this.ordinalChart.on('preprocess', onPreprocess$1);
+        this.ordinalChart.on('datatransform', onDataTransform);
+        this.ordinalChart.on('draw', onDraw$1);
+        this.ordinalChart.on('resize', onResize);
+        this.ordinalChart.on('destroy', onDestroy$1);
     }
 
     function onInit$2() {
@@ -1074,7 +1097,10 @@
         });
     }
 
-    function onLayout$2() {}
+    function onLayout$2() {
+        this.topXAxisG = this.svg.append('g').classed('x x--top axis linear', true);
+        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+    }
 
     function onPreprocess$2() {}
 
@@ -1082,24 +1108,32 @@
 
     function onDraw$2() {}
 
-    function onResize$1() {}
+    function onResize$1() {
+        this.legend.remove();
+
+        //Draw top x-axis.
+        this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG.select('text.axis-title--top').attr({
+            transform: 'translate(' + this.plot_width / 2 + ',' + -this.margin.top / 2 + ')',
+            'text-anchor': 'middle'
+        }).text(this.config.x.label);
+    }
 
     function onDestroy$2() {}
 
-    function ordinalChart() {
-        console.log(this.settings.ordinalChartSynced);
+    function linearChart() {
         //Define listing.
-        this.ordinalChart = new webCharts.createChart(this.containers.ordinalChart.node(), this.settings.ordinalChartSynced, this.controls);
-        this.ordinalChart.pvl = this;
+        this.linearChart = new webCharts.createChart(this.containers.linearChart.node(), this.settings.linearChartSynced, this.controls);
+        this.linearChart.pvl = this;
 
         //Define callbacks.
-        this.ordinalChart.on('init', onInit$2);
-        this.ordinalChart.on('layout', onLayout$2);
-        this.ordinalChart.on('preprocess', onPreprocess$2);
-        this.ordinalChart.on('datatransform', onDataTransform$1);
-        this.ordinalChart.on('draw', onDraw$2);
-        this.ordinalChart.on('resize', onResize$1);
-        this.ordinalChart.on('destroy', onDestroy$2);
+        this.linearChart.on('init', onInit$2);
+        this.linearChart.on('layout', onLayout$2);
+        this.linearChart.on('preprocess', onPreprocess$2);
+        this.linearChart.on('datatransform', onDataTransform$1);
+        this.linearChart.on('draw', onDraw$2);
+        this.linearChart.on('resize', onResize$1);
+        this.linearChart.on('destroy', onDestroy$2);
     }
 
     function checkFilterCols(filterCol) {
@@ -1143,9 +1177,8 @@
         });
 
         //Update ordinal chart settings.
-        this.ordinalChart.config.x.order = this.data.sets.visit_col.map(function (visit) {
-            return visit.split(':|:')[1];
-        });
+        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
     }
 
     function defineVisitStatusSet() {
@@ -1373,8 +1406,8 @@
         styles.call(pvl); // attaches styles object to central object ([pvl])
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
         listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
-        chart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
         ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
         return pvl;
     }

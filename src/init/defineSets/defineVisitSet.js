@@ -13,4 +13,5 @@ export default function defineVisitSet() {
     //Update ordinal chart settings.
     this.ordinalChart.config.x.domain = this.data.sets.visit_col;
     this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
+    this.ordinalChart.config.marks[1].values[this.settings.visit_col] = this.data.sets.visit_col;
 }

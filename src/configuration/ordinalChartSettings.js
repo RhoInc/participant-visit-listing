@@ -24,6 +24,20 @@ export default function ordinalChartSettings() {
                 },
                 values: {}, // set in ../init/defineSets/defineVisitSet.js
             },
+            {
+                type: 'circle',
+                per: null, // set in ./syncOrdinalSettings.js
+                tooltip: null, // set in ./syncOrdinalSettings.js
+                radius: 3,
+                attributes: {
+                    'fill-opacity': 1,
+                    'fill': 'white',
+                },
+                values: {
+                    expected: [true],
+                    unscheduled: [false],
+                }, // set in ../init/defineSets/defineVisitSet.js
+            },
 		],
 		color_by: null, // set in ./syncOrdinalSettings.js
 		color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js

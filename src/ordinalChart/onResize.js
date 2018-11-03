@@ -17,5 +17,5 @@ export default function onResize() {
             transform: 'translate(' + this.plot_width / 2 + ',' + -this.margin.top / 2 + ')',
             'text-anchor': 'middle'
         })
-        .text(this.config.x.label);
+        .text(`Schedule of Events by ${this.config.x.label}`);
 }

@@ -2,7 +2,7 @@ export default function chartSettings() {
     return {
         x: {
             type: 'linear',
-            label: 'Visit Day',
+            label: 'Study Day',
             value_col: null, // set in ./syncLinearSettings.js
         },
         y: {
@@ -17,9 +17,38 @@ export default function chartSettings() {
                 type: 'circle',
                 per: null, // set in ./syncLinearSettings.js
                 tooltip: null, // set in ./syncLinearSettings.js
-                radius: 4,
+                radius: 5,
                 attributes: {
                     'fill-opacity': 1,
+                },
+            },
+            {
+                type: 'circle',
+                per: null, // set in ./syncOrdinalSettings.js
+                tooltip: null, // set in ./syncOrdinalSettings.js
+                radius: 3,
+                attributes: {
+                    'fill-opacity': 1,
+                    'fill': 'white',
+                },
+                values: {
+                    expected: [true],
+                },
+            },
+            {
+                type: 'text',
+                per: null, // set in ./syncLinearSettings.js
+                tooltip: null, // set in ./syncLinearSettings.js
+                text: '[visitCharacter]',
+                attributes: {
+                    'font-size': '10px',
+                    'font-weight': 'bold',
+                    dx: 3,
+                    dy: -3,
+                    cursor: 'default',
+                },
+                values: {
+                    unscheduled: [true]
                 },
             },
 		],

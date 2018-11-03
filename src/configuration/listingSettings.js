@@ -15,6 +15,7 @@ export default function listingSettings() {
         visit_text_col: 'visit_text',
         visit_text_color_col: 'visit_status_color', // must be hex RGB
         visit_status_description_col: 'visit_status_description',
+        visit_expectation_pattern: '/expect|future|overdue/i',
         visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
         visit_status_exclusion_col: 'plot_exclude',
         visit_status_exclusion_value: 'Yes',

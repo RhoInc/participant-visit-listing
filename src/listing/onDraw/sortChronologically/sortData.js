@@ -3,8 +3,8 @@ export default function sortData(data) {
         let order = 0;
 
         this.sortable.order.forEach(item => {
-            const aCell = a[`${item.col}_date`] ? a[`${item.col}_date`] : a[item.col];
-            const bCell = b[`${item.col}_date`] ? b[`${item.col}_date`] : b[item.col];
+            const aCell = a[`${item.col}-date`] ? a[`${item.col}-date`] : a[item.col];
+            const bCell = b[`${item.col}-date`] ? b[`${item.col}-date`] : b[item.col];
 
             if (order === 0) {
                 if (aCell !== null && bCell !== null) {

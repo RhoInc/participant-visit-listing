@@ -1,4 +1,7 @@
 export default function listingSettings() {
+    const exports = ['csv'];
+    if (window.XLSX)
+        exports.unshift('xlsx');
     return {
         //ID-level variables
         site_col: 'site_name',
@@ -29,6 +32,6 @@ export default function listingSettings() {
         },
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
         pagination: false, // turn off pagination to view all IDs at the same time
-        exports: ['xlsx', 'csv'] // default exports are to .xlsx and .csv
+        exports // default exports are to .xlsx and .csv
     };
 }

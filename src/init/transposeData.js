@@ -15,14 +15,14 @@ export default function transposeData() {
 
         this.data.sets.visit_col.forEach(visit => {
             const visit_datum = id_data.find(d => d[this.settings.visit_col] === visit);
-            datum[visit] = visit_datum ? visit_datum[this.settings.visit_text_col] : null;
-            datum[`${visit}-date`] = visit_datum ? visit_datum[this.settings.visit_date_col] : null;
+            datum[visit] = visit_datum ? visit_datum[this.settings.visit_text_col] : '';
+            datum[`${visit}-date`] = visit_datum ? visit_datum[this.settings.visit_date_col] : '';
             datum[`${visit}-status`] = visit_datum
                 ? visit_datum[this.settings.visit_status_col]
-                : null;
+                : '';
             datum[`${visit}-color`] = visit_datum
                 ? visit_datum[this.settings.visit_text_color_col]
-                : null;
+                : '';
 
             if (this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
             if (this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];

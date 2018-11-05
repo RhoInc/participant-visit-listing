@@ -23,4 +23,10 @@ export default function onDraw() {
 
     //Add styled export to .xlsx.
     exportToXLSX.call(this);
+
+    var doc = new jsPDF('l', 'pt');
+    var tableNode = this.table.node(); // $('#customers')[0];
+    var json = doc.autoTableHtmlToJson(tableNode);
+    doc.autoTable(json.columns, json.data);
+    doc.save('table.pdf');
 }

@@ -180,4 +180,4 @@ export var saveAs =
         FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
 
         return saveAs;
-    })((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window) || this);
+    })((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));

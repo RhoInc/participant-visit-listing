@@ -199,26 +199,23 @@
         var siteFilter = this.settings.controls.inputs.find(function(control) {
             return control.label === 'Site';
         });
-        siteFilter.value_col = this.settings.rendererSynced.site_col;
+        siteFilter.value_col = this.settings.site_col;
 
         //Sync ID status filter.
         var idStatusFilter = this.settings.controls.inputs.find(function(control) {
             return control.label === 'Participant Status';
         });
-        idStatusFilter.value_col = this.settings.rendererSynced.id_status_col;
+        idStatusFilter.value_col = this.settings.id_status_col;
 
         //Add user-specified filters.
-        if (
-            Array.isArray(this.settings.rendererSynced.filter_cols) &&
-            this.settings.rendererSynced.filter_cols
-        ) {
+        if (Array.isArray(this.settings.filter_cols) && this.settings.filter_cols) {
             var labels = {
                 subset1: 'Analysis Subset 1',
                 subset2: 'Analysis Subset 2',
                 subset3: 'Analysis Subset 3',
                 overdue2: '>1 Overdue Visits'
             };
-            this.settings.rendererSynced.filter_cols.forEach(function(filter_col) {
+            this.settings.filter_cols.forEach(function(filter_col) {
                 _this.settings.controls.inputs.push({
                     type: 'subsetter',
                     label: labels[filter_col] || filter_col,
@@ -426,7 +423,7 @@
         }).length;
         this.containers.legendItems.select('.pvl-legend-item-label').text(function(d) {
             var numerator = _this.data.filtered.filter(function(di) {
-                return di[_this.settings.rendererSynced.visit_status_col] === d[1];
+                return di[_this.settings.visit_status_col] === d[1];
             }).length;
             return (
                 d[1] +
@@ -468,6 +465,8 @@
         this.config.sortable = false;
     }
 
+    function onPreprocess() {}
+
     function addHeaderHover() {
         //Highlight column when hovering over column header.
         this.thead
@@ -496,7 +495,7 @@
                 if (d[di.col] !== null)
                     cell.attr(
                         'title',
-                        d[context.parent.settings.rendererSynced.id_col] +
+                        d[context.parent.settings.id_col] +
                             ' - ' +
                             di.col +
                             ' (' +
@@ -524,7 +523,7 @@
         var idDict = d3
             .nest()
             .key(function(d) {
-                return d[_this.parent.settings.rendererSynced.id_col];
+                return d[_this.parent.settings.id_col];
             })
             .rollup(function(d) {
                 return d;
@@ -535,44 +534,49 @@
         var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
         // create ditionary of table cells
-        var cellDict = d3
-            .nest()
-            .key(function(d) {
-                return d[0].__data__.text;
-            })
-            .rollup(function(d) {
-                return d[0];
-            })
-            .map(cells);
+        var cellDict = cells.size()
+            ? d3
+                  .nest()
+                  .key(function(d) {
+                      return d[0].__data__.text;
+                  })
+                  .rollup(function(d) {
+                      return d[0];
+                  })
+                  .map(cells)
+            : [];
 
         // get ids
         var id_cols = d3
             .set(
-                this.data.filtered.map(function(d) {
-                    return d[_this.parent.settings.rendererSynced.id_col];
+                this.data.raw.map(function(d) {
+                    return d[_this.parent.settings.id_col];
                 })
             )
             .values();
 
         id_cols.forEach(function(id) {
             var id_data = idDict[id];
-            var id_summary = d3
-                .nest()
-                .key(function(d) {
-                    return d[_this.parent.settings.rendererSynced.visit_status_col];
-                })
-                .rollup(function(d) {
-                    return d3.format('%')(d.length / id_data.length);
-                })
-                .entries(id_data);
-            d3.select(cellDict[id][0]).attr(
-                'title',
-                id_summary
-                    .map(function(status) {
-                        return status.key + ' (' + status.values + ')';
+            var id_cell = cellDict[id];
+            if (id_data && id_cell) {
+                var id_summary = d3
+                    .nest()
+                    .key(function(d) {
+                        return d[_this.parent.settings.visit_status_col];
                     })
-                    .join('\n')
-            );
+                    .rollup(function(d) {
+                        return d3.format('%')(d.length / id_data.length);
+                    })
+                    .entries(id_data);
+                d3.select(id_cell[0]).attr(
+                    'title',
+                    id_summary
+                        .map(function(status) {
+                            return status.key + ' (' + status.values + ')';
+                        })
+                        .join('\n')
+                );
+            }
         });
     }
 
@@ -581,12 +585,12 @@
 
         this.parent.data.sets.visit_col.forEach(function(visit) {
             var visit_data = _this.parent.data.raw.filter(function(d) {
-                return d[_this.parent.settings.rendererSynced.visit_col] === visit;
+                return d[_this.parent.settings.visit_col] === visit;
             });
             var visit_summary = d3
                 .nest()
                 .key(function(d) {
-                    return d[_this.parent.settings.rendererSynced.visit_status_col];
+                    return d[_this.parent.settings.visit_status_col];
                 })
                 .rollup(function(d) {
                     return d3.format('%')(d.length / visit_data.length);
@@ -1087,11 +1091,7 @@
             FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
 
             return saveAs;
-        })(
-            (typeof self !== 'undefined' && self) ||
-                (typeof window !== 'undefined' && window) ||
-                undefined
-        );
+        })((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));
 
     //Convert XLSX file for download.
     function s2ab(s) {
@@ -1168,9 +1168,133 @@
         //Define callbacks.
         this.listing.on('init', onInit);
         this.listing.on('layout', onLayout);
-        //this.listing.on('preprocess', onPreprocess);
+        this.listing.on('preprocess', onPreprocess);
         this.listing.on('draw', onDraw);
         this.listing.on('destroy', onDestroy);
+    }
+
+    function checkFilterCols(filterCol) {
+        this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
+        if (!this.data.missingVariables[filterCol])
+            this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+        else if (/subset/.test(filterCol)) {
+            this.data.filters.push({
+                col: filterCol,
+                value: 'All'
+            });
+            this.settings.controlsSynced.inputs.find(function(input) {
+                return input.value_col === filterCol;
+            }).values = d3
+                .set(
+                    this.data.raw.map(function(d) {
+                        return d[filterCol];
+                    })
+                )
+                .values()
+                .filter(function(value) {
+                    return !/^ *$/.test(value);
+                })
+                .sort();
+        }
+    }
+
+    function checkRequiredVariables() {
+        var _this = this;
+
+        this.settings.filter_cols.forEach(function(filter_col) {
+            checkFilterCols.call(_this, filter_col);
+        });
+    }
+
+    function defineVisitSet() {
+        var _this = this;
+
+        this.data.sets.visit_col = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
+                })
+            )
+            .values()
+            .filter(function(visit) {
+                return !_this.settings.visit_exclusion_regex.test(visit);
+            })
+            .sort(function(a, b) {
+                return a.split(':|:')[0] - b.split(':|:')[0];
+            })
+            .map(function(visit) {
+                return visit.split(':|:')[1];
+            });
+    }
+
+    function defineVisitStatusSet() {
+        var _this = this;
+
+        this.data.sets.visit_status_col = d3
+            .set(
+                this.data.raw.map(function(d) {
+                    return (
+                        d[_this.settings.visit_status_order_col] +
+                        ':|:' +
+                        d[_this.settings.visit_status_col] +
+                        ':|:' +
+                        d[_this.settings.visit_text_color_col].toLowerCase() +
+                        ':|:' +
+                        d[_this.settings.visit_status_description_col]
+                    );
+                })
+            )
+            .values()
+            .sort(function(a, b) {
+                return +a.split(':|:')[0] - +b.split(':|:')[0];
+            });
+    }
+
+    function defineLegendSet() {
+        var _this = this;
+
+        this.data.sets.legend = d3
+            .set(
+                this.data.raw
+                    .filter(function(d) {
+                        return (
+                            d[_this.settings.visit_status_exclusion_col] !==
+                            _this.settings.visit_status_exclusion_value
+                        );
+                    })
+                    .map(function(d) {
+                        return (
+                            d[_this.settings.visit_status_order_col] +
+                            ':|:' +
+                            d[_this.settings.visit_status_col] +
+                            ':|:' +
+                            d[_this.settings.visit_text_color_col].toLowerCase() +
+                            ':|:' +
+                            d[_this.settings.visit_status_description_col]
+                        );
+                    })
+            )
+            .values()
+            .sort(function(a, b) {
+                return +a.split(':|:')[0] - +b.split(':|:')[0];
+            });
+    }
+
+    function defineDefaultSet(col) {
+        var _this = this;
+
+        this.data.sets[col] = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.settings[col]];
+                })
+            )
+            .values()
+            .sort();
     }
 
     function defineSets() {
@@ -1185,85 +1309,14 @@
         ].forEach(function(col) {
             switch (col) {
                 case 'visit_col':
-                    _this.data.sets[col] = d3
-                        .set(
-                            _this.data.raw.map(function(d) {
-                                return (
-                                    d[_this.settings.rendererSynced.visit_order_col] +
-                                    ':|:' +
-                                    d[_this.settings.rendererSynced.visit_col]
-                                );
-                            })
-                        )
-                        .values()
-                        .filter(function(visit) {
-                            return !_this.settings.visit_exclusion_regex.test(visit);
-                        })
-                        .sort(function(a, b) {
-                            return a.split(':|:')[0] - b.split(':|:')[0];
-                        })
-                        .map(function(visit) {
-                            return visit.split(':|:')[1];
-                        });
+                    defineVisitSet.call(_this);
                     break;
                 case 'visit_status_col':
-                    _this.data.sets[col] = d3
-                        .set(
-                            _this.data.raw.map(function(d) {
-                                return (
-                                    d[_this.settings.rendererSynced.visit_status_order_col] +
-                                    ':|:' +
-                                    d[_this.settings.rendererSynced.visit_status_col] +
-                                    ':|:' +
-                                    d[
-                                        _this.settings.rendererSynced.visit_text_color_col
-                                    ].toLowerCase() +
-                                    ':|:' +
-                                    d[_this.settings.visit_status_description_col]
-                                );
-                            })
-                        )
-                        .values()
-                        .sort(function(a, b) {
-                            return +a.split(':|:')[0] - +b.split(':|:')[0];
-                        });
-                    _this.data.sets.legend = d3
-                        .set(
-                            _this.data.raw
-                                .filter(function(d) {
-                                    return (
-                                        d[_this.settings.visit_status_exclusion_col] !==
-                                        _this.settings.visit_status_exclusion_value
-                                    );
-                                })
-                                .map(function(d) {
-                                    return (
-                                        d[_this.settings.rendererSynced.visit_status_order_col] +
-                                        ':|:' +
-                                        d[_this.settings.rendererSynced.visit_status_col] +
-                                        ':|:' +
-                                        d[
-                                            _this.settings.rendererSynced.visit_text_color_col
-                                        ].toLowerCase() +
-                                        ':|:' +
-                                        d[_this.settings.visit_status_description_col]
-                                    );
-                                })
-                        )
-                        .values()
-                        .sort(function(a, b) {
-                            return +a.split(':|:')[0] - +b.split(':|:')[0];
-                        });
+                    defineVisitStatusSet.call(_this);
+                    defineLegendSet.call(_this);
                     break;
                 default:
-                    _this.data.sets[col] = d3
-                        .set(
-                            _this.data.raw.map(function(d) {
-                                return d[_this.settings.rendererSynced[col]];
-                            })
-                        )
-                        .values()
-                        .sort();
+                    defineDefaultSet.call(_this, col);
                     break;
             }
         });
@@ -1271,25 +1324,13 @@
 
     function defineColumns() {
         this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
-    }
-
-    function checkFilterCols(filterCol) {
-        this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
-        if (!this.data.missingVariables[filterCol])
-            this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
-                function(input) {
-                    return input.value_col !== filterCol;
-                }
-            );
+        this.listing.config.headers = this.listing.config.cols.slice();
     }
 
     function transposeData() {
         var _this = this;
 
-        checkFilterCols.call(this, 'subset1');
-        checkFilterCols.call(this, 'subset2');
-        checkFilterCols.call(this, 'subset3');
-        checkFilterCols.call(this, 'overdue2');
+        this.data.transposed = [];
 
         this.data.sets.id_col.forEach(function(id, i) {
             var id_data = _this.data.raw.filter(function(d) {
@@ -1368,20 +1409,58 @@
         update.call(this);
     }
 
+    function filterData(d, select) {
+        var _this = this;
+
+        this.data.filters.find(function(filter) {
+            return filter.col === d.value_col;
+        }).value = select.value;
+        this.data.filtered = this.data.raw;
+        this.data.filters.forEach(function(filter) {
+            _this.data.filtered = _this.data.filtered.filter(function(di) {
+                return di[filter.col] === filter.value || filter.value === 'All';
+            });
+        });
+    }
+
+    function update$1() {
+        var context = this;
+
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return /^Analysis Subset \d$/.test(d.label);
+            })
+            .selectAll('select')
+            .on('change', function(d) {
+                filterData.call(context, d, this);
+                defineDefaultSet.call(context, 'id_col');
+                defineVisitSet.call(context);
+                defineColumns.call(context);
+                transposeData.call(context);
+                update.call(context);
+                context.listing.data.raw = context.data.transposed;
+                context.listing.draw();
+            });
+    }
+
     function init(data) {
         this.data = {
             raw: data,
             filtered: data,
+            transposed: null,
             variables: Object.keys(data[0]),
             missingVariables: [],
-            sets: {},
-            transposed: []
+            filters: [],
+            sets: {}
         };
+        checkRequiredVariables.call(this);
         defineSets.call(this);
         defineColumns.call(this);
         transposeData.call(this);
         addLegend.call(this);
         this.listing.init(this.data.transposed);
+        update$1.call(this);
     }
 
     function participantVisitListing(element) {

@@ -1,11 +1,11 @@
 export default function visit() {
     this.parent.data.sets.visit_col.forEach(visit => {
         const visit_data = this.parent.data.raw.filter(
-            d => d[this.parent.settings.rendererSynced.visit_col] === visit
+            d => d[this.parent.settings.visit_col] === visit
         );
         const visit_summary = d3
             .nest()
-            .key(d => d[this.parent.settings.rendererSynced.visit_status_col])
+            .key(d => d[this.parent.settings.visit_status_col])
             .rollup(d => d3.format('%')(d.length / visit_data.length))
             .entries(visit_data);
         const visit_cell = this.table

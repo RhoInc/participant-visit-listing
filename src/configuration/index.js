@@ -1,11 +1,19 @@
-import rendererSettings from './rendererSettings';
-import syncSettings from './syncSettings';
+import listingSettings from './listingSettings';
+import syncListingSettings from './syncListingSettings';
+import ordinalChartSettings from './ordinalChartSettings';
+import syncOrdinalChartSettings from './syncOrdinalChartSettings';
+import linearChartSettings from './linearChartSettings';
+import syncLinearChartSettings from './syncLinearChartSettings';
 import controlsSettings from './controlsSettings';
-import syncControls from './syncControls';
+import syncControlsSettings from './syncControlsSettings';
 
 export default {
-    rendererSettings,
-    syncSettings,
+    listingSettings,
+    syncListingSettings,
+    ordinalChartSettings,
+    syncOrdinalChartSettings,
+    linearChartSettings,
+    syncLinearChartSettings,
     controlsSettings,
-    syncControls
+    syncControlsSettings
 };

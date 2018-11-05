@@ -8,10 +8,10 @@ export default function listing() {
     //Define listing.
     this.listing = new webCharts.createTable(
         this.containers.listing.node(),
-        this.settings.rendererSynced,
+        this.settings.listingSynced,
         this.controls
     );
-    this.listing.parent = this;
+    this.listing.pvl = this;
 
     //Define callbacks.
     this.listing.on('init', onInit);

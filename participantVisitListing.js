@@ -126,7 +126,7 @@
         });
     }
 
-    function rendererSettings() {
+    function listingSettings() {
         return {
             //ID-level variables
             site_col: 'site_name',
@@ -137,42 +137,245 @@
             visit_col: 'visit_name',
             visit_order_col: 'visit_number',
             visit_date_col: 'visit_date',
+            visit_day_col: 'visit_day',
             visit_status_col: 'visit_status',
             visit_status_order_col: 'visit_status_order',
             visit_text_col: 'visit_text',
-            visit_text_color_col: 'visit_status_color', // must be hex RGB
+            visit_text_color_col: 'visit_text_color', // must be hex RGB
             visit_status_description_col: 'visit_status_description',
+            visit_expectation_pattern: '/expect|future|overdue/i',
             visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
             visit_status_exclusion_col: 'plot_exclude',
             visit_status_exclusion_value: 'Yes',
 
             //Miscellaneous
+            active_tab: 'Charts',
             date_format: '%Y-%m-%d', // format of visit dates
+            chart_margin: {
+                top: 100,
+                bottom: 100
+            },
             filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
             pagination: false, // turn off pagination to view all IDs at the same time
             exports: ['xlsx', 'csv'] // default exports are to .xlsx and .csv
         };
     }
 
-    function syncSettings() {
-        var settings = this.settings.rendererMerged;
+    function syncListingSettings() {
+        var settings = this.settings.listingMerged;
+
+        //Convert visit_expectation_pattern from string to regular expression.
+        if (
+            typeof settings.visit_expectation_pattern === 'string' &&
+            settings.visit_expectation_pattern !== ''
+        ) {
+            var flags = settings.visit_expectation_pattern.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
+            var pattern = settings.visit_expectation_pattern.replace(
+                new RegExp('^/(.*?)/' + flags + '$'),
+                '$1'
+            ); // capture regex pattern from beginning of regex string
+            settings.visit_expectation_regex = new RegExp(pattern, flags);
+        }
 
         //Convert visit_exclusion_pattern from string to regular expression.
         if (
             typeof settings.visit_exclusion_pattern === 'string' &&
             settings.visit_exclusion_pattern !== ''
         ) {
-            var flags = settings.visit_exclusion_pattern.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
-            var pattern = settings.visit_exclusion_pattern.replace(
-                new RegExp('^/(.*?)/' + flags + '$'),
+            var _flags = settings.visit_exclusion_pattern.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
+            var _pattern = settings.visit_exclusion_pattern.replace(
+                new RegExp('^/(.*?)/' + _flags + '$'),
                 '$1'
             ); // capture regex pattern from beginning of regex string
-            settings.visit_exclusion_regex = new RegExp(pattern, flags);
+            settings.visit_exclusion_regex = new RegExp(_pattern, _flags);
         }
 
         //Assign settings to settings object.
-        this.settings.rendererSynced = settings;
+        this.settings.listingSynced = settings;
         Object.assign(this.settings, settings);
+    }
+
+    function commonChartSettings() {
+        return {
+            x: {
+                type: null, // set in ./ordinalChartSettings and ./linearChartSettings.js
+                label: null, // set in ./ordinalChartSettings.js and ./linearChartSettings.js
+                value_col: null // set in ./ordinalChartSettings and ./syncLinearSettings.js
+            },
+            y: {
+                type: 'ordinal',
+                label: '',
+                value_col: null, // set in ./syncOrdinalChartSettings and ./syncLinearChartSettings.js
+                range_band: 15,
+                behavior: 'flex'
+            },
+            marks: [
+                {
+                    type: 'circle',
+                    per: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    radius: 5,
+                    attributes: {
+                        'fill-opacity': 1
+                    },
+                    values: {}
+                },
+                {
+                    type: 'circle',
+                    per: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    radius: 3,
+                    attributes: {
+                        'fill-opacity': 1,
+                        fill: 'white'
+                    },
+                    values: {
+                        expected: [true]
+                    }
+                }
+            ],
+            color_by: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+            color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
+            legend: {
+                location: 'top',
+                label: 'Visit Status',
+                order: null // set in ../init/defineSets/defineVisitStatusSet.js
+            },
+            gridlines: 'y',
+            scale_text: false
+        };
+    }
+
+    function ordinalChartSettings() {
+        var settings = commonChartSettings();
+        settings.x.type = 'ordinal';
+        settings.x.label = 'Visit';
+        settings.marks[1].values.unscheduled = [false];
+
+        return settings;
+    }
+
+    function syncOrdinalChartSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var ordinalChartSettings = this.settings.ordinalChartMerged;
+        ordinalChartSettings.margin = listingSettings.chart_margin;
+        ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40;
+
+        //Update ordinal chart settings.
+        ordinalChartSettings.x.column = listingSettings.visit_col;
+        ordinalChartSettings.y.column = listingSettings.id_col;
+        var circles = ordinalChartSettings.marks[0];
+        circles.per = [listingSettings.id_col, listingSettings.visit_col];
+        circles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
+        var expectedCircles = ordinalChartSettings.marks[1];
+        expectedCircles.per = [listingSettings.id_col, listingSettings.visit_col];
+        expectedCircles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
+        ordinalChartSettings.color_by = listingSettings.visit_status_col;
+
+        //Assign settings to settings object.
+        this.settings.ordinalChartSynced = ordinalChartSettings;
+    }
+
+    function ordinalChartSettings$1() {
+        var settings = commonChartSettings();
+        settings.x.type = 'linear';
+        settings.x.label = 'Study Day';
+        settings.marks.push({
+            type: 'text',
+            per: null, // set in ./syncLinearSettings.js
+            tooltip: null, // set in ./syncLinearSettings.js
+            text: '[visitCharacter]',
+            attributes: {
+                'font-size': '10px',
+                'font-weight': 'bold',
+                dx: 3,
+                dy: -3,
+                cursor: 'default'
+            },
+            values: {
+                unscheduled: [true]
+            }
+        });
+
+        return settings;
+    }
+
+    function syncLinearChartSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var linearChartSettings = this.settings.linearChartMerged;
+        linearChartSettings.margin = listingSettings.chart_margin;
+
+        //Update linear chart settings.
+        linearChartSettings.x.column = listingSettings.visit_day_col;
+        linearChartSettings.y.column = listingSettings.id_col;
+        var circles = linearChartSettings.marks[0];
+        circles.per = [listingSettings.id_col, listingSettings.visit_day_col];
+        circles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
+        var expectedCircles = linearChartSettings.marks[1];
+        expectedCircles.per = [listingSettings.id_col, listingSettings.visit_day_col];
+        expectedCircles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
+        var text = linearChartSettings.marks[2];
+        text.per = [listingSettings.id_col, listingSettings.visit_day_col];
+        text.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
+        linearChartSettings.color_by = listingSettings.visit_status_col;
+
+        //Assign settings to settings object.
+        this.settings.linearChartSynced = linearChartSettings;
     }
 
     function controlsSettings() {
@@ -192,31 +395,32 @@
         };
     }
 
-    function syncControls() {
-        var _this = this;
+    function syncControlsSettings() {
+        var listingSettings = this.settings.listingSynced;
+        var controlsSettings = this.settings.controlsMerged;
 
         //Sync site filter.
-        var siteFilter = this.settings.controls.inputs.find(function(control) {
+        var siteFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Site';
         });
-        siteFilter.value_col = this.settings.site_col;
+        siteFilter.value_col = listingSettings.site_col;
 
         //Sync ID status filter.
-        var idStatusFilter = this.settings.controls.inputs.find(function(control) {
+        var idStatusFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Participant Status';
         });
-        idStatusFilter.value_col = this.settings.id_status_col;
+        idStatusFilter.value_col = listingSettings.id_status_col;
 
         //Add user-specified filters.
-        if (Array.isArray(this.settings.filter_cols) && this.settings.filter_cols) {
+        if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols) {
             var labels = {
                 subset1: 'Analysis Subset 1',
                 subset2: 'Analysis Subset 2',
                 subset3: 'Analysis Subset 3',
                 overdue2: '>1 Overdue Visits'
             };
-            this.settings.filter_cols.forEach(function(filter_col) {
-                _this.settings.controls.inputs.push({
+            listingSettings.filter_cols.forEach(function(filter_col) {
+                controlsSettings.inputs.push({
                     type: 'subsetter',
                     label: labels[filter_col] || filter_col,
                     value_col: filter_col
@@ -224,17 +428,47 @@
             });
         }
 
-        this.settings.controlsSynced = this.settings.controls;
+        this.settings.controlsSynced = controlsSettings;
+        Object.assign(this.settings, controlsSettings);
     }
 
     var configuration = {
-        rendererSettings: rendererSettings,
-        syncSettings: syncSettings,
+        listingSettings: listingSettings,
+        syncListingSettings: syncListingSettings,
+        ordinalChartSettings: ordinalChartSettings,
+        syncOrdinalChartSettings: syncOrdinalChartSettings,
+        linearChartSettings: ordinalChartSettings$1,
+        syncLinearChartSettings: syncLinearChartSettings,
         controlsSettings: controlsSettings,
-        syncControls: syncControls
+        syncControlsSettings: syncControlsSettings
     };
 
+    function addTabFunctionality() {
+        var context = this;
+
+        this.containers.tabs.on('click', function(d) {
+            context.settings.active_tab = d;
+            var tab = d3.select(this);
+            var active = tab.classed('pvl-tab--active');
+
+            if (!active) {
+                context.containers.tabs.classed('pvl-tab--active', false);
+                tab.classed('pvl-tab--active', true);
+                context.containers.charts.classed('pvl-hidden', true);
+                context.containers.listing.classed('pvl-hidden', true);
+                context.containers[d.toLowerCase()].classed('pvl-hidden', false);
+
+                if (d === 'Charts') {
+                    context.ordinalChart.draw();
+                    context.linearChart.draw();
+                } else context.listing.draw();
+            }
+        });
+    }
+
     function layout() {
+        var _this = this;
+
         this.containers = {
             main: d3
                 .select(this.element)
@@ -247,6 +481,10 @@
                 )
         };
 
+        /**-------------------------------------------------------------------------------------------\
+          Upper row
+        \-------------------------------------------------------------------------------------------**/
+
         this.containers.upperRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--upper', true);
@@ -255,12 +493,48 @@
             .classed('pvl-controls', true);
         this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
 
+        /**-------------------------------------------------------------------------------------------\
+          Lower row
+        \-------------------------------------------------------------------------------------------**/
+
         this.containers.lowerRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--lower', true);
+        this.containers.tabContainer = this.containers.lowerRow
+            .append('div')
+            .classed('pvl-tabs', true);
+        this.containers.tabs = this.containers.tabContainer
+            .selectAll('div')
+            .data(['Charts', 'Listing'])
+            .enter()
+            .append('div')
+            .attr('class', function(d) {
+                return (
+                    'pvl-tab pvl-tab--' +
+                    d.toLowerCase() +
+                    ' ' +
+                    (d === _this.settings.active_tab ? 'pvl-tab--active' : '')
+                );
+            })
+            .text(function(d) {
+                return d;
+            });
+        this.containers.charts = this.containers.lowerRow.append('div').classed('pvl-charts', true);
+        this.containers.ordinalChart = this.containers.charts
+            .append('div')
+            .classed('pvl-chart pvl-chart--ordinal', true);
+        this.containers.linearChart = this.containers.charts
+            .append('div')
+            .classed('pvl-chart pvl-chart--linear', true);
         this.containers.listing = this.containers.lowerRow
             .append('div')
             .classed('pvl-listing', true);
+
+        /**-------------------------------------------------------------------------------------------\
+          Functionality
+        \-------------------------------------------------------------------------------------------**/
+
+        addTabFunctionality.call(this);
     }
 
     function styles() {
@@ -271,30 +545,26 @@
                 '    font-size: 16px;' +
                 '    line-height: normal;' +
                 '}',
+            '.pvl-hidden {' + '    display: none !important;' + '}',
             '.participant-visit-listing > * {' +
                 '    width: 100%;' +
                 '    display: inline-block;' +
                 '}',
-            '.pvl-row--upper {' +
-                '    border-bottom: 2px solid #eee;' +
-                '    padding-bottom: 12px;' +
-                '}',
+
+            /***--------------------------------------------------------------------------------------\
+        Upper row
+      \--------------------------------------------------------------------------------------***/
+
+            '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}',
             '.pvl-row--upper > * {' +
                 '    vertical-align: bottom;' +
                 '    display: inline-block;' +
                 '}',
-            '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}',
-            '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
-            '.pvl-controls .wc-controls .control-group {' +
-                '    margin-bottom: 0;' +
-                '    width: 125px;' +
-                '}',
-            '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
-            '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
-            '.pvl-controls .wc-controls .control-group .wc-control-label {' +
-                '    margin-right: 5px;' +
-                '    text-align: right;' +
-                '}',
+
+            /****---------------------------------------------------------------------------------\
+        Legend
+      \---------------------------------------------------------------------------------****/
+
             '.pvl-legend {' +
                 '    width: 44%;' +
                 '    float: left;' +
@@ -317,13 +587,84 @@
                 '    font-weight: bold;' +
                 '    cursor: help;' +
                 '}',
-            '.pvl-listing {' + '}',
-            '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+
+            /****---------------------------------------------------------------------------------\
+        Controls
+      \---------------------------------------------------------------------------------****/
+
+            '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}',
+            '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group {' +
+                '    margin-bottom: 0;' +
+                '    width: 125px;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
+            '.pvl-controls .wc-controls .control-group .wc-control-label {' +
+                '    margin-right: 5px;' +
+                '    text-align: right;' +
+                '}',
 
             /***--------------------------------------------------------------------------------------\
-                  table
-                \--------------------------------------------------------------------------------------***/
+        Lower row
+      \--------------------------------------------------------------------------------------***/
 
+            '.pvl-row--lower {' + '}',
+            '.pvl-row--lower > * {' + '}',
+
+            /****---------------------------------------------------------------------------------\
+        Tabs
+      \---------------------------------------------------------------------------------****/
+
+            '.pvl-tabs {' +
+                '    text-align: center;' +
+                '    border-top: 1px solid lightgray;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    padding: 6px 0;' +
+                '}',
+            '.pvl-tab {' +
+                '    display: inline-block;' +
+                '    border: 2px solid black;' +
+                '    border-radius: 6px;' +
+                '    padding: 1px 24px;' +
+                '    font-size: 20px;' +
+                '    margin: 0 2px;' +
+                '    color: black;' +
+                '    background: white;' +
+                '    cursor: pointer;' +
+                '    font-weight: normal;' +
+                '}',
+            '.pvl-tab--active {' +
+                '    color: white;' +
+                '    background: black;' +
+                '    font-weight: bold;' +
+                '    cursor: default;' +
+                '}',
+            '.pvl-tab:hover {' +
+                '    color: white;' +
+                '    background: black;' +
+                '    font-weight: bold;' +
+                '}',
+
+            /****---------------------------------------------------------------------------------\
+        Charts
+      \---------------------------------------------------------------------------------****/
+
+            '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}',
+            '.pvl-chart {' + '    display: inline-block;' + '}',
+            '.pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}',
+            '.pvl-chart--linear {' + '    width: 49.5%;' + '    float: right;' + '}',
+            '.pvl-chart .axis-title--top {' +
+                '    font-size: 16px;' +
+                '    font-weight: bold;' +
+                '}' +
+                /****---------------------------------------------------------------------------------\
+        Listing
+      \---------------------------------------------------------------------------------****/
+
+                '.pvl-listing {' +
+                '}',
+            '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
             '.pvl-listing .wc-table table {' +
                 '    display: table;' +
                 '    border: 0;' +
@@ -331,9 +672,9 @@
                 '    min-width: 100%;' +
                 '}',
 
-            /****---------------------------------------------------------------------------------\
-                  thead
-                \---------------------------------------------------------------------------------****/
+            /*****----------------------------------------------------------------------------\
+        thead
+      \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table thead {' + '}',
             '.pvl-listing .wc-table table thead tr:after {' +
@@ -350,9 +691,9 @@
                 '    border-left: 2px solid white;' +
                 '}',
 
-            /****---------------------------------------------------------------------------------\
-                  tbody
-                \---------------------------------------------------------------------------------****/
+            /*****----------------------------------------------------------------------------\
+        tbody
+      \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table tbody {' +
                 '    display: block;' +
@@ -378,9 +719,9 @@
                 '    font-weight: bold;' +
                 '}',
 
-            /****---------------------------------------------------------------------------------\
-                  t-agnostic
-                \---------------------------------------------------------------------------------****/
+            /*****----------------------------------------------------------------------------\
+        t-agnostic
+      \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}',
             '.pvl-listing .wc-table table th,' +
@@ -456,13 +797,13 @@
     }
 
     function onInit() {
-        //this.data.raw.forEach(d => {
-        //});
         this.data.initial = this.data.raw.slice();
     }
 
     function onLayout() {
         this.config.sortable = false;
+        if (this.pvl.settings.active_tab === 'Charts')
+            this.pvl.containers.listing.classed('pvl-hidden', true);
     }
 
     function onPreprocess() {}
@@ -495,7 +836,7 @@
                 if (d[di.col] !== null)
                     cell.attr(
                         'title',
-                        d[context.parent.settings.id_col] +
+                        d[context.pvl.settings.id_col] +
                             ' - ' +
                             di.col +
                             ' (' +
@@ -512,6 +853,10 @@
                         '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
                     ); // border-bottom
                 if (!/black|white/.test(di.color)) cell.style('color', di.color); // color
+
+                //Italicize expected visits.
+                //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))
+                //    cell.style('font-style', 'italic');
             });
         });
     }
@@ -523,12 +868,12 @@
         var idDict = d3
             .nest()
             .key(function(d) {
-                return d[_this.parent.settings.id_col];
+                return d[_this.pvl.settings.id_col];
             })
             .rollup(function(d) {
                 return d;
             })
-            .map(this.parent.data.raw);
+            .map(this.pvl.data.raw);
 
         // get all the cells
         var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
@@ -550,7 +895,7 @@
         var id_cols = d3
             .set(
                 this.data.raw.map(function(d) {
-                    return d[_this.parent.settings.id_col];
+                    return d[_this.pvl.settings.id_col];
                 })
             )
             .values();
@@ -562,7 +907,7 @@
                 var id_summary = d3
                     .nest()
                     .key(function(d) {
-                        return d[_this.parent.settings.visit_status_col];
+                        return d[_this.pvl.settings.visit_status_col];
                     })
                     .rollup(function(d) {
                         return d3.format('%')(d.length / id_data.length);
@@ -583,14 +928,14 @@
     function visit() {
         var _this = this;
 
-        this.parent.data.sets.visit_col.forEach(function(visit) {
-            var visit_data = _this.parent.data.raw.filter(function(d) {
-                return d[_this.parent.settings.visit_col] === visit;
+        this.pvl.data.sets.visit_col.forEach(function(visit) {
+            var visit_data = _this.pvl.data.raw.filter(function(d) {
+                return d[_this.pvl.settings.visit_col] === visit;
             });
             var visit_summary = d3
                 .nest()
                 .key(function(d) {
-                    return d[_this.parent.settings.visit_status_col];
+                    return d[_this.pvl.settings.visit_status_col];
                 })
                 .rollup(function(d) {
                     return d3.format('%')(d.length / visit_data.length);
@@ -1160,10 +1505,10 @@
         //Define listing.
         this.listing = new webCharts.createTable(
             this.containers.listing.node(),
-            this.settings.rendererSynced,
+            this.settings.listingSynced,
             this.controls
         );
-        this.listing.parent = this;
+        this.listing.pvl = this;
 
         //Define callbacks.
         this.listing.on('init', onInit);
@@ -1171,6 +1516,138 @@
         this.listing.on('preprocess', onPreprocess);
         this.listing.on('draw', onDraw);
         this.listing.on('destroy', onDestroy);
+    }
+
+    function onInit$1() {}
+
+    function onLayout$1() {
+        this.bottomXAxisG = this.svg.select('.x.axis').classed('x--bottom', true);
+        this.topXAxisG = this.svg.append('g').classed('x x--top axis ordinal', true);
+        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+    }
+
+    function onPreprocess$1() {}
+
+    function onDataTransform() {}
+
+    function onDraw$1() {}
+
+    function onResize() {
+        this.legend.remove();
+
+        //Draw top x-axis.
+        (this.topXAxis = d3.svg
+            .axis()
+            .scale(this.x)
+            .orient('top')
+            .ticks(this.xAxis.ticks()[0])
+            .tickFormat(this.config.x_displayFormat)
+            .innerTickSize(this.xAxis.innerTickSize())
+            .outerTickSize(this.xAxis.outerTickSize())),
+            this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG
+            .select('text.axis-title--top')
+            .attr({
+                transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
+                'text-anchor': 'middle'
+            })
+            .text('Schedule of Events by ' + this.config.x.label);
+
+        //Rotate top x-axis tick labels.
+        var topXAxisTickLabels = this.topXAxisG.selectAll('.tick text');
+        topXAxisTickLabels
+            .attr({
+                transform: 'rotate(-45)'
+            })
+            .style('text-anchor', 'start');
+
+        //Rotate bottom x-axis tick labels.
+        var bottomXAxisTickLabels = this.bottomXAxisG.selectAll('.tick text');
+        bottomXAxisTickLabels
+            .attr({
+                transform: 'rotate(-45)'
+            })
+            .style('text-anchor', 'end');
+    }
+
+    function onDestroy$1() {}
+
+    function ordinalChart() {
+        //Define listing.
+        this.ordinalChart = new webCharts.createChart(
+            this.containers.ordinalChart.node(),
+            this.settings.ordinalChartSynced,
+            this.controls
+        );
+        this.ordinalChart.pvl = this;
+
+        //Define callbacks.
+        this.ordinalChart.on('init', onInit$1);
+        this.ordinalChart.on('layout', onLayout$1);
+        this.ordinalChart.on('preprocess', onPreprocess$1);
+        this.ordinalChart.on('datatransform', onDataTransform);
+        this.ordinalChart.on('draw', onDraw$1);
+        this.ordinalChart.on('resize', onResize);
+        this.ordinalChart.on('destroy', onDestroy$1);
+    }
+
+    function onInit$2() {}
+
+    function onLayout$2() {
+        this.topXAxisG = this.svg.append('g').classed('x x--top axis linear', true);
+        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+
+        if (this.pvl.settings.active_tab === 'Listing')
+            this.pvl.containers.charts.classed('pvl-hidden', true);
+    }
+
+    function onPreprocess$2() {}
+
+    function onDataTransform$1() {}
+
+    function onDraw$2() {}
+
+    function onResize$1() {
+        this.legend.remove();
+
+        //Draw top x-axis.
+        (this.topXAxis = d3.svg
+            .axis()
+            .scale(this.x)
+            .orient('top')
+            .ticks(this.xAxis.ticks()[0])
+            .tickFormat(this.config.x_displayFormat)
+            .innerTickSize(this.xAxis.innerTickSize())
+            .outerTickSize(this.xAxis.outerTickSize())),
+            this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG
+            .select('text.axis-title--top')
+            .attr({
+                transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
+                'text-anchor': 'middle'
+            })
+            .text('Schedule of Events by ' + this.config.x.label);
+    }
+
+    function onDestroy$2() {}
+
+    function linearChart() {
+        //Define listing.
+        this.linearChart = new webCharts.createChart(
+            this.containers.linearChart.node(),
+            this.settings.linearChartSynced,
+            this.controls
+        );
+        this.linearChart.pvl = this;
+
+        //Define callbacks.
+        this.linearChart.on('init', onInit$2);
+        this.linearChart.on('layout', onLayout$2);
+        this.linearChart.on('preprocess', onPreprocess$2);
+        this.linearChart.on('datatransform', onDataTransform$1);
+        this.linearChart.on('draw', onDraw$2);
+        this.linearChart.on('resize', onResize$1);
+        this.linearChart.on('destroy', onDestroy$2);
     }
 
     function checkFilterCols(filterCol) {
@@ -1210,6 +1687,19 @@
         });
     }
 
+    function addVariables() {
+        var _this = this;
+
+        this.data.raw.forEach(function(d) {
+            d.visitDate = d[_this.settings.visit_date_col];
+            d.visitCharacter = d[_this.settings.visit_col].substring(0, 1);
+            d.expected = _this.settings.visit_expectation_regex.test(
+                d[_this.settings.visit_status_col]
+            );
+            d.unscheduled = _this.settings.visit_exclusion_regex.test(d[_this.settings.visit_col]);
+        });
+    }
+
     function defineVisitSet() {
         var _this = this;
 
@@ -1229,6 +1719,15 @@
             .map(function(visit) {
                 return visit.split(':|:')[1];
             });
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[0].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[1].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
     }
 
     function defineVisitStatusSet() {
@@ -1252,6 +1751,40 @@
             .sort(function(a, b) {
                 return +a.split(':|:')[0] - +b.split(':|:')[0];
             });
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[1];
+        });
+        this.ordinalChart.config.colors = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[2];
+        });
+        this.ordinalChart.config.legend.order = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[1];
+        });
+
+        //Update linear chart settings.
+        this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[1];
+        });
+        this.linearChart.config.colors = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[2];
+        });
+        this.linearChart.config.legend.order = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
+            return visit_status.split(':|:')[1];
+        });
     }
 
     function defineLegendSet() {
@@ -1426,22 +1959,36 @@
     function update$1() {
         var context = this;
 
-        this.controls.wrap
+        var analysisSubsetters = this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
                 return /^Analysis Subset \d$/.test(d.label);
             })
-            .selectAll('select')
-            .on('change', function(d) {
-                filterData.call(context, d, this);
-                defineDefaultSet.call(context, 'id_col');
-                defineVisitSet.call(context);
-                defineColumns.call(context);
-                transposeData.call(context);
-                update.call(context);
-                context.listing.data.raw = context.data.transposed;
-                context.listing.draw();
-            });
+            .selectAll('select');
+        analysisSubsetters
+            .selectAll('option')
+            .filter(function(d) {
+                return d === 'All';
+            })
+            .filter(function(d, i) {
+                return i > 0;
+            })
+            .remove();
+        analysisSubsetters.on('change', function(d) {
+            filterData.call(context, d, this);
+            defineDefaultSet.call(context, 'id_col');
+            defineVisitSet.call(context);
+            defineColumns.call(context);
+            transposeData.call(context);
+            update.call(context);
+            context.listing.data.raw = context.data.transposed;
+
+            //Redraw displays.
+            if (context.settings.active_tab === 'Charts') {
+                context.ordinalChart.draw();
+                context.linearChart.draw();
+            } else context.listing.draw();
+        });
     }
 
     function init(data) {
@@ -1455,10 +2002,13 @@
             sets: {}
         };
         checkRequiredVariables.call(this);
+        addVariables.call(this);
         defineSets.call(this);
         defineColumns.call(this);
         transposeData.call(this);
         addLegend.call(this);
+        this.ordinalChart.init(this.data.raw);
+        this.linearChart.init(this.data.raw);
         this.listing.init(this.data.transposed);
         update$1.call(this);
     }
@@ -1471,21 +2021,49 @@
             element: element,
             settings: {
                 user: settings,
-                renderer: configuration.rendererSettings(),
-                controls: configuration.controlsSettings()
+                controlsSettings: configuration.controlsSettings(),
+                listingSettings: configuration.listingSettings(),
+                ordinalChartSettings: configuration.ordinalChartSettings(),
+                linearChartSettings: configuration.linearChartSettings()
             },
             init: init
         };
 
         //Merge and sync user settings with default settings.
-        pvl.settings.rendererMerged = Object.assign(pvl.settings.renderer, pvl.settings.user);
-        configuration.syncSettings.call(pvl);
-        configuration.syncControls.call(pvl);
+        pvl.settings.listingMerged = Object.assign(
+            {},
+            pvl.settings.listingSettings,
+            pvl.settings.user
+        );
+        configuration.syncListingSettings.call(pvl);
+
+        pvl.settings.ordinalChartMerged = Object.assign(
+            {},
+            pvl.settings.ordinalChartSettings,
+            pvl.settings.user
+        );
+        configuration.syncOrdinalChartSettings.call(pvl);
+
+        pvl.settings.linearChartMerged = Object.assign(
+            {},
+            pvl.settings.linearChartSettings,
+            pvl.settings.user
+        );
+        configuration.syncLinearChartSettings.call(pvl);
+
+        pvl.settings.controlsMerged = Object.assign(
+            {},
+            pvl.settings.controlsSettings,
+            pvl.settings.user
+        );
+        configuration.syncControlsSettings.call(pvl);
 
         layout.call(pvl); // attaches containers object to central object ([pvl])
         styles.call(pvl); // attaches styles object to central object ([pvl])
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
         listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
+        ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
         return pvl;
     }

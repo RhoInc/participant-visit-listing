@@ -1,8 +1,6 @@
 export default function visit() {
     this.pvl.data.sets.visit_col.forEach(visit => {
-        const visit_data = this.pvl.data.raw.filter(
-            d => d[this.pvl.settings.visit_col] === visit
-        );
+        const visit_data = this.pvl.data.raw.filter(d => d[this.pvl.settings.visit_col] === visit);
         const visit_summary = d3
             .nest()
             .key(d => d[this.pvl.settings.visit_status_col])

@@ -15,5 +15,5 @@ export default {
     linearChartSettings,
     syncLinearChartSettings,
     controlsSettings,
-    syncControlsSettings,
+    syncControlsSettings
 };

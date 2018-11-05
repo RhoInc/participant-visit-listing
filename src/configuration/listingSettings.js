@@ -21,7 +21,12 @@ export default function listingSettings() {
         visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
+        active_tab: 'Charts',
         date_format: '%Y-%m-%d', // format of visit dates
+        chart_margin: {
+            top: 100,
+            bottom: 100
+        },
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
         pagination: false, // turn off pagination to view all IDs at the same time
         exports: ['xlsx', 'csv'] // default exports are to .xlsx and .csv

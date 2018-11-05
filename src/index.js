@@ -17,33 +17,33 @@ export default function participantVisitListing(element, settings = {}) {
             controlsSettings: configuration.controlsSettings(),
             listingSettings: configuration.listingSettings(),
             ordinalChartSettings: configuration.ordinalChartSettings(),
-            linearChartSettings: configuration.linearChartSettings(),
+            linearChartSettings: configuration.linearChartSettings()
         },
         init
     };
 
     //Merge and sync user settings with default settings.
-    pvl.settings.listingMerged = Object.assign({},
-        pvl.settings.listingSettings,
-        pvl.settings.user,
-    );
+    pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.user);
     configuration.syncListingSettings.call(pvl);
 
-    pvl.settings.ordinalChartMerged = Object.assign({},
+    pvl.settings.ordinalChartMerged = Object.assign(
+        {},
         pvl.settings.ordinalChartSettings,
-        pvl.settings.user,
+        pvl.settings.user
     );
     configuration.syncOrdinalChartSettings.call(pvl);
 
-    pvl.settings.linearChartMerged = Object.assign({},
+    pvl.settings.linearChartMerged = Object.assign(
+        {},
         pvl.settings.linearChartSettings,
-        pvl.settings.user,
+        pvl.settings.user
     );
     configuration.syncLinearChartSettings.call(pvl);
 
-    pvl.settings.controlsMerged = Object.assign({},
+    pvl.settings.controlsMerged = Object.assign(
+        {},
         pvl.settings.controlsSettings,
-        pvl.settings.user,
+        pvl.settings.user
     );
     configuration.syncControlsSettings.call(pvl);
 

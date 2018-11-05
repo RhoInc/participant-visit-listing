@@ -22,8 +22,8 @@ export default function init(data) {
     defineColumns.call(this);
     transposeData.call(this);
     addLegend.call(this);
-    this.listing.init(this.data.transposed);
     this.ordinalChart.init(this.data.raw);
     this.linearChart.init(this.data.raw);
+    this.listing.init(this.data.transposed);
     update.call(this);
 }

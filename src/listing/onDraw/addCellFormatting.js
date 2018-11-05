@@ -25,6 +25,10 @@ export default function addCellFormatting() {
                     `2px solid ${di.color === 'black' ? '#ccc' : di.color}`
                 ); // border-bottom
             if (!/black|white/.test(di.color)) cell.style('color', di.color); // color
+
+            //Italicize expected visits.
+            //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))
+            //    cell.style('font-style', 'italic');
         });
     });
 }

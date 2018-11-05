@@ -37,7 +37,7 @@ export default function layout() {
                         .data(['Charts', 'Listing'])
                         .enter()
                     .append('div')
-                    .attr('class', d => `pvl-tab pvl-tab--${d.toLowerCase()} ${d === 'Charts' ? 'pvl-tab--active' : ''}`)
+                    .attr('class', d => `pvl-tab pvl-tab--${d.toLowerCase()} ${d === this.settings.active_tab ? 'pvl-tab--active' : ''}`)
                     .text(d => d);
             this.containers.charts = this.containers.lowerRow
                 .append('div')

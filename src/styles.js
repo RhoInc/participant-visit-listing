@@ -136,11 +136,11 @@ export default function styles() {
                 '    display: inline-block;' +
                 '}',
                 '.pvl-chart--ordinal {' +
-                '    width: 33%;' +
+                '    width: 49.5%;' +
                 '    float: left;' +
                 '}',
                 '.pvl-chart--linear {' +
-                '    width: 66%;' +
+                '    width: 49.5%;' +
                 '    float: right;' +
                 '}',
                 '.pvl-chart .axis-title--top {' +

@@ -13,7 +13,7 @@ export default function listingSettings() {
         visit_status_col: 'visit_status',
         visit_status_order_col: 'visit_status_order',
         visit_text_col: 'visit_text',
-        visit_text_color_col: 'visit_status_color', // must be hex RGB
+        visit_text_color_col: 'visit_text_color', // must be hex RGB
         visit_status_description_col: 'visit_status_description',
         visit_expectation_pattern: '/expect|future|overdue/i',
         visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',

@@ -1,13 +1,15 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global.participantVisitListing = factory());
-}(this, (function () { 'use strict';
+(function(global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined'
+        ? (module.exports = factory())
+        : typeof define === 'function' && define.amd
+            ? define(factory)
+            : (global.participantVisitListing = factory());
+})(this, function() {
+    'use strict';
 
     if (typeof Object.assign != 'function') {
         Object.defineProperty(Object, 'assign', {
             value: function assign(target, varArgs) {
-
                 if (target == null) {
                     // TypeError if undefined or null
                     throw new TypeError('Cannot convert undefined or null to object');
@@ -165,16 +167,28 @@
         var settings = this.settings.listingMerged;
 
         //Convert visit_expectation_pattern from string to regular expression.
-        if (typeof settings.visit_expectation_pattern === 'string' && settings.visit_expectation_pattern !== '') {
+        if (
+            typeof settings.visit_expectation_pattern === 'string' &&
+            settings.visit_expectation_pattern !== ''
+        ) {
             var flags = settings.visit_expectation_pattern.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
-            var pattern = settings.visit_expectation_pattern.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1'); // capture regex pattern from beginning of regex string
+            var pattern = settings.visit_expectation_pattern.replace(
+                new RegExp('^/(.*?)/' + flags + '$'),
+                '$1'
+            ); // capture regex pattern from beginning of regex string
             settings.visit_expectation_regex = new RegExp(pattern, flags);
         }
 
         //Convert visit_exclusion_pattern from string to regular expression.
-        if (typeof settings.visit_exclusion_pattern === 'string' && settings.visit_exclusion_pattern !== '') {
+        if (
+            typeof settings.visit_exclusion_pattern === 'string' &&
+            settings.visit_exclusion_pattern !== ''
+        ) {
             var _flags = settings.visit_exclusion_pattern.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
-            var _pattern = settings.visit_exclusion_pattern.replace(new RegExp('^/(.*?)/' + _flags + '$'), '$1'); // capture regex pattern from beginning of regex string
+            var _pattern = settings.visit_exclusion_pattern.replace(
+                new RegExp('^/(.*?)/' + _flags + '$'),
+                '$1'
+            ); // capture regex pattern from beginning of regex string
             settings.visit_exclusion_regex = new RegExp(_pattern, _flags);
         }
 
@@ -197,28 +211,31 @@
                 range_band: 15,
                 behavior: 'flex'
             },
-            marks: [{
-                type: 'circle',
-                per: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
-                tooltip: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
-                radius: 5,
-                attributes: {
-                    'fill-opacity': 1
+            marks: [
+                {
+                    type: 'circle',
+                    per: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    radius: 5,
+                    attributes: {
+                        'fill-opacity': 1
+                    },
+                    values: {}
                 },
-                values: {}
-            }, {
-                type: 'circle',
-                per: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
-                tooltip: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
-                radius: 3,
-                attributes: {
-                    'fill-opacity': 1,
-                    fill: 'white'
-                },
-                values: {
-                    expected: [true]
+                {
+                    type: 'circle',
+                    per: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    radius: 3,
+                    attributes: {
+                        'fill-opacity': 1,
+                        fill: 'white'
+                    },
+                    values: {
+                        expected: [true]
+                    }
                 }
-            }],
+            ],
             color_by: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
             color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
             legend: {
@@ -251,10 +268,32 @@
         ordinalChartSettings.y.column = listingSettings.id_col;
         var circles = ordinalChartSettings.marks[0];
         circles.per = [listingSettings.id_col, listingSettings.visit_col];
-        circles.tooltip = "[" + listingSettings.id_col + "] - [" + listingSettings.visit_col + "] ([" + listingSettings.visit_date_col + "]: Day [" + listingSettings.visit_day_col + "]): [" + listingSettings.visit_status_col + "]";
+        circles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
         var expectedCircles = ordinalChartSettings.marks[1];
         expectedCircles.per = [listingSettings.id_col, listingSettings.visit_col];
-        expectedCircles.tooltip = "[" + listingSettings.id_col + "] - [" + listingSettings.visit_col + "] ([" + listingSettings.visit_date_col + "]: Day [" + listingSettings.visit_day_col + "]): [" + listingSettings.visit_status_col + "]";
+        expectedCircles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
         ordinalChartSettings.color_by = listingSettings.visit_status_col;
 
         //Assign settings to settings object.
@@ -295,13 +334,46 @@
         linearChartSettings.y.column = listingSettings.id_col;
         var circles = linearChartSettings.marks[0];
         circles.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        circles.tooltip = "[" + listingSettings.id_col + "] - [" + listingSettings.visit_col + "] ([" + listingSettings.visit_date_col + "]: Day [" + listingSettings.visit_day_col + "]): [" + listingSettings.visit_status_col + "]";
+        circles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
         var expectedCircles = linearChartSettings.marks[1];
         expectedCircles.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        expectedCircles.tooltip = "[" + listingSettings.id_col + "] - [" + listingSettings.visit_col + "] ([" + listingSettings.visit_date_col + "]: Day [" + listingSettings.visit_day_col + "]): [" + listingSettings.visit_status_col + "]";
+        expectedCircles.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
         var text = linearChartSettings.marks[2];
         text.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        text.tooltip = "[" + listingSettings.id_col + "] - [" + listingSettings.visit_col + "] ([" + listingSettings.visit_date_col + "]: Day [" + listingSettings.visit_day_col + "]): [" + listingSettings.visit_status_col + "]";
+        text.tooltip =
+            '[' +
+            listingSettings.id_col +
+            '] - [' +
+            listingSettings.visit_col +
+            '] ([' +
+            listingSettings.visit_date_col +
+            ']: Day [' +
+            listingSettings.visit_day_col +
+            ']): [' +
+            listingSettings.visit_status_col +
+            ']';
         linearChartSettings.color_by = listingSettings.visit_status_col;
 
         //Assign settings to settings object.
@@ -310,15 +382,18 @@
 
     function controlsSettings() {
         return {
-            inputs: [{
-                type: 'subsetter',
-                value_col: null,
-                label: 'Site'
-            }, {
-                type: 'subsetter',
-                value_col: null,
-                label: 'Participant Status'
-            }]
+            inputs: [
+                {
+                    type: 'subsetter',
+                    value_col: null,
+                    label: 'Site'
+                },
+                {
+                    type: 'subsetter',
+                    value_col: null,
+                    label: 'Participant Status'
+                }
+            ]
         };
     }
 
@@ -327,13 +402,13 @@
         var controlsSettings = this.settings.controlsMerged;
 
         //Sync site filter.
-        var siteFilter = controlsSettings.inputs.find(function (control) {
+        var siteFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Site';
         });
         siteFilter.value_col = listingSettings.site_col;
 
         //Sync ID status filter.
-        var idStatusFilter = controlsSettings.inputs.find(function (control) {
+        var idStatusFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Participant Status';
         });
         idStatusFilter.value_col = listingSettings.id_status_col;
@@ -346,7 +421,7 @@
                 subset3: 'Analysis Subset 3',
                 overdue2: '>1 Overdue Visits'
             };
-            listingSettings.filter_cols.forEach(function (filter_col) {
+            listingSettings.filter_cols.forEach(function(filter_col) {
                 controlsSettings.inputs.push({
                     type: 'subsetter',
                     label: labels[filter_col] || filter_col,
@@ -373,7 +448,7 @@
     function addTabFunctionality() {
         var context = this;
 
-        this.containers.tabs.on('click', function (d) {
+        this.containers.tabs.on('click', function(d) {
             context.settings.active_tab = d;
             var tab = d3.select(this);
             var active = tab.classed('pvl-tab--active');
@@ -397,32 +472,65 @@
         var _this = this;
 
         this.containers = {
-            main: d3.select(this.element).append('div').classed('participant-visit-listing', true).attr('id', 'participant-visit-listing' + (d3.selectAll('.participant-visit-listing').size() + 1))
+            main: d3
+                .select(this.element)
+                .append('div')
+                .classed('participant-visit-listing', true)
+                .attr(
+                    'id',
+                    'participant-visit-listing' +
+                        (d3.selectAll('.participant-visit-listing').size() + 1)
+                )
         };
 
         /**-------------------------------------------------------------------------------------------\
           Upper row
         \-------------------------------------------------------------------------------------------**/
 
-        this.containers.upperRow = this.containers.main.append('div').classed('pvl-row pvl-row--upper', true);
-        this.containers.controls = this.containers.upperRow.append('div').classed('pvl-controls', true);
+        this.containers.upperRow = this.containers.main
+            .append('div')
+            .classed('pvl-row pvl-row--upper', true);
+        this.containers.controls = this.containers.upperRow
+            .append('div')
+            .classed('pvl-controls', true);
         this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
 
         /**-------------------------------------------------------------------------------------------\
           Lower row
         \-------------------------------------------------------------------------------------------**/
 
-        this.containers.lowerRow = this.containers.main.append('div').classed('pvl-row pvl-row--lower', true);
-        this.containers.tabContainer = this.containers.lowerRow.append('div').classed('pvl-tabs', true);
-        this.containers.tabs = this.containers.tabContainer.selectAll('div').data(['Charts', 'Listing']).enter().append('div').attr('class', function (d) {
-            return 'pvl-tab pvl-tab--' + d.toLowerCase() + ' ' + (d === _this.settings.active_tab ? 'pvl-tab--active' : '');
-        }).text(function (d) {
-            return d;
-        });
+        this.containers.lowerRow = this.containers.main
+            .append('div')
+            .classed('pvl-row pvl-row--lower', true);
+        this.containers.tabContainer = this.containers.lowerRow
+            .append('div')
+            .classed('pvl-tabs', true);
+        this.containers.tabs = this.containers.tabContainer
+            .selectAll('div')
+            .data(['Charts', 'Listing'])
+            .enter()
+            .append('div')
+            .attr('class', function(d) {
+                return (
+                    'pvl-tab pvl-tab--' +
+                    d.toLowerCase() +
+                    ' ' +
+                    (d === _this.settings.active_tab ? 'pvl-tab--active' : '')
+                );
+            })
+            .text(function(d) {
+                return d;
+            });
         this.containers.charts = this.containers.lowerRow.append('div').classed('pvl-charts', true);
-        this.containers.ordinalChart = this.containers.charts.append('div').classed('pvl-chart pvl-chart--ordinal', true);
-        this.containers.linearChart = this.containers.charts.append('div').classed('pvl-chart pvl-chart--linear', true);
-        this.containers.listing = this.containers.lowerRow.append('div').classed('pvl-listing', true);
+        this.containers.ordinalChart = this.containers.charts
+            .append('div')
+            .classed('pvl-chart pvl-chart--ordinal', true);
+        this.containers.linearChart = this.containers.charts
+            .append('div')
+            .classed('pvl-chart pvl-chart--linear', true);
+        this.containers.listing = this.containers.lowerRow
+            .append('div')
+            .classed('pvl-listing', true);
 
         /**-------------------------------------------------------------------------------------------\
           Functionality
@@ -432,89 +540,240 @@
     }
 
     function styles() {
-      this.styles = ['body {' + '}', '.participant-visit-listing {' + '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' + '    font-size: 16px;' + '    line-height: normal;' + '}', '.pvl-hidden {' + '    display: none !important;' + '}', '.participant-visit-listing > * {' + '    width: 100%;' + '    display: inline-block;' + '}',
+        this.styles = [
+            'body {' + '}',
+            '.participant-visit-listing {' +
+                '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' +
+                '    font-size: 16px;' +
+                '    line-height: normal;' +
+                '}',
+            '.pvl-hidden {' + '    display: none !important;' + '}',
+            '.participant-visit-listing > * {' +
+                '    width: 100%;' +
+                '    display: inline-block;' +
+                '}',
 
-      /***--------------------------------------------------------------------------------------\
+            /***--------------------------------------------------------------------------------------\
         Upper row
       \--------------------------------------------------------------------------------------***/
 
-      '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}', '.pvl-row--upper > * {' + '    vertical-align: bottom;' + '    display: inline-block;' + '}',
+            '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}',
+            '.pvl-row--upper > * {' +
+                '    vertical-align: bottom;' +
+                '    display: inline-block;' +
+                '}',
 
-      /****---------------------------------------------------------------------------------\
+            /****---------------------------------------------------------------------------------\
         Legend
       \---------------------------------------------------------------------------------****/
 
-      '.pvl-legend {' + '    width: 44%;' + '    float: left;' + '    padding-top: 16px;' + '}', '.pvl-legend__ul {' + '    list-style-type: none;' + '    margin: 0;' + '    padding: 0;' + '    overflow: hidden;' + '}', '.pvl-legend__li {' + '    float: left;' + '    margin-right: 1%;' + '    width: 24%;' + '    text-align: center;' + '}', '.pvl-legend-item-info-icon {' + '    margin-left: 4px;' + '    font-weight: bold;' + '    cursor: help;' + '}',
+            '.pvl-legend {' +
+                '    width: 44%;' +
+                '    float: left;' +
+                '    padding-top: 16px;' +
+                '}',
+            '.pvl-legend__ul {' +
+                '    list-style-type: none;' +
+                '    margin: 0;' +
+                '    padding: 0;' +
+                '    overflow: hidden;' +
+                '}',
+            '.pvl-legend__li {' +
+                '    float: left;' +
+                '    margin-right: 1%;' +
+                '    width: 24%;' +
+                '    text-align: center;' +
+                '}',
+            '.pvl-legend-item-info-icon {' +
+                '    margin-left: 4px;' +
+                '    font-weight: bold;' +
+                '    cursor: help;' +
+                '}',
 
-      /****---------------------------------------------------------------------------------\
+            /****---------------------------------------------------------------------------------\
         Controls
       \---------------------------------------------------------------------------------****/
 
-      '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}', '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}', '.pvl-controls .wc-controls .control-group {' + '    margin-bottom: 0;' + '    width: 125px;' + '}', '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}', '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}', '.pvl-controls .wc-controls .control-group .wc-control-label {' + '    margin-right: 5px;' + '    text-align: right;' + '}',
+            '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}',
+            '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group {' +
+                '    margin-bottom: 0;' +
+                '    width: 125px;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
+            '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
+            '.pvl-controls .wc-controls .control-group .wc-control-label {' +
+                '    margin-right: 5px;' +
+                '    text-align: right;' +
+                '}',
 
-      /***--------------------------------------------------------------------------------------\
+            /***--------------------------------------------------------------------------------------\
         Lower row
       \--------------------------------------------------------------------------------------***/
 
-      '.pvl-row--lower {' + '}', '.pvl-row--lower > * {' + '}',
+            '.pvl-row--lower {' + '}',
+            '.pvl-row--lower > * {' + '}',
 
-      /****---------------------------------------------------------------------------------\
+            /****---------------------------------------------------------------------------------\
         Tabs
       \---------------------------------------------------------------------------------****/
 
-      '.pvl-tabs {' + '    text-align: center;' + '    border-top: 1px solid lightgray;' + '    border-bottom: 1px solid lightgray;' + '    padding: 6px 0;' + '}', '.pvl-tab {' + '    display: inline-block;' + '    border: 2px solid black;' + '    border-radius: 6px;' + '    padding: 1px 24px;' + '    font-size: 20px;' + '    margin: 0 2px;' + '    color: black;' + '    background: white;' + '    cursor: pointer;' + '    font-weight: normal;' + '}', '.pvl-tab--active {' + '    color: white;' + '    background: black;' + '    font-weight: bold;' + '    cursor: default;' + '}', '.pvl-tab:hover {' + '    color: white;' + '    background: black;' + '    font-weight: bold;' + '}',
+            '.pvl-tabs {' +
+                '    text-align: center;' +
+                '    border-top: 1px solid lightgray;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    padding: 6px 0;' +
+                '}',
+            '.pvl-tab {' +
+                '    display: inline-block;' +
+                '    border: 2px solid black;' +
+                '    border-radius: 6px;' +
+                '    padding: 1px 24px;' +
+                '    font-size: 20px;' +
+                '    margin: 0 2px;' +
+                '    color: black;' +
+                '    background: white;' +
+                '    cursor: pointer;' +
+                '    font-weight: normal;' +
+                '}',
+            '.pvl-tab--active {' +
+                '    color: white;' +
+                '    background: black;' +
+                '    font-weight: bold;' +
+                '    cursor: default;' +
+                '}',
+            '.pvl-tab:hover {' +
+                '    color: white;' +
+                '    background: black;' +
+                '    font-weight: bold;' +
+                '}',
 
-      /****---------------------------------------------------------------------------------\
+            /****---------------------------------------------------------------------------------\
         Charts
       \---------------------------------------------------------------------------------****/
 
-      '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}', '.pvl-chart {' + '    display: inline-block;' + '}', '.pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}', '.pvl-chart--linear {' + '    width: 49.5%;' + '    float: right;' + '}', '.pvl-chart .axis-title--top {' + '    font-size: 16px;' + '    font-weight: bold;' + '}' +
-
-      /****---------------------------------------------------------------------------------\
+            '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}',
+            '.pvl-chart {' + '    display: inline-block;' + '}',
+            '.pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}',
+            '.pvl-chart--linear {' + '    width: 49.5%;' + '    float: right;' + '}',
+            '.pvl-chart .axis-title--top {' +
+                '    font-size: 16px;' +
+                '    font-weight: bold;' +
+                '}' +
+                /****---------------------------------------------------------------------------------\
         Listing
       \---------------------------------------------------------------------------------****/
 
-      '.pvl-listing {' + '}', '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}', '.pvl-listing .wc-table table {' + '    display: table;' + '    border: 0;' + '    border-collapse: collapse;' + '    min-width: 100%;' + '}',
+                '.pvl-listing {' +
+                '}',
+            '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+            '.pvl-listing .wc-table table {' +
+                '    display: table;' +
+                '    border: 0;' +
+                '    border-collapse: collapse;' +
+                '    min-width: 100%;' +
+                '}',
 
-      /*****----------------------------------------------------------------------------\
+            /*****----------------------------------------------------------------------------\
         thead
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table thead {' + '}', '.pvl-listing .wc-table table thead tr:after {' + '    content: "";' + '    overflow-y: scroll;' + '    visibility: hidden;' + '    height: 0;' + '}', '.pvl-listing .wc-table table thead tr th {' + '    flex: 1 auto;' + '    display: block;' + '    border-top: 2px solid white;' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}',
+            '.pvl-listing .wc-table table thead {' + '}',
+            '.pvl-listing .wc-table table thead tr:after {' +
+                '    content: "";' +
+                '    overflow-y: scroll;' +
+                '    visibility: hidden;' +
+                '    height: 0;' +
+                '}',
+            '.pvl-listing .wc-table table thead tr th {' +
+                '    flex: 1 auto;' +
+                '    display: block;' +
+                '    border-top: 2px solid white;' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
 
-      /*****----------------------------------------------------------------------------\
+            /*****----------------------------------------------------------------------------\
         tbody
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table tbody {' + '    display: block;' + '    width: 100%;' + '    overflow-y: auto;' + '    height: 66vh;' + '}', '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '    flex: 1 auto;' + '    word-wrap: break-word;' + '}', '.pvl-listing .wc-table table tr:nth-child(odd) td {' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}', '.pvl-listing .wc-table table tr:nth-child(even) td {' + '    border-right: 2px solid #eee;' + '    border-left: 2px solid #eee;' + '}', '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}', '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' + '    font-weight: bold;' + '}',
+            '.pvl-listing .wc-table table tbody {' +
+                '    display: block;' +
+                '    width: 100%;' +
+                '    overflow-y: auto;' +
+                '    height: 66vh;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr td {' +
+                '    cursor: default;' +
+                '    flex: 1 auto;' +
+                '    word-wrap: break-word;' +
+                '}',
+            '.pvl-listing .wc-table table tr:nth-child(odd) td {' +
+                '    border-right: 2px solid white;' +
+                '    border-left: 2px solid white;' +
+                '}',
+            '.pvl-listing .wc-table table tr:nth-child(even) td {' +
+                '    border-right: 2px solid #eee;' +
+                '    border-left: 2px solid #eee;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}',
+            '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' +
+                '    font-weight: bold;' +
+                '}',
 
-      /*****----------------------------------------------------------------------------\
+            /*****----------------------------------------------------------------------------\
         t-agnostic
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}', '.pvl-listing .wc-table table th,' + '.pvl-listing .wc-table table td {' + '    flex: 1 auto;' + '    width: 100px;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover,' + '.pvl-listing .wc-table table tr td.pvl-header-hover {' + '    border-right: 2px solid #aaa;' + '    border-left: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover {' + '    border-top: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' + '    border-bottom: 2px solid #aaa !important;' + '}'];
+            '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}',
+            '.pvl-listing .wc-table table th,' +
+                '.pvl-listing .wc-table table td {' +
+                '    flex: 1 auto;' +
+                '    width: 100px;' +
+                '}',
+            '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                '    border-right: 2px solid #aaa;' +
+                '    border-left: 2px solid #aaa;' +
+                '}',
+            '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                '    border-top: 2px solid #aaa;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                '    border-bottom: 2px solid #aaa !important;' +
+                '}'
+        ];
 
-      //Attach styles to DOM.
-      this.style = document.createElement('style');
-      this.style.type = 'text/css';
-      this.style.innerHTML = this.styles.join('\n');
-      document.getElementsByTagName('head')[0].appendChild(this.style);
-      this.containers.style = d3.select(this.style);
+        //Attach styles to DOM.
+        this.style = document.createElement('style');
+        this.style.type = 'text/css';
+        this.style.innerHTML = this.styles.join('\n');
+        document.getElementsByTagName('head')[0].appendChild(this.style);
+        this.containers.style = d3.select(this.style);
     }
 
     function update() {
         var _this = this;
 
-        var denominator = this.data.filtered.filter(function (d) {
-            return _this.data.sets.legend.map(function (d) {
-                return d.split(':|:')[1];
-            }).indexOf(d[_this.settings.visit_status_col]) > -1;
+        var denominator = this.data.filtered.filter(function(d) {
+            return (
+                _this.data.sets.legend
+                    .map(function(d) {
+                        return d.split(':|:')[1];
+                    })
+                    .indexOf(d[_this.settings.visit_status_col]) > -1
+            );
         }).length;
-        this.containers.legendItems.select('.pvl-legend-item-label').text(function (d) {
-            var numerator = _this.data.filtered.filter(function (di) {
+        this.containers.legendItems.select('.pvl-legend-item-label').text(function(d) {
+            var numerator = _this.data.filtered.filter(function(di) {
                 return di[_this.settings.visit_status_col] === d[1];
             }).length;
-            return d[1] + ' (' + (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') + ')';
+            return (
+                d[1] +
+                ' (' +
+                (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') +
+                ')'
+            );
         });
     }
 
@@ -522,13 +781,16 @@
         var context = this;
 
         //Define controls.
-        this.controls = new webCharts.createControls(this.containers.controls.node(), this.settings.controlsSynced);
+        this.controls = new webCharts.createControls(
+            this.containers.controls.node(),
+            this.settings.controlsSynced
+        );
 
         //Update legend when controls change.
-        this.controls.wrap.on('change', function (d) {
+        this.controls.wrap.on('change', function(d) {
             context.data.filtered = context.data.raw;
-            context.listing.filters.forEach(function (filter) {
-                context.data.filtered = context.data.filtered.filter(function (d) {
+            context.listing.filters.forEach(function(filter) {
+                context.data.filtered = context.data.filtered.filter(function(d) {
                     return filter.val === 'All' || d[filter.col] === filter.val;
                 });
             });
@@ -542,38 +804,62 @@
 
     function onLayout() {
         this.config.sortable = false;
-        if (this.pvl.settings.active_tab === 'Charts') this.pvl.containers.listing.classed('pvl-hidden', true);
+        if (this.pvl.settings.active_tab === 'Charts')
+            this.pvl.containers.listing.classed('pvl-hidden', true);
+        if (window.jsPDF)
+            this.exportable.wrap
+                .insert('a', '#csv')
+                .classed('wc-button export', true)
+                .attr('id', 'pdf')
+                .text('PDF');
     }
 
     function onPreprocess() {}
 
     function addHeaderHover() {
         //Highlight column when hovering over column header.
-        this.thead.selectAll('th').on('mouseover', function (d, i) {
-            d3.select(this).classed('pvl-header-hover', true);
-            d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', true);
-        }).on('mouseout', function (d, i) {
-            d3.select(this).classed('pvl-header-hover', false);
-            d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', false);
-        });
+        this.thead
+            .selectAll('th')
+            .on('mouseover', function(d, i) {
+                d3.select(this).classed('pvl-header-hover', true);
+                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', true);
+            })
+            .on('mouseout', function(d, i) {
+                d3.select(this).classed('pvl-header-hover', false);
+                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', false);
+            });
     }
 
     function addCellFormatting() {
         var context = this;
 
-        this.tbody.selectAll('tr').each(function (d, i) {
+        this.tbody.selectAll('tr').each(function(d, i) {
             var row = d3.select(this);
 
-            row.selectAll('td:nth-child(n+4)').each(function (di, j) {
+            row.selectAll('td:nth-child(n+4)').each(function(di, j) {
                 var cell = d3.select(this).classed('pvl-emboldened', /\d\d/.test(di.text));
                 di.date = d[di.col + '-date'];
 
                 //Add tooltip to cells.
-                if (d[di.col] !== null) cell.attr('title', d[context.pvl.settings.id_col] + ' - ' + di.col + ' (' + di.date + '): ' + d[di.col + '-status']);
+                if (d[di.col] !== null)
+                    cell.attr(
+                        'title',
+                        d[context.pvl.settings.id_col] +
+                            ' - ' +
+                            di.col +
+                            ' (' +
+                            di.date +
+                            '): ' +
+                            d[di.col + '-status']
+                    );
 
                 //Apply cell formmating.
                 di.color = (d[di.col + '-color'] || 'white').toLowerCase();
-                if (!/white/.test(di.color)) cell.style('border-bottom', '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)); // border-bottom
+                if (!/white/.test(di.color))
+                    cell.style(
+                        'border-bottom',
+                        '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
+                    ); // border-bottom
                 if (!/black|white/.test(di.color)) cell.style('color', di.color); // color
 
                 //Italicize expected visits.
@@ -587,39 +873,62 @@
         var _this = this;
 
         // create dictionary of id columns
-        var idDict = d3.nest().key(function (d) {
-            return d[_this.pvl.settings.id_col];
-        }).rollup(function (d) {
-            return d;
-        }).map(this.pvl.data.raw);
+        var idDict = d3
+            .nest()
+            .key(function(d) {
+                return d[_this.pvl.settings.id_col];
+            })
+            .rollup(function(d) {
+                return d;
+            })
+            .map(this.pvl.data.raw);
 
         // get all the cells
         var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
 
         // create ditionary of table cells
-        var cellDict = cells.size() ? d3.nest().key(function (d) {
-            return d[0].__data__.text;
-        }).rollup(function (d) {
-            return d[0];
-        }).map(cells) : [];
+        var cellDict = cells.size()
+            ? d3
+                  .nest()
+                  .key(function(d) {
+                      return d[0].__data__.text;
+                  })
+                  .rollup(function(d) {
+                      return d[0];
+                  })
+                  .map(cells)
+            : [];
 
         // get ids
-        var id_cols = d3.set(this.data.raw.map(function (d) {
-            return d[_this.pvl.settings.id_col];
-        })).values();
+        var id_cols = d3
+            .set(
+                this.data.raw.map(function(d) {
+                    return d[_this.pvl.settings.id_col];
+                })
+            )
+            .values();
 
-        id_cols.forEach(function (id) {
+        id_cols.forEach(function(id) {
             var id_data = idDict[id];
             var id_cell = cellDict[id];
             if (id_data && id_cell) {
-                var id_summary = d3.nest().key(function (d) {
-                    return d[_this.pvl.settings.visit_status_col];
-                }).rollup(function (d) {
-                    return d3.format('%')(d.length / id_data.length);
-                }).entries(id_data);
-                d3.select(id_cell[0]).attr('title', id_summary.map(function (status) {
-                    return status.key + ' (' + status.values + ')';
-                }).join('\n'));
+                var id_summary = d3
+                    .nest()
+                    .key(function(d) {
+                        return d[_this.pvl.settings.visit_status_col];
+                    })
+                    .rollup(function(d) {
+                        return d3.format('%')(d.length / id_data.length);
+                    })
+                    .entries(id_data);
+                d3.select(id_cell[0]).attr(
+                    'title',
+                    id_summary
+                        .map(function(status) {
+                            return status.key + ' (' + status.values + ')';
+                        })
+                        .join('\n')
+                );
             }
         });
     }
@@ -627,21 +936,33 @@
     function visit() {
         var _this = this;
 
-        this.pvl.data.sets.visit_col.forEach(function (visit) {
-            var visit_data = _this.pvl.data.raw.filter(function (d) {
+        this.pvl.data.sets.visit_col.forEach(function(visit) {
+            var visit_data = _this.pvl.data.raw.filter(function(d) {
                 return d[_this.pvl.settings.visit_col] === visit;
             });
-            var visit_summary = d3.nest().key(function (d) {
-                return d[_this.pvl.settings.visit_status_col];
-            }).rollup(function (d) {
-                return d3.format('%')(d.length / visit_data.length);
-            }).entries(visit_data);
-            var visit_cell = _this.table.selectAll('thead tr').selectAll('th:not(:first-child)').filter(function (d) {
-                return d === visit;
-            });
-            visit_cell.attr('title', visit_summary.map(function (status) {
-                return status.key + ' (' + status.values + ')';
-            }).join('\n'));
+            var visit_summary = d3
+                .nest()
+                .key(function(d) {
+                    return d[_this.pvl.settings.visit_status_col];
+                })
+                .rollup(function(d) {
+                    return d3.format('%')(d.length / visit_data.length);
+                })
+                .entries(visit_data);
+            var visit_cell = _this.table
+                .selectAll('thead tr')
+                .selectAll('th:not(:first-child)')
+                .filter(function(d) {
+                    return d === visit;
+                });
+            visit_cell.attr(
+                'title',
+                visit_summary
+                    .map(function(status) {
+                        return status.key + ' (' + status.values + ')';
+                    })
+                    .join('\n')
+            );
         });
     }
 
@@ -653,18 +974,24 @@
     function sortData(data) {
         var _this = this;
 
-        this.data.raw = this.data.raw.sort(function (a, b) {
+        this.data.raw = this.data.raw.sort(function(a, b) {
             var order = 0;
 
-            _this.sortable.order.forEach(function (item) {
+            _this.sortable.order.forEach(function(item) {
                 var aCell = a[item.col + '-date'] ? a[item.col + '-date'] : a[item.col];
                 var bCell = b[item.col + '-date'] ? b[item.col + '-date'] : b[item.col];
 
                 if (order === 0) {
                     if (aCell !== null && bCell !== null) {
-                        if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) {
+                        if (
+                            (item.direction === 'ascending' && aCell < bCell) ||
+                            (item.direction === 'descending' && aCell > bCell)
+                        ) {
                             order = -1;
-                        } else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) {
+                        } else if (
+                            (item.direction === 'ascending' && aCell > bCell) ||
+                            (item.direction === 'descending' && aCell < bCell)
+                        ) {
                             order = 1;
                         }
                     } else if (['', null].indexOf(aCell) > -1) {
@@ -685,7 +1012,7 @@
             col = this.config.cols[this.config.headers.indexOf(header)];
 
         //Check if column is already a part of current sort order.
-        var sortItem = this.sortable.order.filter(function (item) {
+        var sortItem = this.sortable.order.filter(function(item) {
             return item.col === col;
         })[0];
 
@@ -694,36 +1021,56 @@
             sortItem = {
                 col: col,
                 direction: 'ascending',
-                wrap: this.sortable.wrap.append('div').datum({ key: col }).classed('wc-button sort-box', true).text(header)
+                wrap: this.sortable.wrap
+                    .append('div')
+                    .datum({ key: col })
+                    .classed('wc-button sort-box', true)
+                    .text(header)
             };
-            sortItem.wrap.append('span').classed('sort-direction', true).html('&darr;');
-            sortItem.wrap.append('span').classed('remove-sort', true).html('&#10060;');
+            sortItem.wrap
+                .append('span')
+                .classed('sort-direction', true)
+                .html('&darr;');
+            sortItem.wrap
+                .append('span')
+                .classed('remove-sort', true)
+                .html('&#10060;');
             this.sortable.order.push(sortItem);
         } else {
             //Otherwise reverse its sort direction.
             sortItem.direction = sortItem.direction === 'ascending' ? 'descending' : 'ascending';
-            sortItem.wrap.select('span.sort-direction').html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
+            sortItem.wrap
+                .select('span.sort-direction')
+                .html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
         }
 
         //Hide sort instructions.
         this.sortable.wrap.select('.instruction').classed('hidden', true);
 
         //Add sort container deletion functionality.
-        this.sortable.order.forEach(function (item, i) {
-            item.wrap.on('click', function (d) {
+        this.sortable.order.forEach(function(item, i) {
+            item.wrap.on('click', function(d) {
                 //Remove column's sort container.
                 d3.select(this).remove();
 
                 //Remove column from sort.
-                context.sortable.order.splice(context.sortable.order.map(function (d) {
-                    return d.col;
-                }).indexOf(d.key), 1);
+                context.sortable.order.splice(
+                    context.sortable.order
+                        .map(function(d) {
+                            return d.col;
+                        })
+                        .indexOf(d.key),
+                    1
+                );
 
                 //Display sorting instruction.
-                context.sortable.wrap.select('.instruction').classed('hidden', context.sortable.order.length);
+                context.sortable.wrap
+                    .select('.instruction')
+                    .classed('hidden', context.sortable.order.length);
 
                 //Redraw chart.
-                if (context.sortable.order.length) sortData.call(context);else context.data.raw = context.data.initial.slice();
+                if (context.sortable.order.length) sortData.call(context);
+                else context.data.raw = context.data.initial.slice();
                 context.draw();
             });
         });
@@ -736,7 +1083,7 @@
     function sortChronologically() {
         var context = this;
 
-        this.thead_cells.on('click', function (header) {
+        this.thead_cells.on('click', function(header) {
             onClick.call(context, this, header);
         });
     }
@@ -798,17 +1145,26 @@
         ws[cell_ref] = cell;
     }
 
-    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-      return typeof obj;
-    } : function (obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
 
     function clone(obj) {
         var copy = void 0;
 
         //boolean, number, string, null, undefined
-        if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj) return obj;
+        if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj)
+            return obj;
 
         //date
         if (obj instanceof Date) {
@@ -850,20 +1206,27 @@
             type: 'binary'
         };
 
-        var filterRange = 'A1:' + String.fromCharCode(64 + listing.config.cols.length) + (listing.data.filtered.length + 1);
+        var filterRange =
+            'A1:' +
+            String.fromCharCode(64 + listing.config.cols.length) +
+            (listing.data.filtered.length + 1);
 
         //Header row
-        listing.config.headers.forEach(function (header, col) {
+        listing.config.headers.forEach(function(header, col) {
             addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
         });
 
         //Data rows
-        listing.data.filtered.forEach(function (d, row) {
-            listing.config.cols.forEach(function (variable, col) {
+        listing.data.filtered.forEach(function(d, row) {
+            listing.config.cols.forEach(function(variable, col) {
                 var cellStyle = clone(bodyStyle);
                 var color = d[variable + '-color'];
-                var fontColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FF000000';
-                var borderColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FFCCCCCC';
+                var fontColor = /^#[a-z0-9]{6}$/i.test(color)
+                    ? color.replace('#', 'FF')
+                    : 'FF000000';
+                var borderColor = /^#[a-z0-9]{6}$/i.test(color)
+                    ? color.replace('#', 'FF')
+                    : 'FFCCCCCC';
                 if (col > 2) {
                     cellStyle.font.color.rgb = fontColor;
                     cellStyle.border.bottom.color.rgb = borderColor;
@@ -876,13 +1239,14 @@
         });
 
         //Define column widths.
-        var tr = listing.tbody.selectAll('tr')
-        //.filter(function() {
-        //    return d3.select(this).style('display') === 'table-row'; })
-        .filter(function (d, i) {
-            return i === 0;
-        });
-        tr.selectAll('td').each(function (d, i) {
+        var tr = listing.tbody
+            .selectAll('tr')
+            //.filter(function() {
+            //    return d3.select(this).style('display') === 'table-row'; })
+            .filter(function(d, i) {
+                return i === 0;
+            });
+        tr.selectAll('td').each(function(d, i) {
             cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
         });
 
@@ -912,187 +1276,205 @@
 
     /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
 
-    var saveAs = saveAs || function (view) {
-        // IE <10 is explicitly unsupported
+    var saveAs =
+        saveAs ||
+        (function(view) {
+            // IE <10 is explicitly unsupported
 
-        if (typeof view === 'undefined' || typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent)) {
-            return;
-        }
-        var doc = view.document,
-
-        // only get URL when necessary in case Blob.js hasn't overridden it yet
-        get_URL = function get_URL() {
-            return view.URL || view.webkitURL || view;
-        },
-            save_link = doc.createElementNS('http://www.w3.org/1999/xhtml', 'a'),
-            can_use_save_link = 'download' in save_link,
-            click = function click(node) {
-            var event = new MouseEvent('click');
-            node.dispatchEvent(event);
-        },
-            is_safari = /constructor/i.test(view.HTMLElement) || view.safari,
-            is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent),
-            setImmediate = view.setImmediate || view.setTimeout,
-            throw_outside = function throw_outside(ex) {
-            setImmediate(function () {
-                throw ex;
-            }, 0);
-        },
-            force_saveable_type = 'application/octet-stream',
-
-        // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-        arbitrary_revoke_timeout = 1000 * 40,
-            // in ms
-        revoke = function revoke(file) {
-            var revoker = function revoker() {
-                if (typeof file === 'string') {
-                    // file is an object URL
-                    get_URL().revokeObjectURL(file);
-                } else {
-                    // file is a File
-                    file.remove();
-                }
-            };
-            setTimeout(revoker, arbitrary_revoke_timeout);
-        },
-            dispatch = function dispatch(filesaver, event_types, event) {
-            event_types = [].concat(event_types);
-            var i = event_types.length;
-            while (i--) {
-                var listener = filesaver['on' + event_types[i]];
-                if (typeof listener === 'function') {
-                    try {
-                        listener.call(filesaver, event || filesaver);
-                    } catch (ex) {
-                        throw_outside(ex);
-                    }
-                }
-            }
-        },
-            auto_bom = function auto_bom(blob) {
-            // prepend BOM for UTF-8 XML and text/* types (including HTML)
-            // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
-            if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
-                return new Blob([String.fromCharCode(0xfeff), blob], { type: blob.type });
-            }
-            return blob;
-        },
-            FileSaver = function FileSaver(blob, name, no_auto_bom) {
-            if (!no_auto_bom) {
-                blob = auto_bom(blob);
-            }
-            // First try a.download, then web filesystem, then object URLs
-            var filesaver = this,
-                type = blob.type,
-                force = type === force_saveable_type,
-                object_url,
-                dispatch_all = function dispatch_all() {
-                dispatch(filesaver, 'writestart progress write writeend'.split(' '));
-            },
-
-            // on any filesys errors revert to saving with object URLs
-            fs_error = function fs_error() {
-                if ((is_chrome_ios || force && is_safari) && view.FileReader) {
-                    // Safari doesn't allow downloading of blob urls
-                    var reader = new FileReader();
-                    reader.onloadend = function () {
-                        var url = is_chrome_ios ? reader.result : reader.result.replace(/^data:[^;]*;/, 'data:attachment/file;');
-                        var popup = view.open(url, '_blank');
-                        if (!popup) view.location.href = url;
-                        url = undefined; // release reference before dispatching
-                        filesaver.readyState = filesaver.DONE;
-                        dispatch_all();
-                    };
-                    reader.readAsDataURL(blob);
-                    filesaver.readyState = filesaver.INIT;
-                    return;
-                }
-                // don't create more object URLs than needed
-                if (!object_url) {
-                    object_url = get_URL().createObjectURL(blob);
-                }
-                if (force) {
-                    view.location.href = object_url;
-                } else {
-                    var opened = view.open(object_url, '_blank');
-                    if (!opened) {
-                        // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
-                        view.location.href = object_url;
-                    }
-                }
-                filesaver.readyState = filesaver.DONE;
-                dispatch_all();
-                revoke(object_url);
-            };
-            filesaver.readyState = filesaver.INIT;
-
-            if (can_use_save_link) {
-                object_url = get_URL().createObjectURL(blob);
-                setImmediate(function () {
-                    save_link.href = object_url;
-                    save_link.download = name;
-                    click(save_link);
-                    dispatch_all();
-                    revoke(object_url);
-                    filesaver.readyState = filesaver.DONE;
-                }, 0);
+            if (
+                typeof view === 'undefined' ||
+                (typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent))
+            ) {
                 return;
             }
+            var doc = view.document,
+                // only get URL when necessary in case Blob.js hasn't overridden it yet
+                get_URL = function get_URL() {
+                    return view.URL || view.webkitURL || view;
+                },
+                save_link = doc.createElementNS('http://www.w3.org/1999/xhtml', 'a'),
+                can_use_save_link = 'download' in save_link,
+                click = function click(node) {
+                    var event = new MouseEvent('click');
+                    node.dispatchEvent(event);
+                },
+                is_safari = /constructor/i.test(view.HTMLElement) || view.safari,
+                is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent),
+                setImmediate = view.setImmediate || view.setTimeout,
+                throw_outside = function throw_outside(ex) {
+                    setImmediate(function() {
+                        throw ex;
+                    }, 0);
+                },
+                force_saveable_type = 'application/octet-stream',
+                // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
+                arbitrary_revoke_timeout = 1000 * 40,
+                // in ms
+                revoke = function revoke(file) {
+                    var revoker = function revoker() {
+                        if (typeof file === 'string') {
+                            // file is an object URL
+                            get_URL().revokeObjectURL(file);
+                        } else {
+                            // file is a File
+                            file.remove();
+                        }
+                    };
+                    setTimeout(revoker, arbitrary_revoke_timeout);
+                },
+                dispatch = function dispatch(filesaver, event_types, event) {
+                    event_types = [].concat(event_types);
+                    var i = event_types.length;
+                    while (i--) {
+                        var listener = filesaver['on' + event_types[i]];
+                        if (typeof listener === 'function') {
+                            try {
+                                listener.call(filesaver, event || filesaver);
+                            } catch (ex) {
+                                throw_outside(ex);
+                            }
+                        }
+                    }
+                },
+                auto_bom = function auto_bom(blob) {
+                    // prepend BOM for UTF-8 XML and text/* types (including HTML)
+                    // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
+                    if (
+                        /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
+                            blob.type
+                        )
+                    ) {
+                        return new Blob([String.fromCharCode(0xfeff), blob], { type: blob.type });
+                    }
+                    return blob;
+                },
+                FileSaver = function FileSaver(blob, name, no_auto_bom) {
+                    if (!no_auto_bom) {
+                        blob = auto_bom(blob);
+                    }
+                    // First try a.download, then web filesystem, then object URLs
+                    var filesaver = this,
+                        type = blob.type,
+                        force = type === force_saveable_type,
+                        object_url,
+                        dispatch_all = function dispatch_all() {
+                            dispatch(filesaver, 'writestart progress write writeend'.split(' '));
+                        },
+                        // on any filesys errors revert to saving with object URLs
+                        fs_error = function fs_error() {
+                            if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
+                                // Safari doesn't allow downloading of blob urls
+                                var reader = new FileReader();
+                                reader.onloadend = function() {
+                                    var url = is_chrome_ios
+                                        ? reader.result
+                                        : reader.result.replace(
+                                              /^data:[^;]*;/,
+                                              'data:attachment/file;'
+                                          );
+                                    var popup = view.open(url, '_blank');
+                                    if (!popup) view.location.href = url;
+                                    url = undefined; // release reference before dispatching
+                                    filesaver.readyState = filesaver.DONE;
+                                    dispatch_all();
+                                };
+                                reader.readAsDataURL(blob);
+                                filesaver.readyState = filesaver.INIT;
+                                return;
+                            }
+                            // don't create more object URLs than needed
+                            if (!object_url) {
+                                object_url = get_URL().createObjectURL(blob);
+                            }
+                            if (force) {
+                                view.location.href = object_url;
+                            } else {
+                                var opened = view.open(object_url, '_blank');
+                                if (!opened) {
+                                    // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
+                                    view.location.href = object_url;
+                                }
+                            }
+                            filesaver.readyState = filesaver.DONE;
+                            dispatch_all();
+                            revoke(object_url);
+                        };
+                    filesaver.readyState = filesaver.INIT;
 
-            fs_error();
-        },
-            FS_proto = FileSaver.prototype,
-            saveAs = function saveAs(blob, name, no_auto_bom) {
-            return new FileSaver(blob, name || blob.name || 'download', no_auto_bom);
-        };
+                    if (can_use_save_link) {
+                        object_url = get_URL().createObjectURL(blob);
+                        setImmediate(function() {
+                            save_link.href = object_url;
+                            save_link.download = name;
+                            click(save_link);
+                            dispatch_all();
+                            revoke(object_url);
+                            filesaver.readyState = filesaver.DONE;
+                        }, 0);
+                        return;
+                    }
 
-        // IE 10+ (native saveAs)
-        if (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob) {
-            return function (blob, name, no_auto_bom) {
-                name = name || blob.name || 'download';
+                    fs_error();
+                },
+                FS_proto = FileSaver.prototype,
+                saveAs = function saveAs(blob, name, no_auto_bom) {
+                    return new FileSaver(blob, name || blob.name || 'download', no_auto_bom);
+                };
 
-                if (!no_auto_bom) {
-                    blob = auto_bom(blob);
-                }
-                return navigator.msSaveOrOpenBlob(blob, name);
-            };
-        }
+            // IE 10+ (native saveAs)
+            if (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob) {
+                return function(blob, name, no_auto_bom) {
+                    name = name || blob.name || 'download';
 
-        // todo: detect chrome extensions & packaged apps
-        //save_link.target = "_blank";
+                    if (!no_auto_bom) {
+                        blob = auto_bom(blob);
+                    }
+                    return navigator.msSaveOrOpenBlob(blob, name);
+                };
+            }
 
-        FS_proto.abort = function () {};
-        FS_proto.readyState = FS_proto.INIT = 0;
-        FS_proto.WRITING = 1;
-        FS_proto.DONE = 2;
+            // todo: detect chrome extensions & packaged apps
+            //save_link.target = "_blank";
 
-        FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
+            FS_proto.abort = function() {};
+            FS_proto.readyState = FS_proto.INIT = 0;
+            FS_proto.WRITING = 1;
+            FS_proto.DONE = 2;
 
-        return saveAs;
-    }(typeof self !== 'undefined' && self || typeof window !== 'undefined' && window);
+            FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
+
+            return saveAs;
+        })((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));
 
     //Convert XLSX file for download.
     function s2ab(s) {
-            var i = void 0;
-            if (typeof ArrayBuffer !== 'undefined') {
-                    var buf = new ArrayBuffer(s.length);
-                    var view = new Uint8Array(buf);
+        var i = void 0;
+        if (typeof ArrayBuffer !== 'undefined') {
+            var buf = new ArrayBuffer(s.length);
+            var view = new Uint8Array(buf);
 
-                    for (i = 0; i !== s.length; ++i) {
-                            view[i] = s.charCodeAt(i) & 0xff;
-                    }return buf;
-            } else {
-                    var buf = new Array(s.length);
-
-                    for (i = 0; i !== s.length; ++i) {
-                            buf[i] = s.charCodeAt(i) & 0xff;
-                    }return buf;
+            for (i = 0; i !== s.length; ++i) {
+                view[i] = s.charCodeAt(i) & 0xff;
             }
+            return buf;
+        } else {
+            var buf = new Array(s.length);
+
+            for (i = 0; i !== s.length; ++i) {
+                buf[i] = s.charCodeAt(i) & 0xff;
+            }
+            return buf;
+        }
     }
 
     function exportXLSX(listing) {
         try {
-            saveAs(new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }), 'participant-visit-listing.xlsx');
+            saveAs(
+                new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }),
+                'participant-visit-listing-' +
+                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+                    '.xlsx'
+            );
         } catch (error) {
             if (typeof console !== 'undefined') console.log(error);
         }
@@ -1101,9 +1483,83 @@
     function exportToXLSX() {
         var _this = this;
 
-        this.wrap.select('.export#xlsx').on('click', function () {
+        this.wrap.select('.export#xlsx').on('click', function() {
             defineXLSX(_this);
             exportXLSX(_this);
+        });
+    }
+
+    function exportToPDF() {
+        var _this = this;
+
+        this.wrap.select('.export#pdf').on('click', function() {
+            var doc = new jsPDF('l', 'pt');
+            var tableNode = _this.table.node();
+            var json = doc.autoTableHtmlToJson(tableNode);
+            doc.autoTable(json.columns, json.data);
+            doc.save(
+                'participant-visit-listing-' +
+                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+                    '.pdf'
+            );
+        });
+    }
+
+    function download(fileType, data) {
+        //transform blob array into a blob of characters
+        var blob = new Blob(data, {
+            type:
+                fileType === 'csv'
+                    ? 'text/csv;charset=utf-8;'
+                    : fileType === 'xlsx'
+                        ? 'application/octet-stream'
+                        : console.warn('File type not supported: ' + fileType)
+        });
+        var fileName =
+            'participant-visit-listing-' +
+            d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+            '.' +
+            fileType;
+        var link = this.wrap.select('.export#' + fileType);
+
+        if (navigator.msSaveBlob)
+            //IE
+            navigator.msSaveBlob(blob, fileName);
+        else if (link.node().download !== undefined) {
+            //21st century browsers
+            var url = URL.createObjectURL(blob);
+            link.node().setAttribute('href', url);
+            link.node().setAttribute('download', fileName);
+        }
+    }
+
+    function exportToCSV() {
+        var _this = this;
+
+        this.wrap.select('.export#csv').on('click', function() {
+            var CSVarray = [];
+
+            //add headers to CSV array
+            var headers = _this.config.headers.map(function(header) {
+                return '"' + header.replace(/"/g, '""') + '"';
+            });
+            CSVarray.push(headers);
+
+            //add rows to CSV array
+            _this.data.filtered.forEach(function(d, i) {
+                var row = _this.config.cols.map(function(col) {
+                    var value = d[col];
+
+                    if (typeof value === 'string') value = value.replace(/"/g, '""');
+
+                    return '"' + value + '"';
+                });
+
+                CSVarray.push(row);
+            });
+
+            //Download .csv file.
+            download.call(_this, 'csv', [CSVarray.join('\n')]);
         });
     }
 
@@ -1114,9 +1570,6 @@
         //Sort columns on click chronologically.
         sortChronologically.call(this);
 
-        //Float table header as user scrolls.
-        //floatHeader.call(this);
-
         //Add row and column summaries.
         addSummaries.call(this);
 
@@ -1126,18 +1579,22 @@
         //Add styled export to .xlsx.
         exportToXLSX.call(this);
 
-        var doc = new jsPDF('l', 'pt');
-        var tableNode = this.table.node(); // $('#customers')[0];
-        var json = doc.autoTableHtmlToJson(tableNode);
-        doc.autoTable(json.columns, json.data);
-        doc.save('table.pdf');
+        //Add styled (eventually) export to .pdf.
+        exportToPDF.call(this);
+
+        //Add export to .csv.
+        exportToCSV.call(this);
     }
 
     function onDestroy() {}
 
     function listing() {
         //Define listing.
-        this.listing = new webCharts.createTable(this.containers.listing.node(), this.settings.listingSynced, this.controls);
+        this.listing = new webCharts.createTable(
+            this.containers.listing.node(),
+            this.settings.listingSynced,
+            this.controls
+        );
         this.listing.pvl = this;
 
         //Define callbacks.
@@ -1166,30 +1623,49 @@
         this.legend.remove();
 
         //Draw top x-axis.
-        this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
-        this.topXAxisG.select('text.axis-title--top').attr({
-            transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
-            'text-anchor': 'middle'
-        }).text('Schedule of Events by ' + this.config.x.label);
+        (this.topXAxis = d3.svg
+            .axis()
+            .scale(this.x)
+            .orient('top')
+            .ticks(this.xAxis.ticks()[0])
+            .tickFormat(this.config.x_displayFormat)
+            .innerTickSize(this.xAxis.innerTickSize())
+            .outerTickSize(this.xAxis.outerTickSize())),
+            this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG
+            .select('text.axis-title--top')
+            .attr({
+                transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
+                'text-anchor': 'middle'
+            })
+            .text('Schedule of Events by ' + this.config.x.label);
 
         //Rotate top x-axis tick labels.
         var topXAxisTickLabels = this.topXAxisG.selectAll('.tick text');
-        topXAxisTickLabels.attr({
-            transform: 'rotate(-45)'
-        }).style('text-anchor', 'start');
+        topXAxisTickLabels
+            .attr({
+                transform: 'rotate(-45)'
+            })
+            .style('text-anchor', 'start');
 
         //Rotate bottom x-axis tick labels.
         var bottomXAxisTickLabels = this.bottomXAxisG.selectAll('.tick text');
-        bottomXAxisTickLabels.attr({
-            transform: 'rotate(-45)'
-        }).style('text-anchor', 'end');
+        bottomXAxisTickLabels
+            .attr({
+                transform: 'rotate(-45)'
+            })
+            .style('text-anchor', 'end');
     }
 
     function onDestroy$1() {}
 
     function ordinalChart() {
         //Define listing.
-        this.ordinalChart = new webCharts.createChart(this.containers.ordinalChart.node(), this.settings.ordinalChartSynced, this.controls);
+        this.ordinalChart = new webCharts.createChart(
+            this.containers.ordinalChart.node(),
+            this.settings.ordinalChartSynced,
+            this.controls
+        );
         this.ordinalChart.pvl = this;
 
         //Define callbacks.
@@ -1208,7 +1684,8 @@
         this.topXAxisG = this.svg.append('g').classed('x x--top axis linear', true);
         this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
 
-        if (this.pvl.settings.active_tab === 'Listing') this.pvl.containers.charts.classed('pvl-hidden', true);
+        if (this.pvl.settings.active_tab === 'Listing')
+            this.pvl.containers.charts.classed('pvl-hidden', true);
     }
 
     function onPreprocess$2() {}
@@ -1221,18 +1698,33 @@
         this.legend.remove();
 
         //Draw top x-axis.
-        this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
-        this.topXAxisG.select('text.axis-title--top').attr({
-            transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
-            'text-anchor': 'middle'
-        }).text('Schedule of Events by ' + this.config.x.label);
+        (this.topXAxis = d3.svg
+            .axis()
+            .scale(this.x)
+            .orient('top')
+            .ticks(this.xAxis.ticks()[0])
+            .tickFormat(this.config.x_displayFormat)
+            .innerTickSize(this.xAxis.innerTickSize())
+            .outerTickSize(this.xAxis.outerTickSize())),
+            this.topXAxisG.call(this.topXAxis);
+        this.topXAxisG
+            .select('text.axis-title--top')
+            .attr({
+                transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
+                'text-anchor': 'middle'
+            })
+            .text('Schedule of Events by ' + this.config.x.label);
     }
 
     function onDestroy$2() {}
 
     function linearChart() {
         //Define listing.
-        this.linearChart = new webCharts.createChart(this.containers.linearChart.node(), this.settings.linearChartSynced, this.controls);
+        this.linearChart = new webCharts.createChart(
+            this.containers.linearChart.node(),
+            this.settings.linearChartSynced,
+            this.controls
+        );
         this.linearChart.pvl = this;
 
         //Define callbacks.
@@ -1247,27 +1739,37 @@
 
     function checkFilterCols(filterCol) {
         this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
-        if (!this.data.missingVariables[filterCol]) this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(function (input) {
-            return input.value_col !== filterCol;
-        });else if (/subset/.test(filterCol)) {
+        if (!this.data.missingVariables[filterCol])
+            this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+        else if (/subset/.test(filterCol)) {
             this.data.filters.push({
                 col: filterCol,
                 value: 'All'
             });
-            this.settings.controlsSynced.inputs.find(function (input) {
+            this.settings.controlsSynced.inputs.find(function(input) {
                 return input.value_col === filterCol;
-            }).values = d3.set(this.data.raw.map(function (d) {
-                return d[filterCol];
-            })).values().filter(function (value) {
-                return !/^ *$/.test(value);
-            }).sort();
+            }).values = d3
+                .set(
+                    this.data.raw.map(function(d) {
+                        return d[filterCol];
+                    })
+                )
+                .values()
+                .filter(function(value) {
+                    return !/^ *$/.test(value);
+                })
+                .sort();
         }
     }
 
     function checkRequiredVariables() {
         var _this = this;
 
-        this.settings.filter_cols.forEach(function (filter_col) {
+        this.settings.filter_cols.forEach(function(filter_col) {
             checkFilterCols.call(_this, filter_col);
         });
     }
@@ -1275,10 +1777,12 @@
     function addVariables() {
         var _this = this;
 
-        this.data.raw.forEach(function (d) {
+        this.data.raw.forEach(function(d) {
             d.visitDate = d[_this.settings.visit_date_col];
             d.visitCharacter = d[_this.settings.visit_col].substring(0, 1);
-            d.expected = _this.settings.visit_expectation_regex.test(d[_this.settings.visit_status_col]);
+            d.expected = _this.settings.visit_expectation_regex.test(
+                d[_this.settings.visit_status_col]
+            );
             d.unscheduled = _this.settings.visit_exclusion_regex.test(d[_this.settings.visit_col]);
         });
     }
@@ -1286,50 +1790,86 @@
     function defineVisitSet() {
         var _this = this;
 
-        this.data.sets.visit_col = d3.set(this.data.filtered.map(function (d) {
-            return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
-        })).values().filter(function (visit) {
-            return !_this.settings.visit_exclusion_regex.test(visit);
-        }).sort(function (a, b) {
-            return a.split(':|:')[0] - b.split(':|:')[0];
-        }).map(function (visit) {
-            return visit.split(':|:')[1];
-        });
+        this.data.sets.visit_col = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
+                })
+            )
+            .values()
+            .filter(function(visit) {
+                return !_this.settings.visit_exclusion_regex.test(visit);
+            })
+            .sort(function(a, b) {
+                return a.split(':|:')[0] - b.split(':|:')[0];
+            })
+            .map(function(visit) {
+                return visit.split(':|:')[1];
+            });
 
         //Update ordinal chart settings.
         this.ordinalChart.config.x.domain = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[1].values[this.settings.visit_col] = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[0].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[1].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
     }
 
     function defineVisitStatusSet() {
         var _this = this;
 
-        this.data.sets.visit_status_col = d3.set(this.data.raw.map(function (d) {
-            return d[_this.settings.visit_status_order_col] + ':|:' + d[_this.settings.visit_status_col] + ':|:' + d[_this.settings.visit_text_color_col].toLowerCase() + ':|:' + d[_this.settings.visit_status_description_col];
-        })).values().sort(function (a, b) {
-            return +a.split(':|:')[0] - +b.split(':|:')[0];
-        });
+        this.data.sets.visit_status_col = d3
+            .set(
+                this.data.raw.map(function(d) {
+                    return (
+                        d[_this.settings.visit_status_order_col] +
+                        ':|:' +
+                        d[_this.settings.visit_status_col] +
+                        ':|:' +
+                        d[_this.settings.visit_text_color_col].toLowerCase() +
+                        ':|:' +
+                        d[_this.settings.visit_status_description_col]
+                    );
+                })
+            )
+            .values()
+            .sort(function(a, b) {
+                return +a.split(':|:')[0] - +b.split(':|:')[0];
+            });
 
         //Update ordinal chart settings.
-        this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[1];
         });
-        this.ordinalChart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.ordinalChart.config.colors = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[2];
         });
-        this.ordinalChart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.ordinalChart.config.legend.order = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[1];
         });
 
         //Update linear chart settings.
-        this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[1];
         });
-        this.linearChart.config.colors = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.linearChart.config.colors = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[2];
         });
-        this.linearChart.config.legend.order = this.data.sets.visit_status_col.map(function (visit_status) {
+        this.linearChart.config.legend.order = this.data.sets.visit_status_col.map(function(
+            visit_status
+        ) {
             return visit_status.split(':|:')[1];
         });
     }
@@ -1337,29 +1877,56 @@
     function defineLegendSet() {
         var _this = this;
 
-        this.data.sets.legend = d3.set(this.data.raw.filter(function (d) {
-            return d[_this.settings.visit_status_exclusion_col] !== _this.settings.visit_status_exclusion_value;
-        }).map(function (d) {
-            return d[_this.settings.visit_status_order_col] + ':|:' + d[_this.settings.visit_status_col] + ':|:' + d[_this.settings.visit_text_color_col].toLowerCase() + ':|:' + d[_this.settings.visit_status_description_col];
-        })).values().sort(function (a, b) {
-            return +a.split(':|:')[0] - +b.split(':|:')[0];
-        });
+        this.data.sets.legend = d3
+            .set(
+                this.data.raw
+                    .filter(function(d) {
+                        return (
+                            d[_this.settings.visit_status_exclusion_col] !==
+                            _this.settings.visit_status_exclusion_value
+                        );
+                    })
+                    .map(function(d) {
+                        return (
+                            d[_this.settings.visit_status_order_col] +
+                            ':|:' +
+                            d[_this.settings.visit_status_col] +
+                            ':|:' +
+                            d[_this.settings.visit_text_color_col].toLowerCase() +
+                            ':|:' +
+                            d[_this.settings.visit_status_description_col]
+                        );
+                    })
+            )
+            .values()
+            .sort(function(a, b) {
+                return +a.split(':|:')[0] - +b.split(':|:')[0];
+            });
     }
 
     function defineDefaultSet(col) {
         var _this = this;
 
-        this.data.sets[col] = d3.set(this.data.filtered.map(function (d) {
-            return d[_this.settings[col]];
-        })).values().sort();
+        this.data.sets[col] = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.settings[col]];
+                })
+            )
+            .values()
+            .sort();
     }
 
     function defineSets() {
         var _this = this;
 
-        ['site_col', 'id_col', 'id_status_col', 'visit_col', // with visit_order_col
-        'visit_status_col' // with visit_status_order_col, visit_text_color_col, and visit_status_description_col
-        ].forEach(function (col) {
+        [
+            'site_col',
+            'id_col',
+            'id_status_col',
+            'visit_col', // with visit_order_col
+            'visit_status_col' // with visit_status_order_col, visit_text_color_col, and visit_status_description_col
+        ].forEach(function(col) {
             switch (col) {
                 case 'visit_col':
                     defineVisitSet.call(_this);
@@ -1385,8 +1952,8 @@
 
         this.data.transposed = [];
 
-        this.data.sets.id_col.forEach(function (id, i) {
-            var id_data = _this.data.raw.filter(function (d) {
+        this.data.sets.id_col.forEach(function(id, i) {
+            var id_data = _this.data.raw.filter(function(d) {
                 return d[_this.settings.id_col] === id;
             });
             var datum = {};
@@ -1399,14 +1966,20 @@
 
             if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
 
-            _this.data.sets.visit_col.forEach(function (visit) {
-                var visit_datum = id_data.find(function (d) {
+            _this.data.sets.visit_col.forEach(function(visit) {
+                var visit_datum = id_data.find(function(d) {
                     return d[_this.settings.visit_col] === visit;
                 });
                 datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
-                datum[visit + '-date'] = visit_datum ? visit_datum[_this.settings.visit_date_col] : '';
-                datum[visit + '-status'] = visit_datum ? visit_datum[_this.settings.visit_status_col] : '';
-                datum[visit + '-color'] = visit_datum ? visit_datum[_this.settings.visit_text_color_col] : '';
+                datum[visit + '-date'] = visit_datum
+                    ? visit_datum[_this.settings.visit_date_col]
+                    : '';
+                datum[visit + '-status'] = visit_datum
+                    ? visit_datum[_this.settings.visit_status_col]
+                    : '';
+                datum[visit + '-color'] = visit_datum
+                    ? visit_datum[_this.settings.visit_text_color_col]
+                    : '';
 
                 if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
                 if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
@@ -1417,26 +1990,41 @@
     }
 
     function addLegend() {
-        this.containers.legendItems = this.containers.legend.append('ul').classed('pvl-legend__ul', true).selectAll('li.pvl-legend__li').data(this.data.sets.legend.map(function (visit_status) {
-            return visit_status.split(':|:');
-        })).enter().append('li').classed('pvl-legend__li', true).style({
-            'border-bottom': function borderBottom(d) {
-                return '2px solid ' + (d[2] === 'black' ? '#ccc' : d[2]);
-            },
-            color: function color(d) {
-                return d[2];
-            }
-        });
-        this.containers.legendItems.each(function (d) {
-            var legendItem = d3.select(this);
-            legendItem.append('span').classed('pvl-legend-item-label', true);
-            legendItem.append('span').classed('pvl-legend-item-info-icon', true).html('&#9432').style({
+        this.containers.legendItems = this.containers.legend
+            .append('ul')
+            .classed('pvl-legend__ul', true)
+            .selectAll('li.pvl-legend__li')
+            .data(
+                this.data.sets.legend.map(function(visit_status) {
+                    return visit_status.split(':|:');
+                })
+            )
+            .enter()
+            .append('li')
+            .classed('pvl-legend__li', true)
+            .style({
+                'border-bottom': function borderBottom(d) {
+                    return '2px solid ' + (d[2] === 'black' ? '#ccc' : d[2]);
+                },
                 color: function color(d) {
                     return d[2];
                 }
-            }).attr('title', function (d) {
-                return d[3];
             });
+        this.containers.legendItems.each(function(d) {
+            var legendItem = d3.select(this);
+            legendItem.append('span').classed('pvl-legend-item-label', true);
+            legendItem
+                .append('span')
+                .classed('pvl-legend-item-info-icon', true)
+                .html('&#9432')
+                .style({
+                    color: function color(d) {
+                        return d[2];
+                    }
+                })
+                .attr('title', function(d) {
+                    return d[3];
+                });
         });
         update.call(this);
     }
@@ -1444,12 +2032,12 @@
     function filterData(d, select) {
         var _this = this;
 
-        this.data.filters.find(function (filter) {
+        this.data.filters.find(function(filter) {
             return filter.col === d.value_col;
         }).value = select.value;
         this.data.filtered = this.data.raw;
-        this.data.filters.forEach(function (filter) {
-            _this.data.filtered = _this.data.filtered.filter(function (di) {
+        this.data.filters.forEach(function(filter) {
+            _this.data.filtered = _this.data.filtered.filter(function(di) {
                 return di[filter.col] === filter.value || filter.value === 'All';
             });
         });
@@ -1458,16 +2046,22 @@
     function update$1() {
         var context = this;
 
-        var analysisSubsetters = this.controls.wrap.selectAll('.control-group').filter(function (d) {
-            return (/^Analysis Subset \d$/.test(d.label)
-            );
-        }).selectAll('select');
-        analysisSubsetters.selectAll('option').filter(function (d) {
-            return d === 'All';
-        }).filter(function (d, i) {
-            return i > 0;
-        }).remove();
-        analysisSubsetters.on('change', function (d) {
+        var analysisSubsetters = this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return /^Analysis Subset \d$/.test(d.label);
+            })
+            .selectAll('select');
+        analysisSubsetters
+            .selectAll('option')
+            .filter(function(d) {
+                return d === 'All';
+            })
+            .filter(function(d, i) {
+                return i > 0;
+            })
+            .remove();
+        analysisSubsetters.on('change', function(d) {
             filterData.call(context, d, this);
             defineDefaultSet.call(context, 'id_col');
             defineVisitSet.call(context);
@@ -1479,6 +2073,7 @@
             //Redraw displays.
             if (context.settings.active_tab === 'Charts') {
                 context.ordinalChart.draw();
+                context.linearChart.raw_data = context.data.filtered;
                 context.linearChart.draw();
             } else context.listing.draw();
         });
@@ -1523,16 +2118,32 @@
         };
 
         //Merge and sync user settings with default settings.
-        pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.user);
+        pvl.settings.listingMerged = Object.assign(
+            {},
+            pvl.settings.listingSettings,
+            pvl.settings.user
+        );
         configuration.syncListingSettings.call(pvl);
 
-        pvl.settings.ordinalChartMerged = Object.assign({}, pvl.settings.ordinalChartSettings, pvl.settings.user);
+        pvl.settings.ordinalChartMerged = Object.assign(
+            {},
+            pvl.settings.ordinalChartSettings,
+            pvl.settings.user
+        );
         configuration.syncOrdinalChartSettings.call(pvl);
 
-        pvl.settings.linearChartMerged = Object.assign({}, pvl.settings.linearChartSettings, pvl.settings.user);
+        pvl.settings.linearChartMerged = Object.assign(
+            {},
+            pvl.settings.linearChartSettings,
+            pvl.settings.user
+        );
         configuration.syncLinearChartSettings.call(pvl);
 
-        pvl.settings.controlsMerged = Object.assign({}, pvl.settings.controlsSettings, pvl.settings.user);
+        pvl.settings.controlsMerged = Object.assign(
+            {},
+            pvl.settings.controlsSettings,
+            pvl.settings.user
+        );
         configuration.syncControlsSettings.call(pvl);
 
         layout.call(pvl); // attaches containers object to central object ([pvl])
@@ -1546,5 +2157,4 @@
     }
 
     return participantVisitListing;
-
-})));
+});

@@ -1,7 +1,6 @@
 export default function listingSettings() {
     const exports = ['csv'];
-    if (window.XLSX)
-        exports.unshift('xlsx');
+    if (window.XLSX) exports.unshift('xlsx');
     return {
         //ID-level variables
         site_col: 'site_name',

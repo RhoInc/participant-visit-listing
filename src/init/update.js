@@ -25,11 +25,12 @@ export default function update() {
         transposeData.call(context);
         updateLegend.call(context);
         context.listing.data.raw = context.data.transposed;
+        context.ordinalChart.raw_data = context.data.filtered;
+        context.linearChart.raw_data = context.data.filtered;
 
         //Redraw displays.
         if (context.settings.active_tab === 'Charts') {
             context.ordinalChart.draw();
-            context.linearChart.raw_data = context.data.filtered;
             context.linearChart.draw();
         } else context.listing.draw();
     });

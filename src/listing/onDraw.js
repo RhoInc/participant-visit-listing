@@ -1,9 +1,10 @@
 import addHeaderHover from './onDraw/addHeaderHover';
-import floatHeader from './onDraw/floatHeader';
 import addCellFormatting from './onDraw/addCellFormatting';
 import addSummaries from './onDraw/addSummaries';
 import sortChronologically from './onDraw/sortChronologically';
 import exportToXLSX from './onDraw/exportToXLSX';
+import exportToPDF from './onDraw/exportToPDF';
+import exportToCSV from './onDraw/exportToCSV';
 
 export default function onDraw() {
     //Highlight column when hovering over column header.
@@ -11,9 +12,6 @@ export default function onDraw() {
 
     //Sort columns on click chronologically.
     sortChronologically.call(this);
-
-    //Float table header as user scrolls.
-    //floatHeader.call(this);
 
     //Add row and column summaries.
     addSummaries.call(this);
@@ -23,4 +21,10 @@ export default function onDraw() {
 
     //Add styled export to .xlsx.
     exportToXLSX.call(this);
+
+    //Add styled (eventually) export to .pdf.
+    exportToPDF.call(this);
+
+    //Add export to .csv.
+    exportToCSV.call(this);
 }

@@ -29,6 +29,7 @@ export default function update() {
         //Redraw displays.
         if (context.settings.active_tab === 'Charts') {
             context.ordinalChart.draw();
+            context.linearChart.raw_data = context.data.filtered;
             context.linearChart.draw();
         } else context.listing.draw();
     });

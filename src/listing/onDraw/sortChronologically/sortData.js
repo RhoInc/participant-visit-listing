@@ -19,9 +19,9 @@ export default function sortData(data) {
                     ) {
                         order = 1;
                     }
-                } else if (aCell === null) {
+                } else if (['', null].indexOf(aCell) > -1) {
                     order = 2;
-                } else if (bCell === null) {
+                } else if (['', null].indexOf(bCell) > -1) {
                     order = -2;
                 }
             }

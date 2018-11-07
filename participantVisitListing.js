@@ -127,6 +127,8 @@
     }
 
     function listingSettings() {
+        var exports = ['csv'];
+        if (window.XLSX) exports.unshift('xlsx');
         return {
             //ID-level variables
             site_col: 'site_name',
@@ -157,7 +159,7 @@
             },
             filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
             pagination: false, // turn off pagination to view all IDs at the same time
-            exports: ['xlsx', 'csv'] // default exports are to .xlsx and .csv
+            exports: exports // default exports are to .xlsx and .csv
         };
     }
 
@@ -804,6 +806,12 @@
         this.config.sortable = false;
         if (this.pvl.settings.active_tab === 'Charts')
             this.pvl.containers.listing.classed('pvl-hidden', true);
+        if (window.jsPDF)
+            this.exportable.wrap
+                .insert('a', '#csv')
+                .classed('wc-button export', true)
+                .attr('id', 'pdf')
+                .text('PDF');
     }
 
     function onPreprocess() {}
@@ -986,9 +994,9 @@
                         ) {
                             order = 1;
                         }
-                    } else if (aCell === null) {
+                    } else if (['', null].indexOf(aCell) > -1) {
                         order = 2;
-                    } else if (bCell === null) {
+                    } else if (['', null].indexOf(bCell) > -1) {
                         order = -2;
                     }
                 }
@@ -1463,7 +1471,9 @@
         try {
             saveAs(
                 new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }),
-                'participant-visit-listing.xlsx'
+                'participant-visit-listing-' +
+                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+                    '.xlsx'
             );
         } catch (error) {
             if (typeof console !== 'undefined') console.log(error);
@@ -1479,15 +1489,86 @@
         });
     }
 
+    function exportToPDF() {
+        var _this = this;
+
+        this.wrap.select('.export#pdf').on('click', function() {
+            var doc = new jsPDF('l', 'pt');
+            var tableNode = _this.table.node();
+            var json = doc.autoTableHtmlToJson(tableNode);
+            doc.autoTable(json.columns, json.data);
+            doc.save(
+                'participant-visit-listing-' +
+                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+                    '.pdf'
+            );
+        });
+    }
+
+    function download(fileType, data) {
+        //transform blob array into a blob of characters
+        var blob = new Blob(data, {
+            type:
+                fileType === 'csv'
+                    ? 'text/csv;charset=utf-8;'
+                    : fileType === 'xlsx'
+                        ? 'application/octet-stream'
+                        : console.warn('File type not supported: ' + fileType)
+        });
+        var fileName =
+            'participant-visit-listing-' +
+            d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
+            '.' +
+            fileType;
+        var link = this.wrap.select('.export#' + fileType);
+
+        if (navigator.msSaveBlob)
+            //IE
+            navigator.msSaveBlob(blob, fileName);
+        else if (link.node().download !== undefined) {
+            //21st century browsers
+            var url = URL.createObjectURL(blob);
+            link.node().setAttribute('href', url);
+            link.node().setAttribute('download', fileName);
+        }
+    }
+
+    function exportToCSV() {
+        var _this = this;
+
+        this.wrap.select('.export#csv').on('click', function() {
+            var CSVarray = [];
+
+            //add headers to CSV array
+            var headers = _this.config.headers.map(function(header) {
+                return '"' + header.replace(/"/g, '""') + '"';
+            });
+            CSVarray.push(headers);
+
+            //add rows to CSV array
+            _this.data.filtered.forEach(function(d, i) {
+                var row = _this.config.cols.map(function(col) {
+                    var value = d[col];
+
+                    if (typeof value === 'string') value = value.replace(/"/g, '""');
+
+                    return '"' + value + '"';
+                });
+
+                CSVarray.push(row);
+            });
+
+            //Download .csv file.
+            download.call(_this, 'csv', [CSVarray.join('\n')]);
+        });
+    }
+
     function onDraw() {
         //Highlight column when hovering over column header.
         addHeaderHover.call(this);
 
         //Sort columns on click chronologically.
         sortChronologically.call(this);
-
-        //Float table header as user scrolls.
-        //floatHeader.call(this);
 
         //Add row and column summaries.
         addSummaries.call(this);
@@ -1497,6 +1578,12 @@
 
         //Add styled export to .xlsx.
         exportToXLSX.call(this);
+
+        //Add styled (eventually) export to .pdf.
+        exportToPDF.call(this);
+
+        //Add export to .csv.
+        exportToCSV.call(this);
     }
 
     function onDestroy() {}
@@ -1883,16 +1970,16 @@
                 var visit_datum = id_data.find(function(d) {
                     return d[_this.settings.visit_col] === visit;
                 });
-                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : null;
+                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
                 datum[visit + '-date'] = visit_datum
                     ? visit_datum[_this.settings.visit_date_col]
-                    : null;
+                    : '';
                 datum[visit + '-status'] = visit_datum
                     ? visit_datum[_this.settings.visit_status_col]
-                    : null;
+                    : '';
                 datum[visit + '-color'] = visit_datum
                     ? visit_datum[_this.settings.visit_text_color_col]
-                    : null;
+                    : '';
 
                 if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
                 if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
@@ -1986,6 +2073,7 @@
             //Redraw displays.
             if (context.settings.active_tab === 'Charts') {
                 context.ordinalChart.draw();
+                context.linearChart.raw_data = context.data.filtered;
                 context.linearChart.draw();
             } else context.listing.draw();
         });

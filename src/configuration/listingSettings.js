@@ -23,7 +23,7 @@ export default function listingSettings() {
         visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
-        active_tab: 'Listing', // ['Listing', 'Ordinal', 'Linear']
+        active_tab: 'Charts', // ['Listing', 'Ordinal', 'Linear']
         date_format: '%Y-%m-%d', // format of visit dates
         display_cell_text: false,
         chart_margin: {
@@ -32,6 +32,6 @@ export default function listingSettings() {
         },
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
         pagination: false, // turn off pagination to view all IDs at the same time
-        exports // default exports are to .xlsx and .csv
+        exports, // default exports are to .xlsx and .csv
     };
 }

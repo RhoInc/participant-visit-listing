@@ -149,7 +149,7 @@
             visit_status_exclusion_value: 'Yes',
 
             //Miscellaneous
-            active_tab: 'Listing', // ['Listing', 'Ordinal', 'Linear']
+            active_tab: 'Charts', // ['Listing', 'Ordinal', 'Linear']
             date_format: '%Y-%m-%d', // format of visit dates
             display_cell_text: false,
             chart_margin: {
@@ -228,6 +228,7 @@
                 order: null // set in ../init/defineSets/defineVisitStatusSet.js
             },
             gridlines: 'y',
+            padding: 0,
             scale_text: false
         };
     }
@@ -481,19 +482,19 @@
         thead
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table thead {' + '}', '.pvl-listing .wc-table table thead tr:after {' + '    content: "";' + '    overflow-y: scroll;' + '    visibility: hidden;' + '    height: 0;' + '}', '.pvl-listing .wc-table table thead tr th {' + '    flex: 1 auto;' + '    display: block;' + '    border-top: 2px solid white;' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}',
+      '.pvl-listing .wc-table table thead {' + '}', '.pvl-listing .wc-table table thead tr:after {' + '    content: "";' + '    overflow-y: scroll;' + '    visibility: hidden;' + '    height: 0;' + '}', '.pvl-listing .wc-table table thead tr th {' + '    flex: 1 auto;' + '    display: block;' + '    border-top: 2px solid white;' + '}',
 
       /*****----------------------------------------------------------------------------\
         tbody
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table tbody {' + '    display: block;' + '    width: 100%;' + '    overflow-y: auto;' + '    height: 66vh;' + '}', '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '    flex: 1 auto;' + '    word-wrap: break-word;' + '}', '.pvl-listing .wc-table table tr:nth-child(odd) td {' + '    border-right: 2px solid white;' + '    border-left: 2px solid white;' + '}', '.pvl-listing .wc-table table tr:nth-child(even) td {' + '    border-right: 2px solid #eee;' + '    border-left: 2px solid #eee;' + '}', '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}', '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' + '    font-weight: bold;' + '}',
+      '.pvl-listing .wc-table table tbody {' + '    display: block;' + '    width: 100%;' + '    overflow-y: auto;' + '    height: 66vh;' + '}', '.pvl-listing .wc-table table tbody tr {' + '    background: white !important;' + '    border-bottom: 1px solid #eee;' + '}', '.pvl-listing .wc-table table tbody tr:hover {' + '    border-bottom: 1px solid black;' + '}', '.pvl-listing .wc-table table tbody tr td {' + '    cursor: default;' + '    flex: 1 auto;' + '    word-wrap: break-word;' + '}', '.pvl-listing .wc-table table tr td:nth-child(n+4) {' + '    border-right: 1px solid #aaa;' + '    border-left: 1px solid #aaa;' + '}', '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}', '.wc-table table tbody tr:nth-child(even) td:nth-child(-n+3) {' + '    background: #eee;' + '}', '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' + '    font-weight: bold;' + '}',
 
       /*****----------------------------------------------------------------------------\
         t-agnostic
       \----------------------------------------------------------------------------*****/
 
-      '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}', '.pvl-listing .wc-table table th,' + '.pvl-listing .wc-table table td {' + '    flex: 1 auto;' + '    width: 100px;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover,' + '.pvl-listing .wc-table table tr td.pvl-header-hover {' + '    border-right: 2px solid #aaa;' + '    border-left: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tr th.pvl-header-hover {' + '    border-top: 2px solid #aaa;' + '}', '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' + '    border-bottom: 2px solid #aaa !important;' + '}'];
+      '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}', '.pvl-listing .wc-table table th,' + '.pvl-listing .wc-table table td {' + '    flex: 1 auto;' + '    width: 100px;' + '}'];
 
       //Attach styles to DOM.
       this.style = document.createElement('style');
@@ -559,7 +560,7 @@
         this.cellTextToggle.checkbox = this.cellTextToggle.label.append('input').classed('pvl-cell-text-toggle__checkbox', true).attr('type', 'checkbox').property('checked', this.config.display_cell_text);
         this.cellTextToggle.checkbox.on('click', function () {
             context.config.display_cell_text = this.checked;
-            context.tbody.selectAll('td:nth-child(n+4)').style('color', context.config.display_cell_text ? 'black' : 'transparent');
+            context.draw();
         });
     }
 
@@ -602,18 +603,22 @@
 
                 //Apply cell formmating.
                 di.color = (d[di.col + '-color'] || 'white').toLowerCase();
-                if (!/white/.test(di.color)) cell.style({
+                cell.style({
+                    'border-top': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color),
                     'border-bottom': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
                 }); // border-bottom
-                if (!/black|white/.test(di.color)) cell.style({
-                    background: di.color,
-                    opacity: .9
-                }); // color
-                if (!context.config.display_cell_text) cell.style('color', 'transparent');
-
-                //Italicize expected visits.
-                //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))
-                //    cell.style('font-style', 'italic');
+                if (context.config.display_cell_text) {
+                    if (!/black|white/.test(di.color)) cell.style({
+                        background: i % 2 ? '#eee' : 'white',
+                        color: di.color
+                    }); // color
+                } else {
+                    if (!/black|white/.test(di.color)) cell.style({
+                        background: di.color,
+                        opacity: .9
+                    }); // color
+                    cell.style('color', 'transparent');
+                }
             });
         });
     }
@@ -1254,16 +1259,20 @@
 
     function onDraw$1() {}
 
-    function onResize() {
+    function removeLegend() {
         this.legend.remove();
+    }
 
+    function addTopXAxis() {
         //Draw top x-axis.
         this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
         this.topXAxisG.select('text.axis-title--top').attr({
             transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
             'text-anchor': 'middle'
         }).text('Schedule of Events by ' + this.config.x.label);
+    }
 
+    function rotateXAxisTickLabels() {
         //Rotate top x-axis tick labels.
         var topXAxisTickLabels = this.topXAxisG.selectAll('.tick text');
         topXAxisTickLabels.attr({
@@ -1275,6 +1284,31 @@
         bottomXAxisTickLabels.attr({
             transform: 'rotate(-45)'
         }).style('text-anchor', 'end');
+    }
+
+    function getItHeated() {
+        var context = this;
+        console.log(this);
+        this.marks[0].groups.each(function (d) {
+            var group = d3.select(this);
+            group.select('rect.pvl-heat-rect').remove();
+            d.heat = group.append('rect').classed('pvl-heat-rect', true).attr({
+                x: context.x(d.values.x),
+                y: context.y(d.values.y),
+                width: context.x.rangeBand(),
+                height: context.y.rangeBand(),
+                fill: context.colorScale(d.values.raw[0][context.config.color_by]),
+                stroke: '#aaa',
+                'stroke-width': .5
+            });
+        });
+    }
+
+    function onResize() {
+        removeLegend.call(this);
+        addTopXAxis.call(this);
+        rotateXAxisTickLabels.call(this);
+        getItHeated.call(this);
     }
 
     function onDestroy$1() {}

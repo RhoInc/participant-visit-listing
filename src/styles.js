@@ -192,8 +192,6 @@ export default function styles() {
                     '    flex: 1 auto;' +
                     '    display: block;' +
                     '    border-top: 2px solid white;' +
-                    '    border-right: 2px solid white;' +
-                    '    border-left: 2px solid white;' +
                     '}',
 
 
@@ -207,21 +205,27 @@ export default function styles() {
                     '    overflow-y: auto;' +
                     '    height: 66vh;' +
                     '}',
+                    '.pvl-listing .wc-table table tbody tr {' +
+                    '    background: white !important;' +
+                    '    border-bottom: 1px solid #eee;' +
+                    '}',
+                    '.pvl-listing .wc-table table tbody tr:hover {' +
+                    '    border-bottom: 1px solid black;' +
+                    '}',
                     '.pvl-listing .wc-table table tbody tr td {' +
                     '    cursor: default;' +
                     '    flex: 1 auto;' +
                     '    word-wrap: break-word;' +
                     '}',
-                    '.pvl-listing .wc-table table tr:nth-child(odd) td {' +
-                    '    border-right: 2px solid white;' +
-                    '    border-left: 2px solid white;' +
-                    '}',
-                    '.pvl-listing .wc-table table tr:nth-child(even) td {' +
-                    '    border-right: 2px solid #eee;' +
-                    '    border-left: 2px solid #eee;' +
+                    '.pvl-listing .wc-table table tr td:nth-child(n+4) {' +
+                    '    border-right: 1px solid #aaa;' +
+                    '    border-left: 1px solid #aaa;' +
                     '}',
                     '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' +
                     '    cursor: help;' +
+                    '}',
+                    '.wc-table table tbody tr:nth-child(even) td:nth-child(-n+3) {' +
+                    '    background: #eee;' +
                     '}',
                     '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' +
                     '    font-weight: bold;' +
@@ -239,17 +243,17 @@ export default function styles() {
                     '    flex: 1 auto;' +
                     '    width: 100px;' +
                     '}',
-                    '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
-                    '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
-                    '    border-right: 2px solid #aaa;' +
-                    '    border-left: 2px solid #aaa;' +
-                    '}',
-                    '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
-                    '    border-top: 2px solid #aaa;' +
-                    '}',
-                    '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
-                    '    border-bottom: 2px solid #aaa !important;' +
-                    '}',
+                    //'.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                    //'.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                    //'    border-right: 1px solid black;' +
+                    //'    border-left: 1px solid black;' +
+                    //'}',
+                    //'.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                    //'    border-top: 1px solid #aaa;' +
+                    //'}',
+                    //'.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                    //'    border-bottom: 1px solid #aaa !important;' +
+                    //'}',
 
     ];
 

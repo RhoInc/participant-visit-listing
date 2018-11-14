@@ -19,21 +19,24 @@ export default function addCellFormatting() {
 
             //Apply cell formmating.
             di.color = (d[`${di.col}-color`] || 'white').toLowerCase();
-            if (!/white/.test(di.color))
-                cell.style({
-                    'border-bottom': `2px solid ${di.color === 'black' ? '#ccc' : di.color}`,
-                }); // border-bottom
-            if (!/black|white/.test(di.color))
-                cell.style({
-                    background: di.color,
-                    opacity: .9,
-                }); // color
-            if (!context.config.display_cell_text)
-                cell.style('color', 'transparent');
-
-            //Italicize expected visits.
-            //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))
-            //    cell.style('font-style', 'italic');
+            cell.style({
+                'border-top': `2px solid ${di.color === 'black' ? '#ccc' : di.color}`,
+                'border-bottom': `2px solid ${di.color === 'black' ? '#ccc' : di.color}`,
+            }); // border-bottom
+            if (context.config.display_cell_text) {
+                if (!/black|white/.test(di.color))
+                    cell.style({
+                        background: i%2 ? '#eee' : 'white',
+                        color: di.color,
+                    }); // color
+            } else {
+                if (!/black|white/.test(di.color))
+                    cell.style({
+                        background: di.color,
+                        opacity: .9,
+                    }); // color
+                    cell.style('color', 'transparent');
+            }
         });
     });
 }

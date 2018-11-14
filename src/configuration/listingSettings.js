@@ -23,8 +23,9 @@ export default function listingSettings() {
         visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
-        active_tab: 'Charts',
+        active_tab: 'Listing', // ['Listing', 'Ordinal', 'Linear']
         date_format: '%Y-%m-%d', // format of visit dates
+        display_cell_text: false,
         chart_margin: {
             top: 100,
             bottom: 100

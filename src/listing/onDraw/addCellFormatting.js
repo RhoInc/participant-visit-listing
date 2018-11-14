@@ -20,11 +20,16 @@ export default function addCellFormatting() {
             //Apply cell formmating.
             di.color = (d[`${di.col}-color`] || 'white').toLowerCase();
             if (!/white/.test(di.color))
-                cell.style(
-                    'border-bottom',
-                    `2px solid ${di.color === 'black' ? '#ccc' : di.color}`
-                ); // border-bottom
-            if (!/black|white/.test(di.color)) cell.style('color', di.color); // color
+                cell.style({
+                    'border-bottom': `2px solid ${di.color === 'black' ? '#ccc' : di.color}`,
+                }); // border-bottom
+            if (!/black|white/.test(di.color))
+                cell.style({
+                    background: di.color,
+                    opacity: .9,
+                }); // color
+            if (!context.config.display_cell_text)
+                cell.style('color', 'transparent');
 
             //Italicize expected visits.
             //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))

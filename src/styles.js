@@ -158,6 +158,17 @@ export default function styles() {
                 '    width: 100%;' +
                 '    overflow-x: scroll;' +
                 '}',
+                '.interactivity.pvl-cell-text-toggle {' +
+                '    margin-right: 10px;' +
+                '    border: 1px solid #aaa;' +
+                '    border-radius: 5px;' +
+                '    padding: 5px;' +
+                '}',
+                '.pvl-cell-text-toggle__label {' +
+                '}',
+                '.pvl-cell-text-toggle__checkbox {' +
+                '    margin-left: 5px;' +
+                '}',
                 '.pvl-listing .wc-table table {' +
                 '    display: table;' +
                 '    border: 0;' +

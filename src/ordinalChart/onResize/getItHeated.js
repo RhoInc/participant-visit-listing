@@ -1,6 +1,6 @@
 export default function getItHeated() {
     const context = this;
-    console.log(this);
+
     this.marks[0].groups.each(function(d) {
         const group = d3.select(this);
         group.select('rect.pvl-heat-rect').remove();

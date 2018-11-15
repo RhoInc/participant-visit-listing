@@ -416,7 +416,7 @@
 
         this.containers.lowerRow = this.containers.main.append('div').classed('pvl-row pvl-row--lower', true);
         this.containers.tabContainer = this.containers.lowerRow.append('div').classed('pvl-tabs', true);
-        this.containers.tabs = this.containers.tabContainer.selectAll('div').data(['Listing', 'Charts', 'Visit Chart', 'Study Day Chart']).enter().append('div').attr('class', function (d) {
+        this.containers.tabs = this.containers.tabContainer.selectAll('div').data(['Listing', 'Charts']).enter().append('div').attr('class', function (d) {
             return 'pvl-tab pvl-tab--' + d.toLowerCase() + ' ' + (d === _this.settings.active_tab ? 'pvl-tab--active' : '');
         }).text(function (d) {
             return d;
@@ -1248,9 +1248,15 @@
     function onInit$1() {}
 
     function onLayout$1() {
-        this.bottomXAxisG = this.svg.select('.x.axis').classed('x--bottom', true);
-        this.topXAxisG = this.svg.append('g').classed('x x--top axis ordinal', true);
-        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+        this.topXAxis = {
+            container: this.svg.append('g').classed('x x--top axis ordinal', true)
+        };
+        this.topXAxis.label = this.topXAxis.container.append('text').classed('axis-title axis-title--top', true);
+        this.topXAxis.minimize = this.topXAxis.container.append('text').classed('pvl-chart-button pvl-chart-button--minimize', true).html('&minus;<title>Minimize chart</title').attr('title', 'Minimize chart');
+        this.topXAxis.maximize = this.topXAxis.container.append('text').classed('pvl-chart-button pvl-chart-button--maximize', true).html('&plus;<title>Maximize chart').attr('title', 'Maximize chart');
+        this.bottomXAxis = {
+            container: this.svg.select('.x.axis').classed('x--bottom', true)
+        };
     }
 
     function onPreprocess$1() {}
@@ -1265,8 +1271,9 @@
 
     function addTopXAxis() {
         //Draw top x-axis.
-        this.topXAxis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize()), this.topXAxisG.call(this.topXAxis);
-        this.topXAxisG.select('text.axis-title--top').attr({
+        this.topXAxis.axis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).tickFormat(this.config.x_displayFormat).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize());
+        this.topXAxis.container.call(this.topXAxis.axis);
+        this.topXAxis.label.attr({
             transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
             'text-anchor': 'middle'
         }).text('Schedule of Events by ' + this.config.x.label);
@@ -1274,13 +1281,13 @@
 
     function rotateXAxisTickLabels() {
         //Rotate top x-axis tick labels.
-        var topXAxisTickLabels = this.topXAxisG.selectAll('.tick text');
+        var topXAxisTickLabels = this.topXAxis.container.selectAll('.tick text');
         topXAxisTickLabels.attr({
             transform: 'rotate(-45)'
         }).style('text-anchor', 'start');
 
         //Rotate bottom x-axis tick labels.
-        var bottomXAxisTickLabels = this.bottomXAxisG.selectAll('.tick text');
+        var bottomXAxisTickLabels = this.bottomXAxis.container.selectAll('.tick text');
         bottomXAxisTickLabels.attr({
             transform: 'rotate(-45)'
         }).style('text-anchor', 'end');
@@ -1288,7 +1295,7 @@
 
     function getItHeated() {
         var context = this;
-        console.log(this);
+
         this.marks[0].groups.each(function (d) {
             var group = d3.select(this);
             group.select('rect.pvl-heat-rect').remove();

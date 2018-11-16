@@ -34,7 +34,11 @@ export default function styles() {
                 '.pvl-legend {' +
                 '    width: 44%;' +
                 '    float: left;' +
-                '    padding-top: 16px;' +
+                '    text-align: center;' +
+                '}',
+                '.pvl-legend__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
                 '}',
                 '.pvl-legend__ul {' +
                 '    list-style-type: none;' +

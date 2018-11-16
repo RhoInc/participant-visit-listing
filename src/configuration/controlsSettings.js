@@ -9,7 +9,8 @@ export default function controlsSettings() {
             {
                 type: 'subsetter',
                 value_col: null,
-                label: 'Participant Status'
+                label: 'Participant Status',
+                multiple: true,
             }
         ]
     };

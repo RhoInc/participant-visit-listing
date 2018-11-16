@@ -10,12 +10,15 @@ export default function controls() {
     );
 
     //Update legend when controls change.
-    this.controls.wrap.on('change', function(d) {
+    this.controls.wrap.on('change', function() {
         context.data.filtered = context.data.raw;
         context.listing.filters.forEach(filter => {
-            context.data.filtered = context.data.filtered.filter(
-                d => filter.val === 'All' || d[filter.col] === filter.val
-            );
+            context.data.filtered = context.data.filtered
+                .filter(d => (
+                    Array.isArray(filter.val)
+                        ? filter.val.indexOf(d[filter.col]) > -1
+                        : filter.val === 'All' || d[filter.col] === filter.val
+                ));
         });
         updateLegend.call(context);
     });

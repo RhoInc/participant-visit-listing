@@ -39,7 +39,8 @@
         "babel-register": "^6.26.0",
         "prettier": "^1.7.4",
         "rollup": "^0.66.6",
-        "rollup-plugin-babel": "^3.0.2"
+        "rollup-plugin-babel": "^3.0.2",
+        "rollup-plugin-node-resolve": "^3.4.0"
     },
     "optionalDependencies": {
         "jspdf": "^1.4.1",

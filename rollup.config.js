@@ -1,3 +1,4 @@
+import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 
 var pkg = require('./package.json');
@@ -17,7 +18,7 @@ module.exports = {
         format: 'umd',
         globals: {
             d3: 'd3',
-            webcharts: 'webCharts'
+            webcharts: 'webCharts',
         },
     },
     external: (function() {
@@ -26,6 +27,13 @@ module.exports = {
         return Object.keys(dependencies);
     }()),
     plugins: [
+        resolve({
+            module: true,
+            jsnext: true,
+            main: true,
+            browser: true,
+            extensions: ['.js'],
+        }),
         babel({
             exclude: 'node_modules/**',
             presets: [

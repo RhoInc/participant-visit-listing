@@ -1,390 +1,184 @@
 {
     "title": "settings",
     "description": "JSON schema for the configuration of the participant-visit-listing",
-    "overview": "The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays. The Participant Visit Listing object contains Webcharts `table` and `chart` objects, many default Webcharts settings are defined in the [settings.js file](https://github.com/RhoInc/clinical-timelines/blob/master/src/defaults/settings.js) as [described below](#webcharts-settings). Refer to the [Webcharts documentation](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) for more details on these settings.\nIn addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Clinical Timelines to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.",
-    "version": "1.4.0",
+    "overview": "The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays.\nThe Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects.\nRefer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.\nIn addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality.\nThese custom settings are described in detail below.\nAll defaults can be overwritten by users.",
+    "version": "1.2.0",
     "type": "object",
     "properties": {
+        "site_col": {
+            "title": "Site",
+            "description": "name of variable that captures site",
+            "default": "site_name",
+            "type": "string"
+        },
         "id_col": {
-            "title": "ID",
-            "description": "unique identifier variable name",
-            "default": "USUBJID",
+            "title": "Participant ID",
+            "description": "name of variable that captures participant ID",
+            "default": "subjectnameoridentifier",
             "type": "string"
         },
-        "id_unit": {
-            "title": "ID Unit",
-            "description": "unique identifier unit",
-            "default": "participant",
+        "id_status_col": {
+            "title": "Participant Status",
+            "description": "name of variable that captures participant status",
+            "default": "subject_status",
             "type": "string"
         },
-        "id_characteristics": {
-            "title": "ID Characteristics",
-            "description": "an array of identifier characteristic variables and associated metadata",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value_col": {
-                        "title": "Variable name",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Variable label",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "event_col": {
-            "title": "Event Type",
-            "description": "event type variable name",
-            "default": "DOMAIN",
+        "visit_col": {
+            "title": "Visit",
+            "description": "name of variable that captures visit",
+            "default": "visit_name",
             "type": "string"
         },
-        "event_types": {
-            "title": "Initial Event Types",
-            "description": "an array of event types displayed initially",
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "event_highlighted": {
-            "title": "Highlighted Event",
-            "description": "initial highlighted event type",
-            "default": null,
+        "visit_order_col": {
+            "title": "Sort Order of Visit",
+            "description": "name of variable that captures sort order of visit",
+            "default": "visit_number",
             "type": "string"
         },
-        "event_highlight_color": {
-            "title": "Highlighted Event Color",
-            "description": "fill color of highlighted events",
-            "default": "black",
+        "visit_date_col": {
+            "title": "Date of Visit",
+            "description": "name of variable that captures date of visit",
+            "default": "visit_date",
             "type": "string"
         },
-        "event_symbols": {
-            "title": "Lucky Charms",
-            "description": "an array of event types and the symbols that will represent them",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "events": {
-                        "title": "Event Types",
-                        "description": "an array of event types that will be represented by the specified symbol",
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "symbol": {
-                        "title": "Symbol",
-                        "description": "the symbol that will represent the corresponding event types",
-                        "type": "string",
-                        "enum": [
-                            "circle",
-                            "square",
-                            "triangle",
-                            "diamond"
-                        ]
-                    },
-                    "direction": {
-                        "title": "Symbol Direction",
-                        "description": "the direction the symbol points (only applies to triangles)",
-                        "type": "string",
-                        "enum": [
-                            "up",
-                            "right",
-                            "down",
-                            "left"
-                        ]
-                    }
-                }
-            }
-        },
-        "filters": {
-            "title": "Filters",
-            "description": "an array of filter variables and associated metadata",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value_col": {
-                        "title": "Variable name",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Variable label",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "groupings": {
-            "title": "ID Grouping",
-            "description": "an array of categorical ID characteristic variables with which to group IDs",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value_col": {
-                        "title": "Variable name",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Variable label",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "grouping_initial": {
-            "title": "Initial ID Grouping",
-            "description": "initial ID grouping variable",
-            "default": null,
+        "visit_day_col": {
+            "title": "Study Day of Visit",
+            "description": "name of variable that captures study day of visit",
+            "default": "visit_day",
             "type": "string"
         },
-        "grouping_direction": {
-            "title": "Grouping Annotation Placement",
-            "description": "grouping annotation placement",
-            "default": "horizontal",
+        "visit_status_col": {
+            "title": "Visit Status",
+            "description": "name of variable that captures status of visit",
+            "default": "visit_status",
+            "type": "string"
+        },
+        "visit_status_order_col": {
+            "title": "Sort Order of Visit Status",
+            "description": "name of variable that captures sort order of visit status",
+            "default": "visit_status_order",
+            "type": "string"
+        },
+        "visit_text_col": {
+            "title": "Listing Cell Text",
+            "description": "name of variable that captures text to be printed in listing cells",
+            "default": "visit_text",
+            "type": "string"
+        },
+        "visit_text_color_col": {
+            "title": "Visit Status Color",
+            "description": "name of variable that captures desired color of visit status",
+            "default": "visit_text_color",
+            "type": "string",
+            "requirement": "color must be hex RGB"
+        },
+        "visit_status_description_col": {
+            "title": "Description of Visit Status",
+            "description": "name of variable that captures a more detailed description of the visit status",
+            "default": "visit_status_description",
+            "type": "string"
+        },
+        "visit_expectation_pattern": {
+            "title": "Visit Expectation Text Pattern",
+            "description": "this string will be converted to a regular expression that will identify visit statuses that represent overdue or future visits",
+            "default": "/expect|future|overdue/i",
+            "type": "string"
+        },
+        "visit_exclusion_pattern": {
+            "title": "Visit Exclusion Text Pattern",
+            "description": "this string will be converted to a regular expression that will identify non-scheduled visits, e.g. unscheduled, repeat, and early termination visits",
+            "default": "/unscheduled|early termination|repeat/i",
+            "type": "string"
+        },
+        "visit_status_exclusion_col": {
+            "title": "Visit Status Exclusion Flag",
+            "description": "name of variable that identifies visit statuses to exclude from visit status legend",
+            "default": "plot_exclude",
+            "type": "string"
+        },
+        "visit_status_exclusion_value": {
+            "title": "Visit Status Exclusion Value",
+            "description": "value of variable that identifies visit statuses to exclude from visit status legend",
+            "default": "Yes",
+            "type": "string"
+        },
+        "active_tab": {
+            "title": "Initially Active Tab",
+            "description": "name of tab, Listing or Charts, that is displayed initially",
+            "default": "Listing",
             "type": "string",
             "enum": [
-                "horizontal",
-                "vertical"
+                "Listing",
+                "Charts"
             ]
-        },
-        "time_scale": {
-            "title": "Time Scale",
-            "description": "the time scale on which to plot events",
-            "type": "string",
-            "default": "Date",
-            "enum": [
-                "Date",
-                "Day"
-            ]
-        },
-        "stdt_col": {
-            "title": "Start Date",
-            "description": "start date variable name",
-            "default": "STDT",
-            "type": "string"
-        },
-        "endt_col": {
-            "title": "End Date",
-            "description": "end date variable name",
-            "default": "ENDT",
-            "type": "string"
-        },
-        "date_range": {
-            "title": "Date Range",
-            "description": "start and stop dates with which to define the x-axis domain and which match settings.date_format",
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-                "type": "string"
-            }
-        },
-        "date_ranges": {
-            "title": "Date Ranges",
-            "description": "start and stop date ranges which populate the time range dropdown",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "domain": {
-                        "title": "Date Range",
-                        "description": "start and stop dates with which to define the x-axis domain and which match settings.date_format",
-                        "type": "array",
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "items": {
-                            "type": "string"
-                        }
-                    },
-                    "label": {
-                        "title": "Date Range Label",
-                        "description": "a description of the date range",
-                        "type": "string"
-                    }
-                }
-            }
         },
         "date_format": {
-            "title": "Input Date Format",
-            "description": "date format of start and stop date variables",
+            "title": "Visit Date Format",
+            "description": "a strptime specification of time format directives, used to parse visit date",
             "default": "%Y-%m-%d",
             "type": "string"
         },
-        "date_display_format": {
-            "title": "Displayed Date Format",
-            "description": "date format of x-axis",
-            "default": "%b %y",
-            "type": "string"
+        "display_cell_text": {
+            "title": "Display Listing Cell Text?",
+            "description": "controls the display of the listing, either as a heat map or as a listing",
+            "default": false,
+            "type": "boolean"
         },
-        "stdy_col": {
-            "title": "Start Day",
-            "description": "start day variable name",
-            "default": "STDY",
-            "type": "string"
-        },
-        "endy_col": {
-            "title": "End Day",
-            "description": "end day variable name",
-            "default": "ENDY",
-            "type": "string"
-        },
-        "day_range": {
-            "title": "Day Range",
-            "description": "start and stop days with which to define the x-axis domain",
-            "type": "array",
-            "minItems": 2,
-            "maxItems": 2,
-            "items": {
-                "type": "number"
-            }
-        },
-        "day_ranges": {
-            "title": "Day Ranges",
-            "description": "start and stop day ranges which populate the time range dropdown",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "domain": {
-                        "title": "Day Range",
-                        "description": "start and stop days with which to define the x-axis domain",
-                        "type": "array",
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "items": {
-                            "type": "number"
-                        }
-                    },
-                    "label": {
-                        "title": "Day Range Label",
-                        "description": "a description of the day range",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "seq_col": {
-            "title": "Sequence Number",
-            "description": "event type sequence variable name",
-            "default": "SEQ",
-            "type": "string"
-        },
-        "tooltip_col": {
-            "title": "Event Details",
-            "description": "hovering over a mark displays a tooltip with the details of the event",
-            "default": "TOOLTIP",
-            "type": "string"
-        },
-        "ongo_col": {
-            "title": "Ongoing?",
-            "description": "ongoing event indicator variable name",
-            "default": "ONGO",
-            "type": "string"
-        },
-        "ongo_val": {
-            "title": "Ongoing Value",
-            "description": "ongoing event indicator value",
-            "default": "Y",
-            "type": "string"
-        },
-        "offset_col": {
-            "title": "Offset Factor",
-            "description": "the name of the variable that contains a ranking of vertical position at which to draw a mark",
-            "type": "string"
-        },
-        "reference_lines": {
-            "title": "Reference Timepoints",
-            "description": "an array of reference timepoints and associated descriptions",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "timepoint": {
-                        "title": "Timepoint",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Reference timepoint description",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "transpose_data": {
-            "title": "Transpose Data Export?",
-            "description": "by default data are exported as one record per event; this option transposes the data so each even type has two columns: start and end",
-            "type": "boolean",
-            "default": false
-        },
-        "mark_thickness": {
-            "title": "Mark Thiccness",
-            "description": "a number that controls the the stroke width of lines and the radius of circles",
-            "type": "number",
-            "default": 6
-        },
-        "details": {
-            "title": "Details Listing",
-            "description": "an array of detail listing variables and associated metadata",
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "value_col": {
-                        "title": "Variable name",
-                        "type": "string"
-                    },
-                    "label": {
-                        "title": "Variable label",
-                        "type": "string"
-                    }
-                }
-            }
-        },
-        "details_config": {
-            "title": "Details Listing Settings",
-            "description": "a webcharts table settings object",
-            "type": "object",
+        "chart_margin": {
+            "title": "Chart Margins",
+            "description": "controls the margins of the charts; modify as needed to create space for rotated x-axis tick labels",
             "properties": {
-                "cols": {
-                    "title": "List of variables",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "top": {
+                    "title": "Top",
+                    "default": 100,
+                    "type": "numeric"
                 },
-                "headers": {
-                    "title": "List of headers",
-                    "type": "string",
-                    "items": {
-                        "type": "string"
-                    }
+                "right": {
+                    "title": "Right",
+                    "type": "numeric"
                 },
-                "searchable": {
-                    "title": "Searchable?",
-                    "type": "boolean",
-                    "default": true
+                "bottom": {
+                    "title": "Bottom",
+                    "default": 100,
+                    "type": "numeric"
                 },
-                "sortable": {
-                    "title": "sortable?",
-                    "type": "boolean",
-                    "default": true
-                },
-                "pagination": {
-                    "title": "Paginated?",
-                    "type": "boolean",
-                    "default": true
-                },
-                "exportable": {
-                    "title": "Exportable?",
-                    "type": "boolean",
-                    "default": true
+                "left": {
+                    "title": "Left",
+                    "type": "numeric"
                 }
+            },
+            "type": "object"
+        },
+        "filter_cols": {
+            "title": "Custom Filter Variables",
+            "description": "custom filter variables, in addition to site and participant status",
+            "defaults": [
+                "subset1",
+                "subset2",
+                "subset3",
+                "overdue2"
+            ],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "pagination": {
+            "title": "Listing Pagination?",
+            "description": "disable pagination to view all participants at the same time",
+            "default": false,
+            "type": "boolean"
+        },
+        "exports": {
+            "title": "Listing Export Formats",
+            "description": "default export formats are to .xlsx and .csv; if jsPDF is available export to .pdf will also be available",
+            "defaults": [
+                "xlsx",
+                "csv"
+            ],
+            "type": "array",
+            "items": {
+                "type": "string"
             }
         }
     }

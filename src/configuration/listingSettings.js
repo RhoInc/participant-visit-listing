@@ -23,7 +23,7 @@ export default function listingSettings() {
         visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
-        active_tab: 'Charts', // ['Listing', 'Charts']
+        active_tab: 'Listing', // ['Listing', 'Charts']
         date_format: '%Y-%m-%d', // format of visit dates
         display_cell_text: false,
         chart_margin: {

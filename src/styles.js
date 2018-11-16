@@ -147,6 +147,20 @@ export default function styles() {
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +
                 '}' +
+                '.pvl-chart .pvl-chart-button {' +
+                '    font-size: 24px;' +
+                '    cursor: pointer;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button:hover {' +
+                '    font-weight: bold;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--minimize {' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--split {' +
+                '    font-size: 12px;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--maximize {' +
+                '}' +
 
             /****---------------------------------------------------------------------------------\
               Listing

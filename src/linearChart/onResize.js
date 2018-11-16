@@ -1,21 +1,11 @@
-export default function onResize() {
-    this.legend.remove();
+import removeLegend from './onResize/removeLegend';
+import drawTopXAxis from './onResize/drawTopXAxis';
+import positionButtons from './onResize/positionButtons';
+import rotateXAxisTickLabels from './onResize/rotateXAxisTickLabels';
 
-    //Draw top x-axis.
-    (this.topXAxis = d3.svg
-        .axis()
-        .scale(this.x)
-        .orient('top')
-        .ticks(this.xAxis.ticks()[0])
-        .tickFormat(this.config.x_displayFormat)
-        .innerTickSize(this.xAxis.innerTickSize())
-        .outerTickSize(this.xAxis.outerTickSize())),
-        this.topXAxisG.call(this.topXAxis);
-    this.topXAxisG
-        .select('text.axis-title--top')
-        .attr({
-            transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
-            'text-anchor': 'middle'
-        })
-        .text(`Schedule of Events by ${this.config.x.label}`);
+export default function onResize() {
+    removeLegend.call(this);
+    drawTopXAxis.call(this);
+    positionButtons.call(this);
+    rotateXAxisTickLabels.call(this);
 }

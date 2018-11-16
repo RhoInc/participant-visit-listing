@@ -1,6 +1,6 @@
-export default function addTopXAxis() {
+export default function drawTopXAxis() {
     //Draw top x-axis.
-        this.topXAxis.axis = d3.svg
+    this.topXAxis.axis = d3.svg
         .axis()
         .scale(this.x)
         .orient('top')

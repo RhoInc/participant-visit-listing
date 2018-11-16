@@ -12,11 +12,9 @@ export default function getItHeated() {
                 y: context.y(d.values.y),
                 width: context.x.rangeBand(),
                 height: context.y.rangeBand(),
-                fill: context.colorScale(
-                    d.values.raw[0][context.config.color_by]
-                ),
+                fill: context.colorScale(d.values.raw[0][context.config.color_by]),
                 stroke: '#aaa',
-                'stroke-width': .5,
+                'stroke-width': 0.5
             });
     });
 }

@@ -1,20 +1,10 @@
+import addTopXAxis from './onLayout/addTopXAxis';
+import addButtons from './onLayout/addButtons';
+
 export default function onLayout() {
-    this.topXAxis = {
-        container: this.svg.append('g').classed('x x--top axis ordinal', true),
-    };
-    this.topXAxis.label = this.topXAxis.container
-        .append('text').classed('axis-title axis-title--top', true);
-    this.topXAxis.minimize = this.topXAxis.container
-        .append('text')
-        .classed('pvl-chart-button pvl-chart-button--minimize', true)
-        .html('&minus;<title>Minimize chart</title')
-        .attr('title', 'Minimize chart');
-    this.topXAxis.maximize = this.topXAxis.container
-        .append('text')
-        .classed('pvl-chart-button pvl-chart-button--maximize', true)
-        .html('&plus;<title>Maximize chart')
-        .attr('title', 'Maximize chart');
+    addTopXAxis.call(this);
+    addButtons.call(this);
     this.bottomXAxis = {
-        container: this.svg.select('.x.axis').classed('x--bottom', true),
+        container: this.svg.select('.x.axis').classed('x--bottom', true)
     };
 }

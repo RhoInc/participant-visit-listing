@@ -16,9 +16,8 @@ export default function toggleCellText() {
         .classed('pvl-cell-text-toggle__checkbox', true)
         .attr('type', 'checkbox')
         .property('checked', this.config.display_cell_text);
-    this.cellTextToggle.checkbox
-        .on('click', function() {
-            context.config.display_cell_text = this.checked;
-            context.draw();
-        });
+    this.cellTextToggle.checkbox.on('click', function() {
+        context.config.display_cell_text = this.checked;
+        context.draw();
+    });
 }

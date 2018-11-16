@@ -26,6 +26,7 @@
     },
     "scripts": {
         "build": "npm audit fix && npm run bundle && npm run format",
+        "build-config": "node ./scripts/build-configuration-wiki.js",
         "bundle": "rollup -c",
         "format": "npm run format-src && npm run format-bundle",
         "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/!(*layout|*styles).js\"",

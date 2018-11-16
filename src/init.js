@@ -28,5 +28,4 @@ export default function init(data) {
     this.listing.init(this.data.transposed);
     updateMultiSelects.call(this);
     update.call(this);
-    console.log(this);
 }

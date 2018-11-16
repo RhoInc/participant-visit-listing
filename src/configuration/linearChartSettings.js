@@ -1,6 +1,6 @@
 import commonChartSettings from './commonChartSettings';
 
-export default function ordinalChartSettings() {
+export default function linearChartSettings() {
     const settings = commonChartSettings();
     settings.x.type = 'linear';
     settings.x.label = 'Study Day';

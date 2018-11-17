@@ -1978,25 +1978,10 @@
         });
     }
 
-    function rotateXAxisTickLabels$1() {
-        //Rotate top x-axis tick labels.
-        this.topXAxis.container
-            .selectAll('.tick text')
-            .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'start');
-
-        //Rotate bottom x-axis tick labels.
-        this.bottomXAxis.container
-            .selectAll('.tick text')
-            .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'end');
-    }
-
     function onResize$1() {
         removeLegend$1.call(this);
         drawTopXAxis$1.call(this);
         positionButtons$1.call(this);
-        rotateXAxisTickLabels$1.call(this);
     }
 
     function onDestroy$2() {}

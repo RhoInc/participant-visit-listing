@@ -28,6 +28,6 @@ export default function rendererSettings() {
         chart_margin: {
             top: 100,
             bottom: 100
-        },
+        }
     };
 }

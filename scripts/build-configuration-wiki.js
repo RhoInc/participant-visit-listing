@@ -55,7 +55,7 @@ function setDefault(setting) {
                 markdown.push(`## settings.${property}`);
                 markdown.push(`\`${setting.type}\``);
                 markdown.push(``);
-                markdown.push(`${setting.description}`);
+                markdown.push(`${setting.description || setting.title}`);
 
                 if (setting.type !== 'object') {
                     markdown.push(``);
@@ -68,7 +68,7 @@ function setDefault(setting) {
                             markdown.push(`### settings.${property}.${subProperty}`);
                             markdown.push(`\`${subSetting.type}\``);
                             markdown.push(``);
-                            markdown.push(`${subSetting.description}`);
+                            markdown.push(`${subSetting.description || subSetting.title}`);
                             markdown.push(``);
                             markdown.push(setDefault(subSetting));
                         });
@@ -82,7 +82,7 @@ function setDefault(setting) {
                             markdown.push(`### settings.${property}[].${subProperty}`);
                             markdown.push(`\`${subSetting.type}\``);
                             markdown.push(``);
-                            markdown.push(`${subSetting.description}`);
+                            markdown.push(`${subSetting.description || subSetting.title}`);
                             markdown.push(``);
                             markdown.push(setDefault(subSetting));
                         });

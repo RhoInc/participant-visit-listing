@@ -190,36 +190,30 @@ controls the display of the listing, either as a heat map or as a listing
 controls the margins of the charts; modify as needed to create space for rotated x-axis tick labels
 
 ### settings.chart_margin.top
-`numeric`
+`number`
 
-undefined
+space above the chart canvas
 
-**default:** 
-```
-undefined
-```
+**default:** `100`
 
 ### settings.chart_margin.right
-`numeric`
+`number`
 
-undefined
+space to the right of the chart canvas
 
 **default:** none
 
 ### settings.chart_margin.bottom
-`numeric`
+`number`
 
-undefined
+space below the chart canvas; if unspecified, imputed to fit x-axis
 
-**default:** 
-```
-undefined
-```
+**default:** `100`
 
 ### settings.chart_margin.left
-`numeric`
+`number`
 
-undefined
+space to the left of the chart canvas; if unspecified, imputed to fit y-axis
 
 **default:** none
 
@@ -251,7 +245,7 @@ default export formats are to .xlsx and .csv; if jsPDF is available export to .p
 **default:** none
 
 # Webcharts settings
-The objects below contains Webcharts settings for each display as of version 1.2.0.
+The objects below contain Webcharts settings for each display as of version 1.2.0 of the Participant Visit Listing.
 
 ## Listing
 ```

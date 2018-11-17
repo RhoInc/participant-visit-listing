@@ -24,7 +24,12 @@ export default function participantVisitListing(element, settings = {}) {
     };
 
     //Merge and sync user settings with default settings.
-    pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.rendererSettings, pvl.settings.user);
+    pvl.settings.listingMerged = Object.assign(
+        {},
+        pvl.settings.listingSettings,
+        pvl.settings.rendererSettings,
+        pvl.settings.user
+    );
     configuration.syncListingSettings.call(pvl);
 
     pvl.settings.ordinalChartMerged = Object.assign(

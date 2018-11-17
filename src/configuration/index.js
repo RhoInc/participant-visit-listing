@@ -17,5 +17,5 @@ export default {
     ordinalChartSettings,
     syncOrdinalChartSettings,
     linearChartSettings,
-    syncLinearChartSettings,
+    syncLinearChartSettings
 };

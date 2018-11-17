@@ -126,25 +126,29 @@
         },
         "chart_margin": {
             "title": "Chart Margins",
-            "description": "controls the margins of the charts; modify as needed to create space for rotated x-axis tick labels",
+            "description": "controls the margins around the chart canvas, e.g. for the axes; modify as needed to create space for rotated x-axis tick labels",
             "properties": {
                 "top": {
-                    "title": "Top",
+                    "title": "Top Margin",
+                    "description": "space above the chart canvas",
                     "default": 100,
-                    "type": "numeric"
+                    "type": "number"
                 },
                 "right": {
-                    "title": "Right",
-                    "type": "numeric"
+                    "title": "Right Margin",
+                    "description": "space to the right of the chart canvas",
+                    "type": "number"
                 },
                 "bottom": {
-                    "title": "Bottom",
+                    "title": "Bottom Margin",
+                    "description": "space below the chart canvas; if unspecified, imputed to fit x-axis",
                     "default": 100,
-                    "type": "numeric"
+                    "type": "number"
                 },
                 "left": {
-                    "title": "Left",
-                    "type": "numeric"
+                    "title": "Left Margin",
+                    "description": "space to the left of the chart canvas; if unspecified, imputed to fit y-axis",
+                    "type": "number"
                 }
             },
             "type": "object"

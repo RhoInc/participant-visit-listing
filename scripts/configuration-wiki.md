@@ -1,14 +1,6 @@
-The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays.
+The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays. The Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects. Refer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.
 
-The Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects.
-
-Refer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.
-
-In addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality.
-
-These custom settings are described in detail below.
-
-All defaults can be overwritten by users.
+In addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.
 
 # Renderer-specific settings
 The sections below describe each participant-visit-listing setting as of version 1.2.0.
@@ -187,7 +179,7 @@ controls the display of the listing, either as a heat map or as a listing
 ## settings.chart_margin
 `object`
 
-controls the margins of the charts; modify as needed to create space for rotated x-axis tick labels
+controls the margins around the chart canvas, e.g. for the axes; modify as needed to create space for rotated x-axis tick labels
 
 ### settings.chart_margin.top
 `number`

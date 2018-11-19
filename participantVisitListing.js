@@ -210,6 +210,8 @@
                 });
             });
         }
+        listingSettings.filter_cols.splice(0, 0, siteFilter.value_col);
+        listingSettings.filter_cols.splice(1, 0, idStatusFilter.value_col);
 
         this.settings.controlsSynced = controlsSettings;
         Object.assign(this.settings, controlsSettings);
@@ -674,16 +676,20 @@
                 '    font-weight: bold;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button {' +
-                '    font-size: 24px;' +
+                '    font-size: 30px;' +
                 '    cursor: pointer;' +
+                '    fill: black;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button:hover {' +
-                '    font-weight: bold;' +
+                '    fill: blue;' +
+                '    stroke: blue;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--minimize {' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--split {' +
-                '    font-size: 12px;' +
+                '    font-size: 24px;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--split:hover {' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
@@ -806,8 +812,6 @@
     }
 
     function controls() {
-        var context = this;
-
         //Define controls.
         this.controls = new webCharts.createControls(
             this.containers.controls.node(),
@@ -815,17 +819,19 @@
         );
 
         //Update legend when controls change.
-        this.controls.wrap.on('change', function() {
-            context.data.filtered = context.data.raw;
-            context.listing.filters.forEach(function(filter) {
-                context.data.filtered = context.data.filtered.filter(function(d) {
-                    return Array.isArray(filter.val)
-                        ? filter.val.indexOf(d[filter.col]) > -1
-                        : filter.val === 'All' || d[filter.col] === filter.val;
-                });
-            });
-            update.call(context);
-        });
+        //this.controls.wrap.on('change', function() {
+        //    context.data.filtered = context.data.raw;
+        //    context.listing.filters.forEach(filter => {
+        //        context.data.filtered = context.data.filtered.filter(
+        //            d =>
+        //                Array.isArray(filter.val)
+        //                    ? filter.val.indexOf(d[filter.col]) > -1
+        //                    : filter.val === 'All' || d[filter.col] === filter.val
+        //        );
+        //    });
+        //    console.log('filter length: ' + context.data.filtered.length);
+        //    updateLegend.call(context);
+        //});
     }
 
     function onInit() {
@@ -1680,7 +1686,9 @@
         this.listing.on('destroy', onDestroy);
     }
 
-    function onInit$1() {}
+    function onInit$1() {
+        this.property = 'ordinalChart';
+    }
 
     function addTopXAxis() {
         this.topXAxis = {
@@ -1692,9 +1700,11 @@
     }
 
     function minimize() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
-        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '100%');
-        this.pvl.linearChart.draw();
+        var thisChart = this.property;
+        var thatChart = this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+        this.pvl.containers[thisChart].classed('pvl-hidden', true);
+        this.pvl.containers[thatChart].classed('pvl-hidden', false).style('width', '100%');
+        this.pvl[thatChart].draw();
     }
 
     function split() {
@@ -1705,9 +1715,11 @@
     }
 
     function maximize() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '100%');
-        this.pvl.containers.linearChart.classed('pvl-hidden', true);
-        this.pvl.ordinalChart.draw();
+        var thisChart = this.property;
+        var thatChart = this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+        this.pvl.containers[thatChart].classed('pvl-hidden', true);
+        this.pvl.containers[thisChart].classed('pvl-hidden', false).style('width', '100%');
+        this.pvl[thisChart].draw();
     }
 
     function addButtons() {
@@ -1717,31 +1729,31 @@
         this.topXAxis.minimize = this.topXAxis.container
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--minimize', true)
-            .html('&minus;<title>Minimize chart</title')
-            .attr('title', 'Minimize chart')
+            .text('\u2212')
             .on('click', function() {
                 return minimize.call(_this);
             });
+        this.topXAxis.minimize.append('title').text('MinimizeChart');
 
         //Add split chart button.
         this.topXAxis.split = this.topXAxis.container
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--split', true)
-            .html('&#8418;&#8418;<title>View both charts</title>')
-            .attr('title', 'View both chart')
+            .text('\u25A1\u25A1')
             .on('click', function() {
                 return split.call(_this);
             });
+        this.topXAxis.split.append('title').text('View both charts');
 
         //Add maximize chart button.
         this.topXAxis.maximize = this.topXAxis.container
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--maximize', true)
-            .html('&plus;<title>Maximize chart')
-            .attr('title', 'Maximize chart')
+            .text('+')
             .on('click', function() {
                 return maximize.call(_this);
             });
+        this.topXAxis.maximize.append('title').text('Maximize Chart');
     }
 
     function onLayout$1() {
@@ -1783,15 +1795,15 @@
 
     function positionButtons() {
         this.topXAxis.minimize.attr({
-            transform: 'translate(' + (this.plot_width - 50) + ',' + -(this.margin.top - 20) + ')',
+            transform: 'translate(' + (this.plot_width - 60) + ',' + -(this.margin.top - 24) + ')',
             'text-anchor': 'middle'
         });
         this.topXAxis.split.attr({
-            transform: 'translate(' + (this.plot_width - 30) + ',' + -(this.margin.top - 16) + ')',
+            transform: 'translate(' + (this.plot_width - 35) + ',' + -(this.margin.top - 18) + ')',
             'text-anchor': 'middle'
         });
         this.topXAxis.maximize.attr({
-            transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 20) + ')',
+            transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 24) + ')',
             'text-anchor': 'middle'
         });
     }
@@ -1860,73 +1872,13 @@
         this.ordinalChart.on('destroy', onDestroy$1);
     }
 
-    function onInit$2() {}
-
-    function addTopXAxis$1() {
-        this.topXAxis = {
-            container: this.svg.append('g').classed('x x--top axis ordinal', true)
-        };
-        this.topXAxis.label = this.topXAxis.container
-            .append('text')
-            .classed('axis-title axis-title--top', true);
-    }
-
-    function minimize$1() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '100%');
-        this.pvl.containers.linearChart.classed('pvl-hidden', true);
-        this.pvl.ordinalChart.draw();
-    }
-
-    function split$1() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '49.5%');
-        this.pvl.ordinalChart.draw();
-        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '49.5%');
-        this.pvl.linearChart.draw();
-    }
-
-    function maximize$1() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
-        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '100%');
-        this.pvl.linearChart.draw();
-    }
-
-    function addButtons$1() {
-        var _this = this;
-
-        //Add minimize chart button.
-        this.topXAxis.minimize = this.topXAxis.container
-            .append('text')
-            .classed('pvl-chart-button pvl-chart-button--minimize', true)
-            .html('&minus;<title>Minimize chart</title')
-            .attr('title', 'Minimize chart')
-            .on('click', function() {
-                return minimize$1.call(_this);
-            });
-
-        //Add split chart button.
-        this.topXAxis.split = this.topXAxis.container
-            .append('text')
-            .classed('pvl-chart-button pvl-chart-button--split', true)
-            .html('&#8418;&#8418;<title>View both charts</title>')
-            .attr('title', 'View both chart')
-            .on('click', function() {
-                return split$1.call(_this);
-            });
-
-        //Add maximize chart button.
-        this.topXAxis.maximize = this.topXAxis.container
-            .append('text')
-            .classed('pvl-chart-button pvl-chart-button--maximize', true)
-            .html('&plus;<title>Maximize chart')
-            .attr('title', 'Maximize chart')
-            .on('click', function() {
-                return maximize$1.call(_this);
-            });
+    function onInit$2() {
+        this.property = 'linearChart';
     }
 
     function onLayout$2() {
-        addTopXAxis$1.call(this);
-        addButtons$1.call(this);
+        addTopXAxis.call(this);
+        addButtons.call(this);
         this.bottomXAxis = {
             container: this.svg.select('.x.axis').classed('x--bottom', true)
         };
@@ -1940,48 +1892,10 @@
 
     function onDraw$2() {}
 
-    function removeLegend$1() {
-        this.legend.remove();
-    }
-
-    function drawTopXAxis$1() {
-        //Draw top x-axis.
-        this.topXAxis.axis = d3.svg
-            .axis()
-            .scale(this.x)
-            .orient('top')
-            .ticks(this.xAxis.ticks()[0])
-            .tickFormat(this.config.x_displayFormat)
-            .innerTickSize(this.xAxis.innerTickSize())
-            .outerTickSize(this.xAxis.outerTickSize());
-        this.topXAxis.container.call(this.topXAxis.axis);
-        this.topXAxis.label
-            .attr({
-                transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
-                'text-anchor': 'middle'
-            })
-            .text('Schedule of Events by ' + this.config.x.label);
-    }
-
-    function positionButtons$1() {
-        this.topXAxis.minimize.attr({
-            transform: 'translate(' + (this.plot_width - 50) + ',' + -(this.margin.top - 20) + ')',
-            'text-anchor': 'middle'
-        });
-        this.topXAxis.split.attr({
-            transform: 'translate(' + (this.plot_width - 30) + ',' + -(this.margin.top - 16) + ')',
-            'text-anchor': 'middle'
-        });
-        this.topXAxis.maximize.attr({
-            transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 20) + ')',
-            'text-anchor': 'middle'
-        });
-    }
-
     function onResize$1() {
-        removeLegend$1.call(this);
-        drawTopXAxis$1.call(this);
-        positionButtons$1.call(this);
+        removeLegend.call(this);
+        drawTopXAxis.call(this);
+        positionButtons.call(this);
     }
 
     function onDestroy$2() {}
@@ -2005,32 +1919,29 @@
         this.linearChart.on('destroy', onDestroy$2);
     }
 
+    var charts = {
+        ordinalChart: ordinalChart,
+        linearChart: linearChart
+    };
+
     function checkFilterCols(filterCol) {
         this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
-        if (!this.data.missingVariables[filterCol])
+        if (!this.data.missingVariables[filterCol]) {
             this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
                 function(input) {
                     return input.value_col !== filterCol;
                 }
             );
-        else if (/subset/.test(filterCol)) {
+        } else {
             this.data.filters.push({
                 col: filterCol,
                 value: 'All'
             });
-            this.settings.controlsSynced.inputs.find(function(input) {
-                return input.value_col === filterCol;
-            }).values = d3
-                .set(
-                    this.data.raw.map(function(d) {
-                        return d[filterCol];
-                    })
-                )
-                .values()
-                .filter(function(value) {
-                    return !/^ *$/.test(value);
-                })
-                .sort();
+            //this.settings.controlsSynced.inputs.find(input => input.value_col === filterCol).values = d3
+            //    .set(this.data.raw.map(d => d[filterCol]))
+            //    .values()
+            //    .filter(value => !/^ *$/.test(value))
+            //    .sort();
         }
     }
 
@@ -2316,9 +2227,15 @@
     function filterData(d, select) {
         var _this = this;
 
-        this.data.filters.find(function(filter) {
+        var filter = this.data.filters.find(function(filter) {
             return filter.col === d.value_col;
-        }).value = select.value;
+        });
+        filter.value = select.multiple
+            ? d3
+                  .select(select)
+                  .selectAll('option:checked')
+                  .data()
+            : select.value;
         this.data.filtered = this.data.raw;
         this.data.filters.forEach(function(filter) {
             _this.data.filtered = _this.data.filtered.filter(function(di) {
@@ -2327,19 +2244,21 @@
                     : filter.value === 'All' || di[filter.col] === filter.value;
             });
         });
-        console.log('analysis length: ' + this.data.filtered.length);
     }
 
     function update$1() {
         var context = this;
 
-        var analysisSubsetters = this.controls.wrap
+        //Capture all data filter dropdowns.
+        var filters = this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
-                return /^Analysis Subset \d$/.test(d.label);
+                return d.type === 'subsetter';
             })
             .selectAll('select');
-        analysisSubsetters
+
+        //Remove extra 'All' options; not sure where they're coming from.
+        filters
             .selectAll('option')
             .filter(function(d) {
                 return d === 'All';
@@ -2348,13 +2267,21 @@
                 return i > 0;
             })
             .remove();
-        analysisSubsetters.on('change', function(d) {
+
+        //Redefine the event listener.
+        filters.on('change', function(d) {
             filterData.call(context, d, this);
             defineDefaultSet.call(context, 'id_col');
-            defineVisitSet.call(context);
-            defineColumns.call(context);
+
+            //Update visit set and listing columns if the changed filter controls an analysis subset.
+            if (/^Analysis Subset \d$/.test(d.label)) {
+                defineVisitSet.call(context);
+                defineColumns.call(context);
+            }
+
             transposeData.call(context);
             update.call(context);
+
             context.listing.data.raw = context.data.transposed;
             context.ordinalChart.raw_data = context.data.filtered;
             context.linearChart.raw_data = context.data.filtered;
@@ -2441,8 +2368,8 @@
         styles.call(pvl); // attaches styles object to central object ([pvl])
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
         listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
-        ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
-        linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
         return pvl;
     }

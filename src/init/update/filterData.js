@@ -1,5 +1,11 @@
 export default function filterData(d, select) {
-    this.data.filters.find(filter => filter.col === d.value_col).value = select.value;
+    const filter = this.data.filters.find(filter => filter.col === d.value_col);
+    filter.value = select.multiple
+        ? d3
+              .select(select)
+              .selectAll('option:checked')
+              .data()
+        : select.value;
     this.data.filtered = this.data.raw;
     this.data.filters.forEach(filter => {
         this.data.filtered = this.data.filtered.filter(
@@ -9,5 +15,4 @@ export default function filterData(d, select) {
                     : filter.value === 'All' || di[filter.col] === filter.value
         );
     });
-    console.log('analysis length: ' + this.data.filtered.length);
 }

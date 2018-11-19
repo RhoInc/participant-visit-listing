@@ -7,7 +7,7 @@ import listing from './listing/index';
 import charts from './charts/index';
 import init from './init';
 
-export default function participantVisitListing(element, settings = {}) {
+export default function participantVisitListing(element = 'body', settings = {}) {
     //Instantiate central object.
     const pvl = {
         element,

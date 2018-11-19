@@ -2317,7 +2317,8 @@
         update$1.call(this);
     }
 
-    function participantVisitListing(element) {
+    function participantVisitListing() {
+        var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
         var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
         //Instantiate central object.

@@ -45,6 +45,7 @@ export default function commonChartSettings() {
             order: null // set in ../init/defineSets/defineVisitStatusSet.js
         },
         gridlines: 'y',
+        padding: 0,
         scale_text: false
     };
 }

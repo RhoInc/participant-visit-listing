@@ -34,7 +34,7 @@ export default function layout() {
                 .classed('pvl-tabs', true);
                 this.containers.tabs = this.containers.tabContainer
                     .selectAll('div')
-                        .data(['Charts', 'Listing'])
+                        .data(['Listing', 'Charts'])
                         .enter()
                     .append('div')
                     .attr('class', d => `pvl-tab pvl-tab--${d.toLowerCase()} ${d === this.settings.active_tab ? 'pvl-tab--active' : ''}`)

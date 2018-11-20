@@ -151,8 +151,9 @@
             visit_status_exclusion_value: 'Yes',
 
             //Miscellaneous
-            active_tab: 'Charts',
+            active_tab: 'Charts', // ['Listing', 'Ordinal', 'Linear']
             date_format: '%Y-%m-%d', // format of visit dates
+            display_cell_text: false,
             chart_margin: {
                 top: 100,
                 bottom: 100
@@ -244,6 +245,7 @@
                 order: null // set in ../init/defineSets/defineVisitStatusSet.js
             },
             gridlines: 'y',
+            padding: 0,
             scale_text: false
         };
     }
@@ -507,7 +509,7 @@
             .classed('pvl-tabs', true);
         this.containers.tabs = this.containers.tabContainer
             .selectAll('div')
-            .data(['Charts', 'Listing'])
+            .data(['Listing', 'Charts'])
             .enter()
             .append('div')
             .attr('class', function(d) {
@@ -660,6 +662,20 @@
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +
                 '}' +
+                '.pvl-chart .pvl-chart-button {' +
+                '    font-size: 24px;' +
+                '    cursor: pointer;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button:hover {' +
+                '    font-weight: bold;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--minimize {' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--split {' +
+                '    font-size: 12px;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--maximize {' +
+                '}' +
                 /****---------------------------------------------------------------------------------\
         Listing
       \---------------------------------------------------------------------------------****/
@@ -667,6 +683,14 @@
                 '.pvl-listing {' +
                 '}',
             '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+            '.interactivity.pvl-cell-text-toggle {' +
+                '    margin-right: 10px;' +
+                '    border: 1px solid #aaa;' +
+                '    border-radius: 5px;' +
+                '    padding: 5px;' +
+                '}',
+            '.pvl-cell-text-toggle__label {' + '}',
+            '.pvl-cell-text-toggle__checkbox {' + '    margin-left: 5px;' + '}',
             '.pvl-listing .wc-table table {' +
                 '    display: table;' +
                 '    border: 0;' +
@@ -689,8 +713,6 @@
                 '    flex: 1 auto;' +
                 '    display: block;' +
                 '    border-top: 2px solid white;' +
-                '    border-right: 2px solid white;' +
-                '    border-left: 2px solid white;' +
                 '}',
 
             /*****----------------------------------------------------------------------------\
@@ -703,20 +725,26 @@
                 '    overflow-y: auto;' +
                 '    height: 66vh;' +
                 '}',
+            '.pvl-listing .wc-table table tbody tr {' +
+                '    background: white !important;' +
+                '    border-bottom: 1px solid #eee;' +
+                '}',
+            '.pvl-listing .wc-table table tbody tr:hover {' +
+                '    border-bottom: 1px solid black;' +
+                '}',
             '.pvl-listing .wc-table table tbody tr td {' +
                 '    cursor: default;' +
                 '    flex: 1 auto;' +
                 '    word-wrap: break-word;' +
                 '}',
-            '.pvl-listing .wc-table table tr:nth-child(odd) td {' +
-                '    border-right: 2px solid white;' +
-                '    border-left: 2px solid white;' +
-                '}',
-            '.pvl-listing .wc-table table tr:nth-child(even) td {' +
-                '    border-right: 2px solid #eee;' +
-                '    border-left: 2px solid #eee;' +
+            '.pvl-listing .wc-table table tr td:nth-child(n+4) {' +
+                '    border-right: 1px solid #aaa;' +
+                '    border-left: 1px solid #aaa;' +
                 '}',
             '.pvl-listing .wc-table table tbody tr td:nth-child(2) {' + '    cursor: help;' + '}',
+            '.wc-table table tbody tr:nth-child(even) td:nth-child(-n+3) {' +
+                '    background: #eee;' +
+                '}',
             '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' +
                 '    font-weight: bold;' +
                 '}',
@@ -730,17 +758,6 @@
                 '.pvl-listing .wc-table table td {' +
                 '    flex: 1 auto;' +
                 '    width: 100px;' +
-                '}',
-            '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
-                '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
-                '    border-right: 2px solid #aaa;' +
-                '    border-left: 2px solid #aaa;' +
-                '}',
-            '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
-                '    border-top: 2px solid #aaa;' +
-                '}',
-            '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
-                '    border-bottom: 2px solid #aaa !important;' +
                 '}'
         ];
 
@@ -802,16 +819,53 @@
         this.data.initial = this.data.raw.slice();
     }
 
-    function onLayout() {
-        this.config.sortable = false;
-        if (this.pvl.settings.active_tab === 'Charts')
+    function hideListing() {
+        if (this.pvl.settings.active_tab !== 'Listing')
             this.pvl.containers.listing.classed('pvl-hidden', true);
+    }
+
+    function disableDefaultSorting() {
+        this.config.sortable = false;
+    }
+
+    function toggleCellText() {
+        var context = this;
+
+        this.cellTextToggle = {
+            container: this.wrap
+                .selectAll('.table-top')
+                .insert('div', ':first-child')
+                .classed('interactivity pvl-cell-text-toggle', true)
+        };
+        this.cellTextToggle.label = this.cellTextToggle.container
+            .append('label')
+            .classed('pvl-cell-text-toggle__label', true)
+            .text('Display cell text');
+        this.cellTextToggle.checkbox = this.cellTextToggle.label
+            .append('input')
+            .classed('pvl-cell-text-toggle__checkbox', true)
+            .attr('type', 'checkbox')
+            .property('checked', this.config.display_cell_text);
+        this.cellTextToggle.checkbox.on('click', function() {
+            context.config.display_cell_text = this.checked;
+            context.draw();
+        });
+    }
+
+    function addPDFExport() {
         if (window.jsPDF)
             this.exportable.wrap
                 .insert('a', '#csv')
                 .classed('wc-button export', true)
                 .attr('id', 'pdf')
                 .text('PDF');
+    }
+
+    function onLayout() {
+        hideListing.call(this);
+        disableDefaultSorting.call(this);
+        toggleCellText.call(this);
+        addPDFExport.call(this);
     }
 
     function onPreprocess() {}
@@ -855,16 +909,24 @@
 
                 //Apply cell formmating.
                 di.color = (d[di.col + '-color'] || 'white').toLowerCase();
-                if (!/white/.test(di.color))
-                    cell.style(
-                        'border-bottom',
-                        '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
-                    ); // border-bottom
-                if (!/black|white/.test(di.color)) cell.style('color', di.color); // color
-
-                //Italicize expected visits.
-                //if (context.config.visit_expectation_regex.test(d[`${di.col}-status`]))
-                //    cell.style('font-style', 'italic');
+                cell.style({
+                    'border-top': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color),
+                    'border-bottom': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
+                }); // border-bottom
+                if (context.config.display_cell_text) {
+                    if (!/black|white/.test(di.color))
+                        cell.style({
+                            background: i % 2 ? '#eee' : 'white',
+                            color: di.color
+                        }); // color
+                } else {
+                    if (!/black|white/.test(di.color))
+                        cell.style({
+                            background: di.color,
+                            opacity: 0.9
+                        }); // color
+                    cell.style('color', 'transparent');
+                }
             });
         });
     }
@@ -1607,10 +1669,74 @@
 
     function onInit$1() {}
 
+    function addTopXAxis() {
+        this.topXAxis = {
+            container: this.svg.append('g').classed('x x--top axis ordinal', true)
+        };
+        this.topXAxis.label = this.topXAxis.container
+            .append('text')
+            .classed('axis-title axis-title--top', true);
+    }
+
+    function minimize() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
+        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '100%');
+        this.pvl.linearChart.draw();
+    }
+
+    function split() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '49.5%');
+        this.pvl.ordinalChart.draw();
+        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '49.5%');
+        this.pvl.linearChart.draw();
+    }
+
+    function maximize() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '100%');
+        this.pvl.containers.linearChart.classed('pvl-hidden', true);
+        this.pvl.ordinalChart.draw();
+    }
+
+    function addButtons() {
+        var _this = this;
+
+        //Add minimize chart button.
+        this.topXAxis.minimize = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--minimize', true)
+            .html('&minus;<title>Minimize chart</title')
+            .attr('title', 'Minimize chart')
+            .on('click', function() {
+                return minimize.call(_this);
+            });
+
+        //Add split chart button.
+        this.topXAxis.split = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--split', true)
+            .html('&#8418;&#8418;<title>View both charts</title>')
+            .attr('title', 'View both chart')
+            .on('click', function() {
+                return split.call(_this);
+            });
+
+        //Add maximize chart button.
+        this.topXAxis.maximize = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--maximize', true)
+            .html('&plus;<title>Maximize chart')
+            .attr('title', 'Maximize chart')
+            .on('click', function() {
+                return maximize.call(_this);
+            });
+    }
+
     function onLayout$1() {
-        this.bottomXAxisG = this.svg.select('.x.axis').classed('x--bottom', true);
-        this.topXAxisG = this.svg.append('g').classed('x x--top axis ordinal', true);
-        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+        addTopXAxis.call(this);
+        addButtons.call(this);
+        this.bottomXAxis = {
+            container: this.svg.select('.x.axis').classed('x--bottom', true)
+        };
     }
 
     function onPreprocess$1() {}
@@ -1619,42 +1745,85 @@
 
     function onDraw$1() {}
 
-    function onResize() {
+    function removeLegend() {
         this.legend.remove();
+    }
 
+    function drawTopXAxis() {
         //Draw top x-axis.
-        (this.topXAxis = d3.svg
+        this.topXAxis.axis = d3.svg
             .axis()
             .scale(this.x)
             .orient('top')
             .ticks(this.xAxis.ticks()[0])
             .tickFormat(this.config.x_displayFormat)
             .innerTickSize(this.xAxis.innerTickSize())
-            .outerTickSize(this.xAxis.outerTickSize())),
-            this.topXAxisG.call(this.topXAxis);
-        this.topXAxisG
-            .select('text.axis-title--top')
+            .outerTickSize(this.xAxis.outerTickSize());
+        this.topXAxis.container.call(this.topXAxis.axis);
+        this.topXAxis.label
             .attr({
                 transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
                 'text-anchor': 'middle'
             })
             .text('Schedule of Events by ' + this.config.x.label);
+    }
 
+    function positionButtons() {
+        this.topXAxis.minimize.attr({
+            transform: 'translate(' + (this.plot_width - 50) + ',' + -(this.margin.top - 20) + ')',
+            'text-anchor': 'middle'
+        });
+        this.topXAxis.split.attr({
+            transform: 'translate(' + (this.plot_width - 30) + ',' + -(this.margin.top - 16) + ')',
+            'text-anchor': 'middle'
+        });
+        this.topXAxis.maximize.attr({
+            transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 20) + ')',
+            'text-anchor': 'middle'
+        });
+    }
+
+    function rotateXAxisTickLabels() {
         //Rotate top x-axis tick labels.
-        var topXAxisTickLabels = this.topXAxisG.selectAll('.tick text');
-        topXAxisTickLabels
-            .attr({
-                transform: 'rotate(-45)'
-            })
+        this.topXAxis.container
+            .selectAll('.tick text')
+            .attr('transform', 'rotate(-45)')
             .style('text-anchor', 'start');
 
         //Rotate bottom x-axis tick labels.
-        var bottomXAxisTickLabels = this.bottomXAxisG.selectAll('.tick text');
-        bottomXAxisTickLabels
-            .attr({
-                transform: 'rotate(-45)'
-            })
+        this.bottomXAxis.container
+            .selectAll('.tick text')
+            .attr('transform', 'rotate(-45)')
             .style('text-anchor', 'end');
+    }
+
+    function getItHeated() {
+        var context = this;
+
+        this.marks[0].groups.each(function(d) {
+            var group = d3.select(this);
+            group.select('rect.pvl-heat-rect').remove();
+            d.heat = group
+                .append('rect')
+                .classed('pvl-heat-rect', true)
+                .attr({
+                    x: context.x(d.values.x),
+                    y: context.y(d.values.y),
+                    width: context.x.rangeBand(),
+                    height: context.y.rangeBand(),
+                    fill: context.colorScale(d.values.raw[0][context.config.color_by]),
+                    stroke: '#aaa',
+                    'stroke-width': 0.5
+                });
+        });
+    }
+
+    function onResize() {
+        removeLegend.call(this);
+        drawTopXAxis.call(this);
+        positionButtons.call(this);
+        rotateXAxisTickLabels.call(this);
+        getItHeated.call(this);
     }
 
     function onDestroy$1() {}
@@ -1680,12 +1849,74 @@
 
     function onInit$2() {}
 
-    function onLayout$2() {
-        this.topXAxisG = this.svg.append('g').classed('x x--top axis linear', true);
-        this.topXAxisG.append('text').classed('axis-title axis-title--top', true);
+    function addTopXAxis$1() {
+        this.topXAxis = {
+            container: this.svg.append('g').classed('x x--top axis ordinal', true)
+        };
+        this.topXAxis.label = this.topXAxis.container
+            .append('text')
+            .classed('axis-title axis-title--top', true);
+    }
 
-        if (this.pvl.settings.active_tab === 'Listing')
-            this.pvl.containers.charts.classed('pvl-hidden', true);
+    function minimize$1() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '100%');
+        this.pvl.containers.linearChart.classed('pvl-hidden', true);
+        this.pvl.ordinalChart.draw();
+    }
+
+    function split$1() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '49.5%');
+        this.pvl.ordinalChart.draw();
+        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '49.5%');
+        this.pvl.linearChart.draw();
+    }
+
+    function maximize$1() {
+        this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
+        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '100%');
+        this.pvl.linearChart.draw();
+    }
+
+    function addButtons$1() {
+        var _this = this;
+
+        //Add minimize chart button.
+        this.topXAxis.minimize = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--minimize', true)
+            .html('&minus;<title>Minimize chart</title')
+            .attr('title', 'Minimize chart')
+            .on('click', function() {
+                return minimize$1.call(_this);
+            });
+
+        //Add split chart button.
+        this.topXAxis.split = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--split', true)
+            .html('&#8418;&#8418;<title>View both charts</title>')
+            .attr('title', 'View both chart')
+            .on('click', function() {
+                return split$1.call(_this);
+            });
+
+        //Add maximize chart button.
+        this.topXAxis.maximize = this.topXAxis.container
+            .append('text')
+            .classed('pvl-chart-button pvl-chart-button--maximize', true)
+            .html('&plus;<title>Maximize chart')
+            .attr('title', 'Maximize chart')
+            .on('click', function() {
+                return maximize$1.call(_this);
+            });
+    }
+
+    function onLayout$2() {
+        addTopXAxis$1.call(this);
+        addButtons$1.call(this);
+        this.bottomXAxis = {
+            container: this.svg.select('.x.axis').classed('x--bottom', true)
+        };
     }
 
     function onPreprocess$2() {}
@@ -1694,26 +1925,63 @@
 
     function onDraw$2() {}
 
-    function onResize$1() {
+    function removeLegend$1() {
         this.legend.remove();
+    }
 
+    function drawTopXAxis$1() {
         //Draw top x-axis.
-        (this.topXAxis = d3.svg
+        this.topXAxis.axis = d3.svg
             .axis()
             .scale(this.x)
             .orient('top')
             .ticks(this.xAxis.ticks()[0])
             .tickFormat(this.config.x_displayFormat)
             .innerTickSize(this.xAxis.innerTickSize())
-            .outerTickSize(this.xAxis.outerTickSize())),
-            this.topXAxisG.call(this.topXAxis);
-        this.topXAxisG
-            .select('text.axis-title--top')
+            .outerTickSize(this.xAxis.outerTickSize());
+        this.topXAxis.container.call(this.topXAxis.axis);
+        this.topXAxis.label
             .attr({
                 transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
                 'text-anchor': 'middle'
             })
             .text('Schedule of Events by ' + this.config.x.label);
+    }
+
+    function positionButtons$1() {
+        this.topXAxis.minimize.attr({
+            transform: 'translate(' + (this.plot_width - 50) + ',' + -(this.margin.top - 20) + ')',
+            'text-anchor': 'middle'
+        });
+        this.topXAxis.split.attr({
+            transform: 'translate(' + (this.plot_width - 30) + ',' + -(this.margin.top - 16) + ')',
+            'text-anchor': 'middle'
+        });
+        this.topXAxis.maximize.attr({
+            transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 20) + ')',
+            'text-anchor': 'middle'
+        });
+    }
+
+    function rotateXAxisTickLabels$1() {
+        //Rotate top x-axis tick labels.
+        this.topXAxis.container
+            .selectAll('.tick text')
+            .attr('transform', 'rotate(-45)')
+            .style('text-anchor', 'start');
+
+        //Rotate bottom x-axis tick labels.
+        this.bottomXAxis.container
+            .selectAll('.tick text')
+            .attr('transform', 'rotate(-45)')
+            .style('text-anchor', 'end');
+    }
+
+    function onResize$1() {
+        removeLegend$1.call(this);
+        drawTopXAxis$1.call(this);
+        positionButtons$1.call(this);
+        rotateXAxisTickLabels$1.call(this);
     }
 
     function onDestroy$2() {}

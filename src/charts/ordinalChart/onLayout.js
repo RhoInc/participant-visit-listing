@@ -1,5 +1,5 @@
-import addTopXAxis from './onLayout/addTopXAxis';
-import addButtons from './onLayout/addButtons';
+import addTopXAxis from '../functions/onLayout/addTopXAxis';
+import addButtons from '../functions/onLayout/addButtons';
 
 export default function onLayout() {
     addTopXAxis.call(this);

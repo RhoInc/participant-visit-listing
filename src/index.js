@@ -4,16 +4,16 @@ import layout from './layout';
 import styles from './styles';
 import controls from './controls';
 import listing from './listing/index';
-import ordinalChart from './ordinalChart/index';
-import linearChart from './linearChart/index';
+import charts from './charts/index';
 import init from './init';
 
-export default function participantVisitListing(element, settings = {}) {
+export default function participantVisitListing(element = 'body', settings = {}) {
     //Instantiate central object.
     const pvl = {
         element,
         settings: {
             user: settings,
+            rendererSettings: configuration.rendererSettings(),
             controlsSettings: configuration.controlsSettings(),
             listingSettings: configuration.listingSettings(),
             ordinalChartSettings: configuration.ordinalChartSettings(),
@@ -23,7 +23,12 @@ export default function participantVisitListing(element, settings = {}) {
     };
 
     //Merge and sync user settings with default settings.
-    pvl.settings.listingMerged = Object.assign({}, pvl.settings.listingSettings, pvl.settings.user);
+    pvl.settings.listingMerged = Object.assign(
+        {},
+        pvl.settings.listingSettings,
+        pvl.settings.rendererSettings,
+        pvl.settings.user
+    );
     configuration.syncListingSettings.call(pvl);
 
     pvl.settings.ordinalChartMerged = Object.assign(
@@ -51,8 +56,8 @@ export default function participantVisitListing(element, settings = {}) {
     styles.call(pvl); // attaches styles object to central object ([pvl])
     controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
     listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
-    ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
-    linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+    charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+    charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
 
     return pvl;
 }

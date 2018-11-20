@@ -7,23 +7,23 @@ export default function addButtons() {
     this.topXAxis.minimize = this.topXAxis.container
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--minimize', true)
-        .html('&minus;<title>Minimize chart</title')
-        .attr('title', 'Minimize chart')
+        .text('\u2212')
         .on('click', () => minimize.call(this));
+    this.topXAxis.minimize.append('title').text('MinimizeChart');
 
     //Add split chart button.
     this.topXAxis.split = this.topXAxis.container
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--split', true)
-        .html('&#8418;&#8418;<title>View both charts</title>')
-        .attr('title', 'View both chart')
+        .text('\u25A1\u25A1')
         .on('click', () => split.call(this));
+    this.topXAxis.split.append('title').text('View both charts');
 
     //Add maximize chart button.
     this.topXAxis.maximize = this.topXAxis.container
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--maximize', true)
-        .html('&plus;<title>Maximize chart')
-        .attr('title', 'Maximize chart')
+        .text('\u002B')
         .on('click', () => maximize.call(this));
+    this.topXAxis.maximize.append('title').text('Maximize Chart');
 }

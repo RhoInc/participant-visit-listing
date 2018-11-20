@@ -34,7 +34,11 @@ export default function styles() {
                 '.pvl-legend {' +
                 '    width: 44%;' +
                 '    float: left;' +
-                '    padding-top: 16px;' +
+                '    text-align: center;' +
+                '}',
+                '.pvl-legend__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
                 '}',
                 '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
@@ -148,16 +152,20 @@ export default function styles() {
                 '    font-weight: bold;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button {' +
-                '    font-size: 24px;' +
+                '    font-size: 30px;' +
                 '    cursor: pointer;' +
+                '    fill: black;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button:hover {' +
-                '    font-weight: bold;' +
+                '    fill: blue;' +
+                '    stroke: blue;' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--minimize {' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--split {' +
-                '    font-size: 12px;' +
+                '    font-size: 24px;' +
+                '}' +
+                '.pvl-chart .pvl-chart-button--split:hover {' +
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +

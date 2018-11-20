@@ -1,6 +1,6 @@
-import removeLegend from './onResize/removeLegend';
-import drawTopXAxis from './onResize/drawTopXAxis';
-import positionButtons from './onResize/positionButtons';
+import removeLegend from '../functions/onResize/removeLegend';
+import drawTopXAxis from '../functions/onResize/drawTopXAxis';
+import positionButtons from '../functions/onResize/positionButtons';
 import rotateXAxisTickLabels from './onResize/rotateXAxisTickLabels';
 import getItHeated from './onResize/getItHeated';
 

@@ -1,6 +1,10 @@
 import update from './addLegend/update';
 
 export default function addLegend() {
+    this.containers.legendLabel = this.containers.legend
+        .append('span')
+        .classed('pvl-legend__label', true)
+        .text('Visit Status');
     this.containers.legendItems = this.containers.legend
         .append('ul')
         .classed('pvl-legend__ul', true)

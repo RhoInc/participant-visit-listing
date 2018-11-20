@@ -4,6 +4,7 @@ export default function layout() {
     this.containers = {
         main: d3.select(this.element)
             .append('div')
+            .datum(this)
             .classed('participant-visit-listing', true)
             .attr('id', `participant-visit-listing${d3.selectAll('.participant-visit-listing').size() + 1}`)
     };

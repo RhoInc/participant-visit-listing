@@ -489,6 +489,7 @@
             main: d3
                 .select(this.element)
                 .append('div')
+                .datum(this)
                 .classed('participant-visit-listing', true)
                 .attr(
                     'id',
@@ -817,21 +818,6 @@
             this.containers.controls.node(),
             this.settings.controlsSynced
         );
-
-        //Update legend when controls change.
-        //this.controls.wrap.on('change', function() {
-        //    context.data.filtered = context.data.raw;
-        //    context.listing.filters.forEach(filter => {
-        //        context.data.filtered = context.data.filtered.filter(
-        //            d =>
-        //                Array.isArray(filter.val)
-        //                    ? filter.val.indexOf(d[filter.col]) > -1
-        //                    : filter.val === 'All' || d[filter.col] === filter.val
-        //        );
-        //    });
-        //    console.log('filter length: ' + context.data.filtered.length);
-        //    updateLegend.call(context);
-        //});
     }
 
     function onInit() {
@@ -1971,7 +1957,7 @@
 
         this.data.sets.visit_col = d3
             .set(
-                this.data.filtered.map(function(d) {
+                this.data.analysis.map(function(d) {
                     return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
                 })
             )
@@ -2236,14 +2222,34 @@
                   .selectAll('option:checked')
                   .data()
             : select.value;
-        this.data.filtered = this.data.raw;
-        this.data.filters.forEach(function(filter) {
-            _this.data.filtered = _this.data.filtered.filter(function(di) {
-                return Array.isArray(filter.value)
-                    ? filter.value.indexOf(di[filter.col]) > -1
-                    : filter.value === 'All' || di[filter.col] === filter.value;
+
+        //Apply analysis filters to raw data.
+        this.data.analysis = this.data.raw;
+        this.data.filters
+            .filter(function(filter) {
+                return /^subset\d$/i.test(filter.col);
+            })
+            .forEach(function(filter) {
+                _this.data.analysis = _this.data.analysis.filter(function(di) {
+                    return Array.isArray(filter.value)
+                        ? filter.value.indexOf(di[filter.col]) > -1
+                        : filter.value === 'All' || di[filter.col] === filter.value;
+                });
             });
-        });
+
+        //Apply other filters to analysis data.
+        this.data.filtered = this.data.analysis;
+        this.data.filters
+            .filter(function(filter) {
+                return !/^subset\d$/i.test(filter.col);
+            })
+            .forEach(function(filter) {
+                _this.data.filtered = _this.data.filtered.filter(function(di) {
+                    return Array.isArray(filter.value)
+                        ? filter.value.indexOf(di[filter.col]) > -1
+                        : filter.value === 'All' || di[filter.col] === filter.value;
+                });
+            });
     }
 
     function update$1() {
@@ -2297,6 +2303,7 @@
     function init(data) {
         this.data = {
             raw: data,
+            analysis: data,
             filtered: data,
             transposed: null,
             variables: Object.keys(data[0]),

@@ -8,19 +8,4 @@ export default function controls() {
         this.containers.controls.node(),
         this.settings.controlsSynced
     );
-
-    //Update legend when controls change.
-    //this.controls.wrap.on('change', function() {
-    //    context.data.filtered = context.data.raw;
-    //    context.listing.filters.forEach(filter => {
-    //        context.data.filtered = context.data.filtered.filter(
-    //            d =>
-    //                Array.isArray(filter.val)
-    //                    ? filter.val.indexOf(d[filter.col]) > -1
-    //                    : filter.val === 'All' || d[filter.col] === filter.val
-    //        );
-    //    });
-    //    console.log('filter length: ' + context.data.filtered.length);
-    //    updateLegend.call(context);
-    //});
 }

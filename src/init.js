@@ -10,6 +10,7 @@ import update from './init/update';
 export default function init(data) {
     this.data = {
         raw: data,
+        analysis: data,
         filtered: data,
         transposed: null,
         variables: Object.keys(data[0]),

@@ -5,7 +5,12 @@ d3.csv(
         return d;
     },
     function(data) {
-        const pvl = participantVisitListing('#container');
+        const pvl = participantVisitListing(
+            '#container',
+            {
+                active_tab: 'Charts'
+            }
+        );
         pvl.init(data);
     }
 );

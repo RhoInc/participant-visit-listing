@@ -5,7 +5,11 @@ d3.csv(
         return d;
     },
     function(data) {
-        const pvl = participantVisitListing('#container');
+        const pvl = participantVisitListing(
+            '#container',
+            {
+            }
+        );
         pvl.init(data);
     }
 );

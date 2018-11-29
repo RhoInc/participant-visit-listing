@@ -32,9 +32,8 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-legend {' +
-                '    width: 44%;' +
+                '    width: 35%;' +
                 '    float: left;' +
-                '    text-align: center;' +
                 '}',
                 '.pvl-legend__label {' +
                 '    font-size: 24px;' +
@@ -49,7 +48,6 @@ export default function styles() {
                 '.pvl-legend__li {' +
                 '    float: left;' +
                 '    margin-right: 1%;' +
-                '    width: 24%;' +
                 '    text-align: center;' +
                 '}',
                 '.pvl-legend-item-info-icon {' +
@@ -63,16 +61,20 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-controls {' +
-                '    width: 55%;' +
+                '    width: 64%;' +
                 '    float: right;' +
                 '}',
                 '.pvl-controls .wc-controls {' +
                 '    float: right;' +
                 '    margin-bottom: 0;' +
+                '    width: 100%;' +
                 '}',
                 '.pvl-controls .wc-controls .control-group {' +
-                '    margin-bottom: 0;' +
-                '    width: 125px;' +
+                '    margin: 0 .8% 0 0;' +
+                '    width: 16%;' +
+                '}',
+                '.pvl-controls .wc-controls .control-group:last-child {' +
+                '    margin-right: 0;' +
                 '}',
                 '.pvl-controls .wc-controls .control-group:last-child {' +
                 '    margin-right: 0;' +
@@ -83,6 +85,7 @@ export default function styles() {
                 '.pvl-controls .wc-controls .control-group .wc-control-label {' +
                 '    margin-right: 5px;' +
                 '    text-align: right;' +
+                '    font-size: 14px;' +
                 '}',
 
         /***--------------------------------------------------------------------------------------\
@@ -169,6 +172,11 @@ export default function styles() {
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
+                '.pvl-unscheduled-legend-item,' +
+                '.pvl-unscheduled-annotation {' +
+                '    font-size: 14px;' +
+                '    font-family: courier;' +
+                '}',
 
             /****---------------------------------------------------------------------------------\
               Listing

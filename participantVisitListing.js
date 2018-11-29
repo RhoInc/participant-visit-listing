@@ -582,11 +582,7 @@
         Legend
       \---------------------------------------------------------------------------------****/
 
-            '.pvl-legend {' +
-                '    width: 44%;' +
-                '    float: left;' +
-                '    text-align: center;' +
-                '}',
+            '.pvl-legend {' + '    width: 35%;' + '    float: left;' + '}',
             '.pvl-legend__label {' + '    font-size: 24px;' + '    font-weight: lighter;' + '}',
             '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
@@ -597,7 +593,6 @@
             '.pvl-legend__li {' +
                 '    float: left;' +
                 '    margin-right: 1%;' +
-                '    width: 24%;' +
                 '    text-align: center;' +
                 '}',
             '.pvl-legend-item-info-icon {' +
@@ -610,17 +605,23 @@
         Controls
       \---------------------------------------------------------------------------------****/
 
-            '.pvl-controls {' + '    width: 55%;' + '    float: right;' + '}',
-            '.pvl-controls .wc-controls {' + '    float: right;' + '    margin-bottom: 0;' + '}',
-            '.pvl-controls .wc-controls .control-group {' +
+            '.pvl-controls {' + '    width: 64%;' + '    float: right;' + '}',
+            '.pvl-controls .wc-controls {' +
+                '    float: right;' +
                 '    margin-bottom: 0;' +
-                '    width: 125px;' +
+                '    width: 100%;' +
                 '}',
+            '.pvl-controls .wc-controls .control-group {' +
+                '    margin: 0 .8% 0 0;' +
+                '    width: 16%;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
             '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
             '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
             '.pvl-controls .wc-controls .control-group .wc-control-label {' +
                 '    margin-right: 5px;' +
                 '    text-align: right;' +
+                '    font-size: 14px;' +
                 '}',
 
             /***--------------------------------------------------------------------------------------\
@@ -694,12 +695,17 @@
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
-                /****---------------------------------------------------------------------------------\
+                '.pvl-unscheduled-legend-item,' +
+                '.pvl-unscheduled-annotation {' +
+                '    font-size: 14px;' +
+                '    font-family: courier;' +
+                '}',
+
+            /****---------------------------------------------------------------------------------\
         Listing
       \---------------------------------------------------------------------------------****/
 
-                '.pvl-listing {' +
-                '}',
+            '.pvl-listing {' + '}',
             '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
             '.interactivity.pvl-cell-text-toggle {' +
                 '    margin-right: 10px;' +
@@ -1878,10 +1884,41 @@
 
     function onDraw$2() {}
 
+    function addAnnotationLegend() {
+        var _this = this;
+
+        if (this.pvl.data.sets.unscheduledVisits.length)
+            this.pvl.data.sets.unscheduledVisits.forEach(function(visit, i) {
+                _this.topXAxis.container
+                    .append('text')
+                    .datum(visit)
+                    .classed('pvl-unscheduled-legend-item', true)
+                    .attr({
+                        transform:
+                            'translate(-' +
+                            (_this.margin.left - 15) +
+                            ',' +
+                            (-_this.margin.top + 16 * (i + 1) + 3) +
+                            ')'
+                    })
+                    .text(visit.substring(0, 1) + ' - ' + visit + ' Visit');
+            });
+    }
+
+    function classTextMarks() {
+        this.marks
+            .find(function(mark) {
+                return mark.type === 'text';
+            })
+            .texts.classed('pvl-unscheduled-annotation', true);
+    }
+
     function onResize$1() {
         removeLegend.call(this);
         drawTopXAxis.call(this);
         positionButtons.call(this);
+        addAnnotationLegend.call(this);
+        classTextMarks.call(this);
     }
 
     function onDestroy$2() {}
@@ -1955,13 +1992,14 @@
     function defineVisitSet() {
         var _this = this;
 
-        this.data.sets.visit_col = d3
+        this.data.sets.visits = d3
             .set(
                 this.data.analysis.map(function(d) {
                     return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
                 })
             )
-            .values()
+            .values();
+        this.data.sets.visit_col = this.data.sets.visits
             .filter(function(visit) {
                 return !_this.settings.visit_exclusion_regex.test(visit);
             })
@@ -1971,6 +2009,26 @@
             .map(function(visit) {
                 return visit.split(':|:')[1];
             });
+        this.data.sets.scheduledVisits = this.data.sets.visit_col;
+        this.data.sets.unscheduledVisits = d3
+            .set(
+                this.data.sets.visits
+                    .filter(function(visit) {
+                        return _this.settings.visit_exclusion_regex.test(visit);
+                    })
+                    .sort(function(a, b) {
+                        return a.split(':|:')[0] - b.split(':|:')[0];
+                    })
+                    .map(function(order_visit) {
+                        var visit = order_visit.split(':|:')[1];
+                        var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
+                        var yesPlease = visit.replace(extra, '');
+
+                        return yesPlease;
+                    })
+            )
+            .values()
+            .sort();
 
         //Update ordinal chart settings.
         this.ordinalChart.config.x.domain = this.data.sets.visit_col;

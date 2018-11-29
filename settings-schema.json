@@ -4,79 +4,117 @@
     "overview": "The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays. The Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects. Refer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.\nIn addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.",
     "version": "1.2.0",
     "type": "object",
+    "data-guidelines": "The Participant Visit Listing accepts [JSON](https://en.wikipedia.org/wiki/JSON) data of the format returned by [`d3.csv()`](https://github.com/d3/d3-3.x-api-reference/blob/master/CSV.md). The collection of displays visualizes clinical schedule of events data with **one row per participant per visit** plus the required variables specified below.",
+    "data-structure": "one record per participant per visit",
     "properties": {
         "site_col": {
             "title": "Site",
             "description": "name of variable that captures site",
             "default": "site_name",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "id_col": {
             "title": "Participant ID",
             "description": "name of variable that captures participant ID",
             "default": "subjectnameoridentifier",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "id_status_col": {
             "title": "Participant Status",
             "description": "name of variable that captures participant status",
             "default": "subject_status",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "visit_col": {
             "title": "Visit",
             "description": "name of variable that captures visit",
             "default": "visit_name",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "visit_order_col": {
             "title": "Sort Order of Visit",
             "description": "name of variable that captures sort order of visit",
             "default": "visit_number",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "number",
+            "required": false
         },
         "visit_date_col": {
             "title": "Date of Visit",
             "description": "name of variable that captures date of visit",
             "default": "visit_date",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "visit_day_col": {
             "title": "Study Day of Visit",
             "description": "name of variable that captures study day of visit",
             "default": "visit_day",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "visit_status_col": {
             "title": "Visit Status",
             "description": "name of variable that captures status of visit",
             "default": "visit_status",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
         },
         "visit_status_order_col": {
             "title": "Sort Order of Visit Status",
             "description": "name of variable that captures sort order of visit status",
             "default": "visit_status_order",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "number",
+            "required": false
         },
         "visit_text_col": {
             "title": "Listing Cell Text",
             "description": "name of variable that captures text to be printed in listing cells",
             "default": "visit_text",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": false
         },
         "visit_text_color_col": {
             "title": "Visit Status Color",
             "description": "name of variable that captures desired color of visit status",
             "default": "visit_text_color",
             "type": "string",
-            "requirement": "color must be hex RGB"
+            "requirement": "color must be hex RGB",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": false
         },
         "visit_status_description_col": {
             "title": "Description of Visit Status",
             "description": "name of variable that captures a more detailed description of the visit status",
             "default": "visit_status_description",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": false
         },
         "visit_expectation_pattern": {
             "title": "Visit Expectation Text Pattern",
@@ -94,7 +132,10 @@
             "title": "Visit Status Exclusion Flag",
             "description": "name of variable that identifies visit statuses to exclude from visit status legend",
             "default": "plot_exclude",
-            "type": "string"
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": false
         },
         "visit_status_exclusion_value": {
             "title": "Visit Status Exclusion Value",
@@ -162,10 +203,19 @@
                 "subset3",
                 "overdue2"
             ],
+            "descriptions": {
+                "subset1": "Analysis Subset 1",
+                "subset2": "Analysis Subset 2",
+                "subset3": "Analysis Subset 3",
+                "overdue2": ">1 Overdue Visits"
+            },
             "type": "array",
             "items": {
                 "type": "string"
-            }
+            },
+            "data-mapping": true,
+            "data-type": "string",
+            "required": false
         },
         "pagination": {
             "title": "Listing Pagination?",

@@ -41,10 +41,13 @@ And in Node:
 ```js
 var participantVisitListing = require("participant-visit-listing");
 ```
-## Links
-More information is available in the project's [wiki](https://github.com/RhoInc/participant-visit-listing/wiki):
 
+More information is available in the project's [wiki](https://github.com/RhoInc/participant-visit-listing/wiki).
+
+## Links
 * [Interactive Example](https://rhoinc.github.io/participant-visit-listing/test-page/)
-* [Data Guidelines](https://github.com/RhoInc/participant-visit-listing/wiki/Data-Guidelines)
 * [API Reference](https://github.com/RhoInc/participant-visit-listing/wiki/API)
+* [Configuration](https://github.com/RhoInc/participant-visit-listing/wiki/Configuration)
+* [Data Guidelines](https://github.com/RhoInc/participant-visit-listing/wiki/Data-Guidelines)
+* [Technical Documentation](https://github.com/RhoInc/participant-visit-listing/wiki/Technical-Documentation)
 * [Release Notes](https://github.com/RhoInc/participant-visit-listing/releases)

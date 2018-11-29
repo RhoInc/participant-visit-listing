@@ -1,7 +1,7 @@
 export default function defineVisitSet() {
     this.data.sets.visit_col = d3
         .set(
-            this.data.filtered.map(
+            this.data.analysis.map(
                 d => `${d[this.settings.visit_order_col]}:|:${d[this.settings.visit_col]}`
             )
         )

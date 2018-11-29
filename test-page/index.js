@@ -8,7 +8,6 @@ d3.csv(
         const pvl = participantVisitListing(
             '#container',
             {
-                active_tab: 'Charts'
             }
         );
         pvl.init(data);

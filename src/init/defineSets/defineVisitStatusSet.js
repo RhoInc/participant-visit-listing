@@ -5,7 +5,7 @@ export default function defineVisitStatusSet() {
                 d =>
                     `${d[this.settings.visit_status_order_col]}:|:${
                         d[this.settings.visit_status_col]
-                    }:|:${d[this.settings.visit_text_color_col].toLowerCase()}:|:${
+                    }:|:${d[this.settings.visit_status_color_col].toLowerCase()}:|:${
                         d[this.settings.visit_status_description_col]
                     }`
             )

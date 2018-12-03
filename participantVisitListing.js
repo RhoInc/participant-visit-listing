@@ -141,7 +141,7 @@
             visit_status_col: 'visit_status',
             visit_status_order_col: 'visit_status_order',
             visit_text_col: 'visit_text',
-            visit_text_color_col: 'visit_text_color', // must be hex RGB
+            visit_status_color_col: 'visit_status_color', // must be hex RGB
             visit_status_description_col: 'visit_status_description',
             visit_expectation_pattern: '/expect|future|overdue/i',
             visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
@@ -2051,7 +2051,7 @@
                         ':|:' +
                         d[_this.settings.visit_status_col] +
                         ':|:' +
-                        d[_this.settings.visit_text_color_col].toLowerCase() +
+                        d[_this.settings.visit_status_color_col].toLowerCase() +
                         ':|:' +
                         d[_this.settings.visit_status_description_col]
                     );
@@ -2115,7 +2115,7 @@
                             ':|:' +
                             d[_this.settings.visit_status_col] +
                             ':|:' +
-                            d[_this.settings.visit_text_color_col].toLowerCase() +
+                            d[_this.settings.visit_status_color_col].toLowerCase() +
                             ':|:' +
                             d[_this.settings.visit_status_description_col]
                         );
@@ -2148,7 +2148,7 @@
             'id_col',
             'id_status_col',
             'visit_col', // with visit_order_col
-            'visit_status_col' // with visit_status_order_col, visit_text_color_col, and visit_status_description_col
+            'visit_status_col' // with visit_status_order_col, visit_status_color_col, and visit_status_description_col
         ].forEach(function(col) {
             switch (col) {
                 case 'visit_col':
@@ -2201,7 +2201,7 @@
                     ? visit_datum[_this.settings.visit_status_col]
                     : '';
                 datum[visit + '-color'] = visit_datum
-                    ? visit_datum[_this.settings.visit_text_color_col]
+                    ? visit_datum[_this.settings.visit_status_color_col]
                     : '';
 
                 if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];

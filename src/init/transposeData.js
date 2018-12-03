@@ -21,7 +21,7 @@ export default function transposeData() {
                 ? visit_datum[this.settings.visit_status_col]
                 : '';
             datum[`${visit}-color`] = visit_datum
-                ? visit_datum[this.settings.visit_text_color_col]
+                ? visit_datum[this.settings.visit_status_color_col]
                 : '';
 
             if (this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];

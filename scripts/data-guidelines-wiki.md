@@ -18,7 +18,7 @@ required and optional variables:
 |**visit_status_col**|visit_status|string|status of visit|**Y**|
 |**visit_status_order_col**|visit_status_order|string|sort order of visit status||
 |**visit_text_col**|visit_text|string|text to be printed in listing cells||
-|**visit_text_color_col**|visit_text_color|string|desired color of visit status||
+|**visit_status_color_col**|visit_status_color|string|desired color of visit status||
 |**visit_status_description_col**|visit_status_description|string|a more detailed description of the visit status||
 |**visit_status_exclusion_col**|plot_exclude|string|identifies visit statuses to exclude from visit status legend||
 |**filter_cols[0]**|subset1|array|Analysis Subset 1||

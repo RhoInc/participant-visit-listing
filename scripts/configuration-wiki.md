@@ -95,12 +95,12 @@ name of variable that captures text to be printed in listing cells
 
 
 
-## settings.visit_text_color_col
+## settings.visit_status_color_col
 `string`
 
 name of variable that captures desired color of visit status
 
-**default:** `"visit_text_color"`
+**default:** `"visit_status_color"`
 
 
 

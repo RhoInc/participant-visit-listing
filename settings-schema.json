@@ -97,10 +97,10 @@
             "data-type": "string",
             "required": false
         },
-        "visit_text_color_col": {
+        "visit_status_color_col": {
             "title": "Visit Status Color",
             "description": "name of variable that captures desired color of visit status",
-            "default": "visit_text_color",
+            "default": "visit_status_color",
             "type": "string",
             "requirement": "color must be hex RGB",
             "data-mapping": true,

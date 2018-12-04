@@ -35,12 +35,9 @@ export default function update() {
         transposeData.call(context);
         updateLegend.call(context);
 
-        if (context.listing.initialized)
-            context.listing.data.raw = context.data.transposed;
-        if(context.ordinalChart.initialized)
-            context.ordinalChart.raw_data = context.data.filtered;
-        if(context.linearChart.initialized)
-            context.linearChart.raw_data = context.data.filtered;
+        if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+        if (context.ordinalChart.initialized) context.ordinalChart.raw_data = context.data.filtered;
+        if (context.linearChart.initialized) context.linearChart.raw_data = context.data.filtered;
 
         //Redraw displays.
         if (context.settings.active_tab === 'Listing') {

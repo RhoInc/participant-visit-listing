@@ -10,7 +10,8 @@ export default function commonChartSettings() {
             label: '',
             value_col: null, // set in ./syncOrdinalChartSettings and ./syncLinearChartSettings.js
             range_band: 15,
-            behavior: 'flex'
+            behavior: 'flex',
+            sort: 'alphabetical-descending'
         },
         marks: [
             {

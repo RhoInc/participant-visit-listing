@@ -262,7 +262,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
         "label": "",
         "value_col": null,
         "range_band": 15,
-        "behavior": "flex"
+        "behavior": "flex",
+        "sort": "alphabetical-descending"
     },
     "marks": [
         {
@@ -320,7 +321,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
         "label": "",
         "value_col": null,
         "range_band": 15,
-        "behavior": "flex"
+        "behavior": "flex",
+        "sort": "alphabetical-descending"
     },
     "marks": [
         {

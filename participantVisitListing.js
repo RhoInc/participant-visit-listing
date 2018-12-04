@@ -384,19 +384,205 @@
         syncLinearChartSettings: syncLinearChartSettings
     };
 
-    function updateMultiSelects() {
+    function filterData(d, select) {
         var _this = this;
 
-        var initialized = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+        var filter = this.data.filters.find(function (filter) {
+            return filter.col === d.value_col;
+        });
+        filter.value = select.multiple ? d3.select(select).selectAll('option:checked').data() : select.value;
 
-        var multiSelects = this.controls.wrap.selectAll('.control-group').filter(function (d) {
+        //Apply analysis filters to raw data.
+        this.data.analysis = this.data.raw;
+        this.data.filters.filter(function (filter) {
+            return (/^subset\d$/i.test(filter.col)
+            );
+        }).forEach(function (filter) {
+            _this.data.analysis = _this.data.analysis.filter(function (di) {
+                return Array.isArray(filter.value) ? filter.value.indexOf(di[filter.col]) > -1 : filter.value === 'All' || di[filter.col] === filter.value;
+            });
+        });
+
+        //Apply other filters to analysis data.
+        this.data.filtered = this.data.analysis;
+        this.data.filters.filter(function (filter) {
+            return !/^subset\d$/i.test(filter.col);
+        }).forEach(function (filter) {
+            _this.data.filtered = _this.data.filtered.filter(function (di) {
+                return Array.isArray(filter.value) ? filter.value.indexOf(di[filter.col]) > -1 : filter.value === 'All' || di[filter.col] === filter.value;
+            });
+        });
+    }
+
+    function defineDefaultSet(col) {
+        var _this = this;
+
+        this.data.sets[col] = d3.set(this.data.filtered.map(function (d) {
+            return d[_this.settings[col]];
+        })).values().sort();
+    }
+
+    function defineVisitSet() {
+        var _this = this;
+
+        this.data.sets.visits = d3.set(this.data.analysis.map(function (d) {
+            return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
+        })).values();
+        this.data.sets.visit_col = this.data.sets.visits.filter(function (visit) {
+            return !_this.settings.visit_exclusion_regex.test(visit);
+        }).sort(function (a, b) {
+            return a.split(':|:')[0] - b.split(':|:')[0];
+        }).map(function (visit) {
+            return visit.split(':|:')[1];
+        });
+        this.data.sets.scheduledVisits = this.data.sets.visit_col;
+        this.data.sets.unscheduledVisits = d3.set(this.data.sets.visits.filter(function (visit) {
+            return _this.settings.visit_exclusion_regex.test(visit);
+        }).sort(function (a, b) {
+            return a.split(':|:')[0] - b.split(':|:')[0];
+        }).map(function (order_visit) {
+            var visit = order_visit.split(':|:')[1];
+            var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
+            var yesPlease = visit.replace(extra, '');
+
+            return yesPlease;
+        })).values().sort();
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[1].values[this.settings.visit_col] = this.data.sets.visit_col;
+    }
+
+    function defineColumns() {
+        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
+        this.listing.config.headers = this.listing.config.cols.slice();
+    }
+
+    function transposeData() {
+        var _this = this;
+
+        this.data.transposed = [];
+
+        this.data.sets.id_col.forEach(function (id, i) {
+            var id_data = _this.data.raw.filter(function (d) {
+                return d[_this.settings.id_col] === id;
+            });
+            var datum = {};
+            datum[_this.settings.site_col] = id_data[0][_this.settings.site_col];
+            datum['Site'] = datum[_this.settings.site_col];
+            datum[_this.settings.id_col] = id;
+            datum['ID'] = datum[_this.settings.id_col];
+            datum[_this.settings.id_status_col] = id_data[0][_this.settings.id_status_col];
+            datum['Status'] = datum[_this.settings.id_status_col];
+
+            if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
+
+            _this.data.sets.visit_col.forEach(function (visit) {
+                var visit_datum = id_data.find(function (d) {
+                    return d[_this.settings.visit_col] === visit;
+                });
+                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
+                datum[visit + '-date'] = visit_datum ? visit_datum[_this.settings.visit_date_col] : '';
+                datum[visit + '-status'] = visit_datum ? visit_datum[_this.settings.visit_status_col] : '';
+                datum[visit + '-color'] = visit_datum ? visit_datum[_this.settings.visit_status_color_col] : '';
+
+                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
+                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
+                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
+            });
+            _this.data.transposed.push(datum);
+        });
+    }
+
+    function update() {
+        var _this = this;
+
+        var denominator = this.data.filtered.filter(function (d) {
+            return _this.data.sets.legend.map(function (d) {
+                return d.split(':|:')[1];
+            }).indexOf(d[_this.settings.visit_status_col]) > -1;
+        }).length;
+        this.containers.legendItems.select('.pvl-legend-item-label').text(function (d) {
+            var numerator = _this.data.filtered.filter(function (di) {
+                return di[_this.settings.visit_status_col] === d[1];
+            }).length;
+            return d[1] + ' (' + (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') + ')';
+        });
+    }
+
+    function update$1() {
+        var context = this;
+
+        //Capture all data filter dropdowns.
+        var filters = this.controls.wrap.selectAll('.control-group').filter(function (d) {
+            return d.type === 'subsetter';
+        }).selectAll('select');
+
+        //Remove extra 'All' options; not sure where they're coming from.
+        filters.selectAll('option').filter(function (d) {
+            return d === 'All';
+        }).filter(function (d, i) {
+            return i > 0;
+        }).remove();
+
+        //Redefine the event listener.
+        filters.on('change', function (d) {
+            filterData.call(context, d, this);
+            defineDefaultSet.call(context, 'id_col');
+
+            //Update visit set and listing columns if the changed filter controls an analysis subset.
+            if (/^Analysis Subset \d$/.test(d.label)) {
+                defineVisitSet.call(context);
+                defineColumns.call(context);
+            }
+
+            transposeData.call(context);
+            update.call(context);
+
+            if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+            if (context.ordinalChart.initialized) context.ordinalChart.raw_data = context.data.filtered;
+            if (context.linearChart.initialized) context.linearChart.raw_data = context.data.filtered;
+
+            //Redraw displays.
+            if (context.settings.active_tab === 'Listing') {
+                context.listing.draw();
+            } else if (context.settings.active_tab === 'Charts') {
+                context.ordinalChart.draw();
+                context.linearChart.draw();
+            }
+        });
+    }
+
+    function updateSelects() {
+        var context = this;
+
+        this.controls.wrap.selectAll('.control-group').filter(function (d) {
+            return !d.multiple;
+        }).selectAll('select').each(function (d) {
+            var filter = context.data.filters.find(function (filter) {
+                return filter.col === d.value_col;
+            });
+            d3.select(this).selectAll('option').property('selected', function (d) {
+                return filter.value === d;
+            });
+        });
+    }
+
+    function updateMultiSelects() {
+        var context = this;
+
+        this.controls.wrap.selectAll('.control-group').filter(function (d) {
             return d.multiple;
-        }).select('select');
-        multiSelects.attr('size', 2);
-        console.log(this.data.filters.find(function (filter) {
-            return filter.col === _this.settings.id_status_col;
-        }));
-        if (!initialized) multiSelects.selectAll('option').property('selected', true);
+        }).selectAll('select').each(function (d) {
+            var filter = context.data.filters.find(function (filter) {
+                return filter.col === d.value_col;
+            });
+            var options = d3.select(this).attr('size', 2).selectAll('option');
+            options.property('selected', function (d) {
+                return filter.value === 'All' || filter.value.indexOf(d) > -1;
+            });
+        });
     }
 
     function addTabFunctionality() {
@@ -419,15 +605,26 @@
 
                 if (d === 'Listing') {
                     //Initialize or draw listing.
-                    if (context.listing.intialized) context.listing.draw(context.data.transposed);else context.listing.init(context.data.transposed);
+                    if (context.listing.initialized) context.listing.draw(context.data.transposed);else {
+                        context.listing.init(context.data.transposed);
+                        update$1.call(context);
+                        updateSelects.call(context);
+                        updateMultiSelects.call(context);
+                    }
                 } else if (d === 'Charts') {
                     //Initialize or draw ordinal chart.
-                    if (context.ordinalChart.intialized) context.ordinalChart.draw(context.data.filtered);else context.ordinalChart.init(context.data.filtered);
+                    if (context.ordinalChart.initialized) context.ordinalChart.draw(context.data.filtered);else {
+                        context.ordinalChart.init(context.data.filtered);
+                    }
 
                     //Initialize or draw linear chart.
-                    if (context.linearChart.intialized) context.linearChart.draw(context.data.filtered);else context.linearChart.init(context.data.filtered);
+                    if (context.linearChart.initialized) context.linearChart.draw(context.data.filtered);else {
+                        context.linearChart.init(context.data.filtered);
+                        update$1.call(context);
+                        updateSelects.call(context);
+                        updateMultiSelects.call(context);
+                    }
                 }
-                updateMultiSelects.call(context, true);
             }
 
             //end performance test
@@ -543,22 +740,6 @@
       this.style.innerHTML = this.styles.join('\n');
       document.getElementsByTagName('head')[0].appendChild(this.style);
       this.containers.style = d3.select(this.style);
-    }
-
-    function update() {
-        var _this = this;
-
-        var denominator = this.data.filtered.filter(function (d) {
-            return _this.data.sets.legend.map(function (d) {
-                return d.split(':|:')[1];
-            }).indexOf(d[_this.settings.visit_status_col]) > -1;
-        }).length;
-        this.containers.legendItems.select('.pvl-legend-item-label').text(function (d) {
-            var numerator = _this.data.filtered.filter(function (di) {
-                return di[_this.settings.visit_status_col] === d[1];
-            }).length;
-            return d[1] + ' (' + (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') + ')';
-        });
     }
 
     function controls() {
@@ -1504,11 +1685,6 @@
                 col: filterCol,
                 value: 'All'
             });
-            //this.settings.controlsSynced.inputs.find(input => input.value_col === filterCol).values = d3
-            //    .set(this.data.raw.map(d => d[filterCol]))
-            //    .values()
-            //    .filter(value => !/^ *$/.test(value))
-            //    .sort();
         }
     }
 
@@ -1529,38 +1705,6 @@
             d.expected = _this.settings.visit_expectation_regex.test(d[_this.settings.visit_status_col]);
             d.unscheduled = _this.settings.visit_exclusion_regex.test(d[_this.settings.visit_col]);
         });
-    }
-
-    function defineVisitSet() {
-        var _this = this;
-
-        this.data.sets.visits = d3.set(this.data.analysis.map(function (d) {
-            return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
-        })).values();
-        this.data.sets.visit_col = this.data.sets.visits.filter(function (visit) {
-            return !_this.settings.visit_exclusion_regex.test(visit);
-        }).sort(function (a, b) {
-            return a.split(':|:')[0] - b.split(':|:')[0];
-        }).map(function (visit) {
-            return visit.split(':|:')[1];
-        });
-        this.data.sets.scheduledVisits = this.data.sets.visit_col;
-        this.data.sets.unscheduledVisits = d3.set(this.data.sets.visits.filter(function (visit) {
-            return _this.settings.visit_exclusion_regex.test(visit);
-        }).sort(function (a, b) {
-            return a.split(':|:')[0] - b.split(':|:')[0];
-        }).map(function (order_visit) {
-            var visit = order_visit.split(':|:')[1];
-            var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
-            var yesPlease = visit.replace(extra, '');
-
-            return yesPlease;
-        })).values().sort();
-
-        //Update ordinal chart settings.
-        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[1].values[this.settings.visit_col] = this.data.sets.visit_col;
     }
 
     function defineVisitStatusSet() {
@@ -1607,14 +1751,6 @@
         });
     }
 
-    function defineDefaultSet(col) {
-        var _this = this;
-
-        this.data.sets[col] = d3.set(this.data.filtered.map(function (d) {
-            return d[_this.settings[col]];
-        })).values().sort();
-    }
-
     function defineSets() {
         var _this = this;
 
@@ -1633,47 +1769,6 @@
                     defineDefaultSet.call(_this, col);
                     break;
             }
-        });
-    }
-
-    function defineColumns() {
-        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
-        this.listing.config.headers = this.listing.config.cols.slice();
-    }
-
-    function transposeData() {
-        var _this = this;
-
-        this.data.transposed = [];
-
-        this.data.sets.id_col.forEach(function (id, i) {
-            var id_data = _this.data.raw.filter(function (d) {
-                return d[_this.settings.id_col] === id;
-            });
-            var datum = {};
-            datum[_this.settings.site_col] = id_data[0][_this.settings.site_col];
-            datum['Site'] = datum[_this.settings.site_col];
-            datum[_this.settings.id_col] = id;
-            datum['ID'] = datum[_this.settings.id_col];
-            datum[_this.settings.id_status_col] = id_data[0][_this.settings.id_status_col];
-            datum['Status'] = datum[_this.settings.id_status_col];
-
-            if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
-
-            _this.data.sets.visit_col.forEach(function (visit) {
-                var visit_datum = id_data.find(function (d) {
-                    return d[_this.settings.visit_col] === visit;
-                });
-                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
-                datum[visit + '-date'] = visit_datum ? visit_datum[_this.settings.visit_date_col] : '';
-                datum[visit + '-status'] = visit_datum ? visit_datum[_this.settings.visit_status_col] : '';
-                datum[visit + '-color'] = visit_datum ? visit_datum[_this.settings.visit_status_color_col] : '';
-
-                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
-                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
-                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
-            });
-            _this.data.transposed.push(datum);
         });
     }
 
@@ -1703,77 +1798,11 @@
         update.call(this);
     }
 
-    function filterData(d, select) {
-        var _this = this;
+    function updateMultiSelects$1() {
 
-        var filter = this.data.filters.find(function (filter) {
-            return filter.col === d.value_col;
-        });
-        filter.value = select.multiple ? d3.select(select).selectAll('option:checked').data() : select.value;
-
-        //Apply analysis filters to raw data.
-        this.data.analysis = this.data.raw;
-        this.data.filters.filter(function (filter) {
-            return (/^subset\d$/i.test(filter.col)
-            );
-        }).forEach(function (filter) {
-            _this.data.analysis = _this.data.analysis.filter(function (di) {
-                return Array.isArray(filter.value) ? filter.value.indexOf(di[filter.col]) > -1 : filter.value === 'All' || di[filter.col] === filter.value;
-            });
-        });
-
-        //Apply other filters to analysis data.
-        this.data.filtered = this.data.analysis;
-        this.data.filters.filter(function (filter) {
-            return !/^subset\d$/i.test(filter.col);
-        }).forEach(function (filter) {
-            _this.data.filtered = _this.data.filtered.filter(function (di) {
-                return Array.isArray(filter.value) ? filter.value.indexOf(di[filter.col]) > -1 : filter.value === 'All' || di[filter.col] === filter.value;
-            });
-        });
-    }
-
-    function update$1() {
-        var context = this;
-
-        //Capture all data filter dropdowns.
-        var filters = this.controls.wrap.selectAll('.control-group').filter(function (d) {
-            return d.type === 'subsetter';
-        }).selectAll('select');
-
-        //Remove extra 'All' options; not sure where they're coming from.
-        filters.selectAll('option').filter(function (d) {
-            return d === 'All';
-        }).filter(function (d, i) {
-            return i > 0;
-        }).remove();
-
-        //Redefine the event listener.
-        filters.on('change', function (d) {
-            filterData.call(context, d, this);
-            defineDefaultSet.call(context, 'id_col');
-
-            //Update visit set and listing columns if the changed filter controls an analysis subset.
-            if (/^Analysis Subset \d$/.test(d.label)) {
-                defineVisitSet.call(context);
-                defineColumns.call(context);
-            }
-
-            transposeData.call(context);
-            update.call(context);
-
-            if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
-            if (context.ordinalChart.initialized) context.ordinalChart.raw_data = context.data.filtered;
-            if (context.linearChart.initialized) context.linearChart.raw_data = context.data.filtered;
-
-            //Redraw displays.
-            if (context.settings.active_tab === 'Listing') {
-                context.listing.draw();
-            } else if (context.settings.active_tab === 'Charts') {
-                context.ordinalChart.draw();
-                context.linearChart.draw();
-            }
-        });
+        this.controls.wrap.selectAll('.control-group').filter(function (d) {
+            return d.multiple;
+        }).selectAll('select').attr('size', 2).selectAll('option').property('selected', true);
     }
 
     function init(data) {
@@ -1802,7 +1831,7 @@
             this.ordinalChart.init(this.data.raw);
             this.linearChart.init(this.data.raw);
         }
-        updateMultiSelects.call(this);
+        updateMultiSelects$1.call(this);
         update$1.call(this);
 
         //end performance test

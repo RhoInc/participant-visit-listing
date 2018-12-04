@@ -1,4 +1,6 @@
-import updateMultiSelects from '../init/updateMultiSelects';
+import update from '../init/update';
+import updateSelects from './addTabFunctionality/updateSelects';
+import updateMultiSelects from './addTabFunctionality/updateMultiSelects';
 
 export default function addTabFunctionality() {
     const context = this;
@@ -20,24 +22,32 @@ export default function addTabFunctionality() {
 
             if (d === 'Listing') {
                 //Initialize or draw listing.
-                if (context.listing.intialized)
+                if (context.listing.initialized)
                     context.listing.draw(context.data.transposed);
-                else
+                else {
                     context.listing.init(context.data.transposed);
+                    update.call(context);
+                    updateSelects.call(context);
+                    updateMultiSelects.call(context);
+                }
             } else if (d === 'Charts') {
                 //Initialize or draw ordinal chart.
-                if (context.ordinalChart.intialized)
+                if (context.ordinalChart.initialized)
                     context.ordinalChart.draw(context.data.filtered);
-                else
+                else {
                     context.ordinalChart.init(context.data.filtered);
+                }
 
                 //Initialize or draw linear chart.
-                if (context.linearChart.intialized)
+                if (context.linearChart.initialized)
                     context.linearChart.draw(context.data.filtered);
-                else
+                else {
                     context.linearChart.init(context.data.filtered);
+                    update.call(context);
+                    updateSelects.call(context);
+                    updateMultiSelects.call(context);
+                }
             }
-            updateMultiSelects.call(context, true);
         }
 
         //end performance test

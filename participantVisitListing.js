@@ -2129,7 +2129,7 @@
         exportToCSV.call(this);
 
         if (this.pvl.settings.active_tab === 'Listing')
-            this.pvl.containers.loadingListing.classed('pvl-invisible', true);
+            this.pvl.containers.loadingListing.classed('pvl-hidden', true);
     }
 
     function onDestroy() {}
@@ -2400,7 +2400,7 @@
         classTextMarks.call(this);
 
         if (this.pvl.settings.active_tab === 'Charts')
-            this.pvl.containers.loadingCharts.classed('pvl-invisible', true);
+            this.pvl.containers.loadingCharts.classed('pvl-hidden', true);
     }
 
     function onDestroy$2() {}

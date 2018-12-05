@@ -12,5 +12,5 @@ export default function onResize() {
     classTextMarks.call(this);
 
     if (this.pvl.settings.active_tab === 'Charts')
-        this.pvl.containers.loadingCharts.classed('pvl-invisible', true);
+        this.pvl.containers.loadingCharts.classed('pvl-hidden', true);
 }

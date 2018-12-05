@@ -106,6 +106,7 @@ export default function styles() {
                 '    border-top: 1px solid lightgray;' +
                 '    border-bottom: 1px solid lightgray;' +
                 '    padding: 6px 0;' +
+                '    position: relative;' +
                 '}',
                 '.pvl-tab {' +
                 '    display: inline-block;' +
@@ -129,6 +130,48 @@ export default function styles() {
                 '    color: white;' +
                 '    background: black;' +
                 '    font-weight: bold;' +
+                '}',
+                '.pvl-loading {' +
+                '    width: 100px;' +
+                '    display: inline-block;' +
+                '    position: absolute;' +
+                '    top: 12px;' +
+                '}',
+                '.pvl-loading--listing {' +
+                '    left: 25%;' +
+                '}',
+                '.pvl-loading--charts {' +
+                '    right: 25%;' +
+                '}',
+                '.pvl-loading > div {' +
+                '    width: 15px;' +
+                '    height: 15px;' +
+                '    background-color: #0458ad;' +
+                '    border-radius: 100%;' +
+                '    display: inline-block;' +
+                '    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;' +
+                '    animation: sk-bouncedelay 1.4s infinite ease-in-out both;' +
+                '}',
+                '.pvl-loading .pvl-loading-ball--1 {' +
+                '    -webkit-animation-delay: -0.32s;' +
+                '    animation-delay: -0.32s;' +
+                '}',
+                '.pvl-loading .pvl-loading-ball--2 {' +
+                '    -webkit-animation-delay: -0.16s;' +
+                '    animation-delay: -0.16s;' +
+                '}',
+                '@-webkit-keyframes sk-bouncedelay {' +
+                '    0%, 80%, 100% { -webkit-transform: scale(0) }' +
+                '    40% { -webkit-transform: scale(1.0) }' +
+                '}',
+                '@keyframes sk-bouncedelay {' +
+                '    0%, 80%, 100% { ' +
+                '        -webkit-transform: scale(0);' +
+                '        transform: scale(0);' +
+                '    } 40% { ' +
+                '        -webkit-transform: scale(1.0);' +
+                '        transform: scale(1.0);' +
+                '    }' +
                 '}',
 
             /****---------------------------------------------------------------------------------\

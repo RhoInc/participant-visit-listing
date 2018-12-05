@@ -23,28 +23,49 @@ export default function update() {
 
     //Redefine the event listener.
     filters.on('change', function(d) {
-        filterData.call(context, d, this);
-        defineIDSet.call(context, 'id_col');
+        //Indicate loading.
+        context.containers[`loading${context.settings.active_tab}`].classed('pvl-hidden', false);
 
-        //Update visit set and listing columns if the changed filter controls an analysis subset.
-        if (/^Analysis Subset \d$/.test(d.label)) {
-            defineVisitSet.call(context);
-            defineColumns.call(context);
-        }
+        const loading = setInterval(() => {
+            const loadingIndicated =
+                context.containers[`loading${context.settings.active_tab}`].style('display') !==
+                'none';
 
-        transposeData.call(context);
-        updateLegend.call(context);
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                context.containers[`loading${context.settings.active_tab}`].classed(
+                    'pvl-hidden',
+                    true
+                );
 
-        if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
-        if (context.ordinalChart.initialized) context.ordinalChart.raw_data = context.data.filtered;
-        if (context.linearChart.initialized) context.linearChart.raw_data = context.data.filtered;
+                //Run code.
+                filterData.call(context, d, this);
+                defineIDSet.call(context, 'id_col');
 
-        //Redraw displays.
-        if (context.settings.active_tab === 'Listing') {
-            context.listing.draw();
-        } else if (context.settings.active_tab === 'Charts') {
-            context.ordinalChart.draw();
-            context.linearChart.draw();
-        }
+                //Update visit set and listing columns if the changed filter controls an analysis subset.
+                if (/^Analysis Subset \d$/.test(d.label)) {
+                    defineVisitSet.call(context);
+                    defineColumns.call(context);
+                }
+
+                transposeData.call(context);
+                updateLegend.call(context);
+
+                if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+                if (context.ordinalChart.initialized)
+                    context.ordinalChart.raw_data = context.data.filtered;
+                if (context.linearChart.initialized)
+                    context.linearChart.raw_data = context.data.filtered;
+
+                //Redraw displays.
+                if (context.settings.active_tab === 'Listing') {
+                    context.listing.draw();
+                } else if (context.settings.active_tab === 'Charts') {
+                    context.ordinalChart.draw();
+                    context.linearChart.draw();
+                }
+            }
+        });
     });
 }

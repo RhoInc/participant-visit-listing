@@ -688,6 +688,7 @@
                     }
                 }
             }
+
             _this.data.transposed[i] = datum;
             i += 1;
         };
@@ -771,31 +772,56 @@
 
         //Redefine the event listener.
         filters.on('change', function(d) {
-            filterData.call(context, d, this);
-            defineDefaultSet.call(context, 'id_col');
+            var _this = this;
 
-            //Update visit set and listing columns if the changed filter controls an analysis subset.
-            if (/^Analysis Subset \d$/.test(d.label)) {
-                defineVisitSet.call(context);
-                defineColumns.call(context);
-            }
+            //Indicate loading.
+            context.containers['loading' + context.settings.active_tab].classed(
+                'pvl-hidden',
+                false
+            );
 
-            transposeData.call(context);
-            update.call(context);
+            var loading = setInterval(function() {
+                var loadingIndicated =
+                    context.containers['loading' + context.settings.active_tab].style('display') !==
+                    'none';
 
-            if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
-            if (context.ordinalChart.initialized)
-                context.ordinalChart.raw_data = context.data.filtered;
-            if (context.linearChart.initialized)
-                context.linearChart.raw_data = context.data.filtered;
+                if (loadingIndicated) {
+                    //Handle loading indicator.
+                    clearInterval(loading);
+                    context.containers['loading' + context.settings.active_tab].classed(
+                        'pvl-hidden',
+                        true
+                    );
 
-            //Redraw displays.
-            if (context.settings.active_tab === 'Listing') {
-                context.listing.draw();
-            } else if (context.settings.active_tab === 'Charts') {
-                context.ordinalChart.draw();
-                context.linearChart.draw();
-            }
+                    //Run code.
+                    filterData.call(context, d, _this);
+                    defineDefaultSet.call(context, 'id_col');
+
+                    //Update visit set and listing columns if the changed filter controls an analysis subset.
+                    if (/^Analysis Subset \d$/.test(d.label)) {
+                        defineVisitSet.call(context);
+                        defineColumns.call(context);
+                    }
+
+                    transposeData.call(context);
+                    update.call(context);
+
+                    if (context.listing.initialized)
+                        context.listing.data.raw = context.data.transposed;
+                    if (context.ordinalChart.initialized)
+                        context.ordinalChart.raw_data = context.data.filtered;
+                    if (context.linearChart.initialized)
+                        context.linearChart.raw_data = context.data.filtered;
+
+                    //Redraw displays.
+                    if (context.settings.active_tab === 'Listing') {
+                        context.listing.draw();
+                    } else if (context.settings.active_tab === 'Charts') {
+                        context.ordinalChart.draw();
+                        context.linearChart.draw();
+                    }
+                }
+            });
         });
     }
 
@@ -847,48 +873,66 @@
         var context = this;
 
         this.containers.tabs.on('click', function(d) {
+            var _this = this;
+
             var t0 = performance.now();
             //begin performance test
 
-            context.settings.active_tab = d;
-            var tab = d3.select(this);
-            var active = tab.classed('pvl-tab--active');
+            //indicate loading
+            context.containers['loading' + d].classed('pvl-hidden', false);
 
-            if (!active) {
-                context.containers.tabs.classed('pvl-tab--active', false);
-                tab.classed('pvl-tab--active', true);
-                context.containers.charts.classed('pvl-hidden', true);
-                context.containers.listing.classed('pvl-hidden', true);
-                context.containers[d.toLowerCase()].classed('pvl-hidden', false);
+            var loading = setInterval(function() {
+                var loadingIndicated =
+                    context.containers['loading' + d].style('display') !== 'none';
 
-                if (d === 'Listing') {
-                    //Initialize or draw listing.
-                    if (context.listing.initialized) context.listing.draw(context.data.transposed);
-                    else {
-                        context.listing.init(context.data.transposed);
-                        update$1.call(context);
-                        updateSelects.call(context);
-                        updateMultiSelects.call(context);
-                    }
-                } else if (d === 'Charts') {
-                    //Initialize or draw ordinal chart.
-                    if (context.ordinalChart.initialized)
-                        context.ordinalChart.draw(context.data.filtered);
-                    else {
-                        context.ordinalChart.init(context.data.filtered);
-                    }
+                if (loadingIndicated) {
+                    //Handle loading indicator.
+                    clearInterval(loading);
+                    context.containers['loading' + d].classed('pvl-hidden', true);
 
-                    //Initialize or draw linear chart.
-                    if (context.linearChart.initialized)
-                        context.linearChart.draw(context.data.filtered);
-                    else {
-                        context.linearChart.init(context.data.filtered);
-                        update$1.call(context);
-                        updateSelects.call(context);
-                        updateMultiSelects.call(context);
+                    //Run code.
+                    context.settings.active_tab = d;
+                    var tab = d3.select(_this);
+                    var active = tab.classed('pvl-tab--active');
+
+                    if (!active) {
+                        context.containers.tabs.classed('pvl-tab--active', false);
+                        tab.classed('pvl-tab--active', true);
+                        context.containers.charts.classed('pvl-hidden', true);
+                        context.containers.listing.classed('pvl-hidden', true);
+                        context.containers[d.toLowerCase()].classed('pvl-hidden', false);
+
+                        if (d === 'Listing') {
+                            //Initialize or draw listing.
+                            if (context.listing.initialized)
+                                context.listing.draw(context.data.transposed);
+                            else {
+                                context.listing.init(context.data.transposed);
+                                update$1.call(context);
+                                updateSelects.call(context);
+                                updateMultiSelects.call(context);
+                            }
+                        } else if (d === 'Charts') {
+                            //Initialize or draw ordinal chart.
+                            if (context.ordinalChart.initialized)
+                                context.ordinalChart.draw(context.data.filtered);
+                            else {
+                                context.ordinalChart.init(context.data.filtered);
+                            }
+
+                            //Initialize or draw linear chart.
+                            if (context.linearChart.initialized)
+                                context.linearChart.draw(context.data.filtered);
+                            else {
+                                context.linearChart.init(context.data.filtered);
+                                update$1.call(context);
+                                updateSelects.call(context);
+                                updateMultiSelects.call(context);
+                            }
+                        }
                     }
                 }
-            }
+            });
 
             //end performance test
             var t1 = performance.now();
@@ -934,8 +978,19 @@
         this.containers.tabContainer = this.containers.lowerRow
             .append('div')
             .classed('pvl-tabs', true);
+        this.containers.loadingListing = this.containers.tabContainer
+            .append('div.pvl-loading')
+            .classed('pvl-hidden pvl-loading pvl-loading--listing', true);
+        this.containers.loadingListing
+            .selectAll('div.pvl-loading-ball')
+            .data([1, 2, 3])
+            .enter()
+            .append('div')
+            .attr('class', function(d) {
+                return 'pvl-loading-ball pvl-loading-ball--' + d;
+            });
         this.containers.tabs = this.containers.tabContainer
-            .selectAll('div')
+            .selectAll('div.pvl-tab')
             .data(['Listing', 'Charts'])
             .enter()
             .append('div')
@@ -949,6 +1004,17 @@
             })
             .text(function(d) {
                 return d;
+            });
+        this.containers.loadingCharts = this.containers.tabContainer
+            .append('div.pvl-loading')
+            .classed('pvl-hidden pvl-loading pvl-loading--charts', true);
+        this.containers.loadingCharts
+            .selectAll('div.pvl-loading-ball')
+            .data([1, 2, 3])
+            .enter()
+            .append('div')
+            .attr('class', function(d) {
+                return 'pvl-loading-ball pvl-loading-ball--' + d;
             });
         this.containers.charts = this.containers.lowerRow.append('div').classed('pvl-charts', true);
         this.containers.ordinalChart = this.containers.charts
@@ -1054,6 +1120,7 @@
                 '    border-top: 1px solid lightgray;' +
                 '    border-bottom: 1px solid lightgray;' +
                 '    padding: 6px 0;' +
+                '    position: relative;' +
                 '}',
             '.pvl-tab {' +
                 '    display: inline-block;' +
@@ -1077,6 +1144,44 @@
                 '    color: white;' +
                 '    background: black;' +
                 '    font-weight: bold;' +
+                '}',
+            '.pvl-loading {' +
+                '    width: 100px;' +
+                '    display: inline-block;' +
+                '    position: absolute;' +
+                '    top: 12px;' +
+                '}',
+            '.pvl-loading--listing {' + '    left: 25%;' + '}',
+            '.pvl-loading--charts {' + '    right: 25%;' + '}',
+            '.pvl-loading > div {' +
+                '    width: 15px;' +
+                '    height: 15px;' +
+                '    background-color: #0458ad;' +
+                '    border-radius: 100%;' +
+                '    display: inline-block;' +
+                '    -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;' +
+                '    animation: sk-bouncedelay 1.4s infinite ease-in-out both;' +
+                '}',
+            '.pvl-loading .pvl-loading-ball--1 {' +
+                '    -webkit-animation-delay: -0.32s;' +
+                '    animation-delay: -0.32s;' +
+                '}',
+            '.pvl-loading .pvl-loading-ball--2 {' +
+                '    -webkit-animation-delay: -0.16s;' +
+                '    animation-delay: -0.16s;' +
+                '}',
+            '@-webkit-keyframes sk-bouncedelay {' +
+                '    0%, 80%, 100% { -webkit-transform: scale(0) }' +
+                '    40% { -webkit-transform: scale(1.0) }' +
+                '}',
+            '@keyframes sk-bouncedelay {' +
+                '    0%, 80%, 100% { ' +
+                '        -webkit-transform: scale(0);' +
+                '        transform: scale(0);' +
+                '    } 40% { ' +
+                '        -webkit-transform: scale(1.0);' +
+                '        transform: scale(1.0);' +
+                '    }' +
                 '}',
 
             /****---------------------------------------------------------------------------------\
@@ -2022,6 +2127,9 @@
 
         //Add export to .csv.
         exportToCSV.call(this);
+
+        if (this.pvl.settings.active_tab === 'Listing')
+            this.pvl.containers.loadingListing.classed('pvl-invisible', true);
     }
 
     function onDestroy() {}
@@ -2290,6 +2398,9 @@
         positionButtons.call(this);
         addAnnotationLegend.call(this);
         classTextMarks.call(this);
+
+        if (this.pvl.settings.active_tab === 'Charts')
+            this.pvl.containers.loadingCharts.classed('pvl-invisible', true);
     }
 
     function onDestroy$2() {}
@@ -2506,6 +2617,8 @@
     }
 
     function addLegend() {
+        var context = this;
+
         this.containers.legendLabel = this.containers.legend
             .append('span')
             .classed('pvl-legend__label', true)
@@ -2543,7 +2656,12 @@
                     }
                 })
                 .attr('title', function(d) {
-                    return d[3];
+                    return !context.settings.visit_expectation_regex.test(d[1])
+                        ? d[3]
+                        : d[3] +
+                              '\n' +
+                              d[1] +
+                              ' visits are identified in the charts as cells or circles with medial white circles.';
                 });
         });
         update.call(this);
@@ -2562,46 +2680,65 @@
     }
 
     function init(data) {
-        var t0 = performance.now();
-        //begin performance test
+        var _this = this;
 
-        this.data = {
-            raw: data,
-            analysis: data,
-            filtered: data,
-            transposed: null,
-            variables: Object.keys(data[0]),
-            missingVariables: [],
-            filters: [],
-            sets: {}
-        };
-        checkRequiredVariables.call(this);
-        addVariables.call(this);
-        defineSets.call(this);
-        addVisitStatusStyles.call(this);
-        defineColumns.call(this);
-        transposeData.call(this);
-        addLegend.call(this);
+        //indicate loading
+        this.containers['loading' + this.settings.active_tab].classed('pvl-hidden', false);
 
-        //end performance test
-        var t1 = performance.now();
-        console.log('data manipulation took ' + (t1 - t0) + ' milliseconds.');
+        var loading = setInterval(function() {
+            var loadingIndicated =
+                _this.containers['loading' + _this.settings.active_tab].style('display') !== 'none';
 
-        t0 = performance.now();
-        //begin performance test
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                _this.containers['loading' + _this.settings.active_tab].classed('pvl-hidden', true);
 
-        if (this.settings.active_tab === 'Listing') {
-            this.listing.init(this.data.transposed);
-        } else if (this.settings.active_tab === 'Charts') {
-            this.ordinalChart.init(this.data.raw);
-            this.linearChart.init(this.data.raw);
-        }
-        updateMultiSelects$1.call(this);
-        update$1.call(this);
+                //Run code.
+                var t0 = performance.now();
+                //begin performance test
 
-        //end performance test
-        t1 = performance.now();
-        console.log('display initialization took ' + (t1 - t0) + ' milliseconds.');
+                _this.data = {
+                    raw: data,
+                    analysis: data,
+                    filtered: data,
+                    transposed: null,
+                    variables: Object.keys(data[0]),
+                    missingVariables: [],
+                    filters: [],
+                    sets: {}
+                };
+                checkRequiredVariables.call(_this);
+                addVariables.call(_this);
+                defineSets.call(_this);
+                addVisitStatusStyles.call(_this);
+                defineColumns.call(_this);
+                transposeData.call(_this);
+                addLegend.call(_this);
+
+                //end performance test
+                var t1 = performance.now();
+                console.log('data manipulation took ' + (t1 - t0) + ' milliseconds.');
+
+                t0 = performance.now();
+                //begin performance test
+
+                if (_this.settings.active_tab === 'Listing') {
+                    _this.containers.loadingCharts.classed('pvl-hidden', true);
+                    _this.listing.init(_this.data.transposed);
+                } else if (_this.settings.active_tab === 'Charts') {
+                    _this.containers.loadingListing.classed('pvl-hidden', true);
+                    _this.ordinalChart.init(_this.data.raw);
+                    _this.linearChart.init(_this.data.raw);
+                }
+                updateMultiSelects$1.call(_this);
+                update$1.call(_this);
+
+                //end performance test
+                t1 = performance.now();
+                console.log('display initialization took ' + (t1 - t0) + ' milliseconds.');
+            }
+        });
     }
 
     function participantVisitListing() {

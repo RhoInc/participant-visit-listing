@@ -9,44 +9,61 @@ import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
 
 export default function init(data) {
-    let t0 = performance.now();
-    //begin performance test
+    //indicate loading
+    this.containers[`loading${this.settings.active_tab}`].classed('pvl-hidden', false);
 
-    this.data = {
-        raw: data,
-        analysis: data,
-        filtered: data,
-        transposed: null,
-        variables: Object.keys(data[0]),
-        missingVariables: [],
-        filters: [],
-        sets: {}
-    };
-    checkRequiredVariables.call(this);
-    addVariables.call(this);
-    defineSets.call(this);
-    addVisitStatusStyles.call(this);
-    defineColumns.call(this);
-    transposeData.call(this);
-    addLegend.call(this);
+    const loading = setInterval(() => {
+        const loadingIndicated =
+            this.containers[`loading${this.settings.active_tab}`].style('display') !== 'none';
 
-    //end performance test
-    let t1 = performance.now();
-    console.log(`data manipulation took ${t1 - t0} milliseconds.`);
+        if (loadingIndicated) {
+            //Handle loading indicator.
+            clearInterval(loading);
+            this.containers[`loading${this.settings.active_tab}`].classed('pvl-hidden', true);
 
-    t0 = performance.now();
-    //begin performance test
+            //Run code.
+            let t0 = performance.now();
+            //begin performance test
 
-    if (this.settings.active_tab === 'Listing') {
-        this.listing.init(this.data.transposed);
-    } else if (this.settings.active_tab === 'Charts') {
-        this.ordinalChart.init(this.data.raw);
-        this.linearChart.init(this.data.raw);
-    }
-    updateMultiSelects.call(this);
-    update.call(this);
+            this.data = {
+                raw: data,
+                analysis: data,
+                filtered: data,
+                transposed: null,
+                variables: Object.keys(data[0]),
+                missingVariables: [],
+                filters: [],
+                sets: {}
+            };
+            checkRequiredVariables.call(this);
+            addVariables.call(this);
+            defineSets.call(this);
+            addVisitStatusStyles.call(this);
+            defineColumns.call(this);
+            transposeData.call(this);
+            addLegend.call(this);
 
-    //end performance test
-    t1 = performance.now();
-    console.log(`display initialization took ${t1 - t0} milliseconds.`);
+            //end performance test
+            let t1 = performance.now();
+            console.log(`data manipulation took ${t1 - t0} milliseconds.`);
+
+            t0 = performance.now();
+            //begin performance test
+
+            if (this.settings.active_tab === 'Listing') {
+                this.containers.loadingCharts.classed('pvl-hidden', true);
+                this.listing.init(this.data.transposed);
+            } else if (this.settings.active_tab === 'Charts') {
+                this.containers.loadingListing.classed('pvl-hidden', true);
+                this.ordinalChart.init(this.data.raw);
+                this.linearChart.init(this.data.raw);
+            }
+            updateMultiSelects.call(this);
+            update.call(this);
+
+            //end performance test
+            t1 = performance.now();
+            console.log(`display initialization took ${t1 - t0} milliseconds.`);
+        }
+    });
 }

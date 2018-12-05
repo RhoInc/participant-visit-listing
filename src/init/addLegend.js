@@ -1,6 +1,8 @@
 import update from './addLegend/update';
 
 export default function addLegend() {
+    const context = this;
+
     this.containers.legendLabel = this.containers.legend
         .append('span')
         .classed('pvl-legend__label', true)
@@ -27,7 +29,15 @@ export default function addLegend() {
             .style({
                 color: d => d[2]
             })
-            .attr('title', d => d[3]);
+            .attr(
+                'title',
+                d =>
+                    !context.settings.visit_expectation_regex.test(d[1])
+                        ? d[3]
+                        : `${d[3]}\n${
+                              d[1]
+                          } visits are identified in the charts as cells or circles with medial white circles.`
+            );
     });
     update.call(this);
 }

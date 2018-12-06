@@ -1,6 +1,7 @@
 import checkRequiredVariables from './init/checkRequiredVariables';
 import addVariables from './init/addVariables';
 import defineSets from './init/defineSets';
+import addVisitStatusStyles from './init/addVisitStatusStyles';
 import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
 import addLegend from './init/addLegend';
@@ -8,6 +9,9 @@ import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
 
 export default function init(data) {
+    let t0 = performance.now();
+    //begin performance test
+
     this.data = {
         raw: data,
         analysis: data,
@@ -21,12 +25,28 @@ export default function init(data) {
     checkRequiredVariables.call(this);
     addVariables.call(this);
     defineSets.call(this);
+    addVisitStatusStyles.call(this);
     defineColumns.call(this);
     transposeData.call(this);
     addLegend.call(this);
-    this.ordinalChart.init(this.data.raw);
-    this.linearChart.init(this.data.raw);
-    this.listing.init(this.data.transposed);
+
+    //end performance test
+    let t1 = performance.now();
+    console.log(`data manipulation took ${t1 - t0} milliseconds.`);
+
+    t0 = performance.now();
+    //begin performance test
+
+    if (this.settings.active_tab === 'Listing') {
+        this.listing.init(this.data.transposed);
+    } else if (this.settings.active_tab === 'Charts') {
+        this.ordinalChart.init(this.data.raw);
+        this.linearChart.init(this.data.raw);
+    }
     updateMultiSelects.call(this);
     update.call(this);
+
+    //end performance test
+    t1 = performance.now();
+    console.log(`display initialization took ${t1 - t0} milliseconds.`);
 }

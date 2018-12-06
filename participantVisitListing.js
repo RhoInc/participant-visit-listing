@@ -275,7 +275,8 @@
                 label: '',
                 value_col: null, // set in ./syncOrdinalChartSettings and ./syncLinearChartSettings.js
                 range_band: 15,
-                behavior: 'flex'
+                behavior: 'flex',
+                sort: 'alphabetical-descending'
             },
             marks: [
                 {
@@ -459,10 +460,396 @@
         syncLinearChartSettings: syncLinearChartSettings
     };
 
+    function filterData(d, select) {
+        var _this = this;
+
+        var filter = this.data.filters.find(function(filter) {
+            return filter.col === d.value_col;
+        });
+        filter.value = select.multiple
+            ? d3
+                  .select(select)
+                  .selectAll('option:checked')
+                  .data()
+            : select.value;
+
+        //Apply analysis filters to raw data.
+        this.data.analysis = this.data.raw;
+        this.data.filters
+            .filter(function(filter) {
+                return /^subset\d$/i.test(filter.col);
+            })
+            .forEach(function(filter) {
+                _this.data.analysis = _this.data.analysis.filter(function(di) {
+                    return Array.isArray(filter.value)
+                        ? filter.value.indexOf(di[filter.col]) > -1
+                        : filter.value === 'All' || di[filter.col] === filter.value;
+                });
+            });
+
+        //Apply other filters to analysis data.
+        this.data.filtered = this.data.analysis;
+        this.data.filters
+            .filter(function(filter) {
+                return !/^subset\d$/i.test(filter.col);
+            })
+            .forEach(function(filter) {
+                _this.data.filtered = _this.data.filtered.filter(function(di) {
+                    return Array.isArray(filter.value)
+                        ? filter.value.indexOf(di[filter.col]) > -1
+                        : filter.value === 'All' || di[filter.col] === filter.value;
+                });
+            });
+    }
+
+    function defineDefaultSet(col) {
+        var _this = this;
+
+        this.data.sets[col] = d3
+            .set(
+                this.data.filtered.map(function(d) {
+                    return d[_this.settings[col]];
+                })
+            )
+            .values()
+            .sort();
+
+        //Sort set numerically if possible.
+        if (
+            this.data.sets[col].every(function(value) {
+                return !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')));
+            })
+        )
+            this.data.sets[col].sort(function(a, b) {
+                return (
+                    parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
+                );
+            });
+    }
+
+    function defineVisitSet() {
+        var _this = this;
+
+        this.data.sets.visits = d3
+            .set(
+                this.data.analysis.map(function(d) {
+                    return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
+                })
+            )
+            .values();
+        this.data.sets.visit_col = this.data.sets.visits
+            .filter(function(visit) {
+                return !_this.settings.visit_exclusion_regex.test(visit);
+            })
+            .sort(function(a, b) {
+                return a.split(':|:')[0] - b.split(':|:')[0];
+            })
+            .map(function(visit) {
+                return visit.split(':|:')[1];
+            });
+        this.data.sets.scheduledVisits = this.data.sets.visit_col;
+        this.data.sets.unscheduledVisits = d3
+            .set(
+                this.data.sets.visits
+                    .filter(function(visit) {
+                        return _this.settings.visit_exclusion_regex.test(visit);
+                    })
+                    .sort(function(a, b) {
+                        return a.split(':|:')[0] - b.split(':|:')[0];
+                    })
+                    .map(function(order_visit) {
+                        var visit = order_visit.split(':|:')[1];
+                        var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
+                        var yesPlease = visit.replace(extra, '');
+
+                        return yesPlease;
+                    })
+            )
+            .values()
+            .sort();
+
+        //Update ordinal chart settings.
+        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[0].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
+        this.ordinalChart.config.marks[1].values[
+            this.settings.visit_col
+        ] = this.data.sets.visit_col;
+    }
+
+    function defineColumns() {
+        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
+        this.listing.config.headers = this.listing.config.cols.slice();
+    }
+
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
+
+    var defineProperty = function(obj, key, value) {
+        if (key in obj) {
+            Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: true,
+                configurable: true,
+                writable: true
+            });
+        } else {
+            obj[key] = value;
+        }
+
+        return obj;
+    };
+
+    function transposeData() {
+        var _this = this;
+
+        this.data.transposed = new Array(this.data.sets.id_col.length);
+
+        var i = 0;
+
+        var _loop = function _loop(id) {
+            var _datum;
+
+            var id_data = _this.data.raw.filter(function(d) {
+                return d[_this.settings.id_col] === id;
+            });
+            var datum = ((_datum = {}),
+            defineProperty(_datum, _this.settings.site_col, id_data[0][_this.settings.site_col]),
+            defineProperty(_datum, 'Site', id_data[0][_this.settings.site_col]),
+            defineProperty(_datum, _this.settings.id_col, id),
+            defineProperty(_datum, 'ID', id),
+            defineProperty(
+                _datum,
+                _this.settings.id_status_col,
+                id_data[0][_this.settings.id_status_col]
+            ),
+            defineProperty(_datum, 'Status', id_data[0][_this.settings.id_status_col]),
+            _datum);
+
+            if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
+
+            var _loop2 = function _loop2(visit) {
+                var visit_datum = id_data.find(function(d) {
+                    return d[_this.settings.visit_col] === visit;
+                });
+                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
+                datum[visit + '-date'] = visit_datum
+                    ? visit_datum[_this.settings.visit_date_col]
+                    : '';
+                datum[visit + '-status'] = visit_datum
+                    ? visit_datum[_this.settings.visit_status_col]
+                    : '';
+                datum[visit + '-color'] = visit_datum
+                    ? visit_datum[_this.settings.visit_status_color_col]
+                    : '';
+
+                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
+                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
+                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
+            };
+
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+                for (
+                    var _iterator2 = _this.data.sets.visit_col[Symbol.iterator](), _step2;
+                    !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
+                    _iteratorNormalCompletion2 = true
+                ) {
+                    var visit = _step2.value;
+
+                    _loop2(visit);
+                }
+            } catch (err) {
+                _didIteratorError2 = true;
+                _iteratorError2 = err;
+            } finally {
+                try {
+                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                        _iterator2.return();
+                    }
+                } finally {
+                    if (_didIteratorError2) {
+                        throw _iteratorError2;
+                    }
+                }
+            }
+            _this.data.transposed[i] = datum;
+            i += 1;
+        };
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+            for (
+                var _iterator = this.data.sets.id_col[Symbol.iterator](), _step;
+                !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
+                _iteratorNormalCompletion = true
+            ) {
+                var id = _step.value;
+
+                _loop(id);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
+        }
+    }
+
+    function update() {
+        var _this = this;
+
+        var denominator = this.data.filtered.filter(function(d) {
+            return (
+                _this.data.sets.legend
+                    .map(function(d) {
+                        return d.split(':|:')[1];
+                    })
+                    .indexOf(d[_this.settings.visit_status_col]) > -1
+            );
+        }).length;
+        this.containers.legendItems.select('.pvl-legend-item-label').text(function(d) {
+            var numerator = _this.data.filtered.filter(function(di) {
+                return di[_this.settings.visit_status_col] === d[1];
+            }).length;
+            return (
+                d[1] +
+                ' (' +
+                (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') +
+                ')'
+            );
+        });
+    }
+
+    function update$1() {
+        var context = this;
+
+        //Capture all data filter dropdowns.
+        var filters = this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.type === 'subsetter';
+            })
+            .selectAll('select');
+
+        //Remove extra 'All' options; not sure where they're coming from.
+        filters
+            .selectAll('option')
+            .filter(function(d) {
+                return d === 'All';
+            })
+            .filter(function(d, i) {
+                return i > 0;
+            })
+            .remove();
+
+        //Redefine the event listener.
+        filters.on('change', function(d) {
+            filterData.call(context, d, this);
+            defineDefaultSet.call(context, 'id_col');
+
+            //Update visit set and listing columns if the changed filter controls an analysis subset.
+            if (/^Analysis Subset \d$/.test(d.label)) {
+                defineVisitSet.call(context);
+                defineColumns.call(context);
+            }
+
+            transposeData.call(context);
+            update.call(context);
+
+            if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+            if (context.ordinalChart.initialized)
+                context.ordinalChart.raw_data = context.data.filtered;
+            if (context.linearChart.initialized)
+                context.linearChart.raw_data = context.data.filtered;
+
+            //Redraw displays.
+            if (context.settings.active_tab === 'Listing') {
+                context.listing.draw();
+            } else if (context.settings.active_tab === 'Charts') {
+                context.ordinalChart.draw();
+                context.linearChart.draw();
+            }
+        });
+    }
+
+    function updateSelects() {
+        var context = this;
+
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return !d.multiple;
+            })
+            .selectAll('select')
+            .each(function(d) {
+                var filter = context.data.filters.find(function(filter) {
+                    return filter.col === d.value_col;
+                });
+                d3.select(this)
+                    .selectAll('option')
+                    .property('selected', function(d) {
+                        return filter.value === d;
+                    });
+            });
+    }
+
+    function updateMultiSelects() {
+        var context = this;
+
+        this.controls.wrap
+            .selectAll('.control-group')
+            .filter(function(d) {
+                return d.multiple;
+            })
+            .selectAll('select')
+            .each(function(d) {
+                var filter = context.data.filters.find(function(filter) {
+                    return filter.col === d.value_col;
+                });
+                var options = d3
+                    .select(this)
+                    .attr('size', 2)
+                    .selectAll('option');
+                options.property('selected', function(d) {
+                    return filter.value === 'All' || filter.value.indexOf(d) > -1;
+                });
+            });
+    }
+
     function addTabFunctionality() {
         var context = this;
 
         this.containers.tabs.on('click', function(d) {
+            var t0 = performance.now();
+            //begin performance test
+
             context.settings.active_tab = d;
             var tab = d3.select(this);
             var active = tab.classed('pvl-tab--active');
@@ -474,11 +861,38 @@
                 context.containers.listing.classed('pvl-hidden', true);
                 context.containers[d.toLowerCase()].classed('pvl-hidden', false);
 
-                if (d === 'Charts') {
-                    context.ordinalChart.draw();
-                    context.linearChart.draw();
-                } else context.listing.draw();
+                if (d === 'Listing') {
+                    //Initialize or draw listing.
+                    if (context.listing.initialized) context.listing.draw(context.data.transposed);
+                    else {
+                        context.listing.init(context.data.transposed);
+                        update$1.call(context);
+                        updateSelects.call(context);
+                        updateMultiSelects.call(context);
+                    }
+                } else if (d === 'Charts') {
+                    //Initialize or draw ordinal chart.
+                    if (context.ordinalChart.initialized)
+                        context.ordinalChart.draw(context.data.filtered);
+                    else {
+                        context.ordinalChart.init(context.data.filtered);
+                    }
+
+                    //Initialize or draw linear chart.
+                    if (context.linearChart.initialized)
+                        context.linearChart.draw(context.data.filtered);
+                    else {
+                        context.linearChart.init(context.data.filtered);
+                        update$1.call(context);
+                        updateSelects.call(context);
+                        updateMultiSelects.call(context);
+                    }
+                }
             }
+
+            //end performance test
+            var t1 = performance.now();
+            console.log('addTabFunctionality.click() took ' + (t1 - t0) + ' milliseconds.');
         });
     }
 
@@ -793,31 +1207,6 @@
         this.containers.style = d3.select(this.style);
     }
 
-    function update() {
-        var _this = this;
-
-        var denominator = this.data.filtered.filter(function(d) {
-            return (
-                _this.data.sets.legend
-                    .map(function(d) {
-                        return d.split(':|:')[1];
-                    })
-                    .indexOf(d[_this.settings.visit_status_col]) > -1
-            );
-        }).length;
-        this.containers.legendItems.select('.pvl-legend-item-label').text(function(d) {
-            var numerator = _this.data.filtered.filter(function(di) {
-                return di[_this.settings.visit_status_col] === d[1];
-            }).length;
-            return (
-                d[1] +
-                ' (' +
-                (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') +
-                ')'
-            );
-        });
-    }
-
     function controls() {
         //Define controls.
         this.controls = new webCharts.createControls(
@@ -827,7 +1216,9 @@
     }
 
     function onInit() {
+        this.initialized = true;
         this.data.initial = this.data.raw.slice();
+        this.controls.init(this.pvl.data.raw); // gotta pass the raw data to the controls
     }
 
     function hideListing() {
@@ -898,16 +1289,25 @@
     function addCellFormatting() {
         var context = this;
 
-        this.tbody.selectAll('tr').each(function(d, i) {
-            var row = d3.select(this);
-
-            row.selectAll('td:nth-child(n+4)').each(function(di, j) {
-                var cell = d3.select(this).classed('pvl-emboldened', /\d\d/.test(di.text));
+        //Formatting cells via .css.
+        this.tbody.selectAll('tr').each(function(d) {
+            var visitCells = d3
+                .select(this)
+                .selectAll('td:nth-child(n + 4)')
+                .attr('class', function(di) {
+                    return d[di.col + '-status']
+                        ? 'pvl-visit-status--' +
+                              d[di.col + '-status'].toLowerCase().replace(/[^_a-z-]/g, '-')
+                        : '';
+                })
+                .classed('pvl-visit-status', true)
+                .classed('pvl-visit-status--heat-map', !context.config.display_cell_text)
+                .classed('pvl-visit-status--cell-text', context.config.display_cell_text);
+            visitCells.each(function(di) {
+                var visitCell = d3.select(this);
                 di.date = d[di.col + '-date'];
-
-                //Add tooltip to cells.
                 if (d[di.col] !== null)
-                    cell.attr(
+                    visitCell.attr(
                         'title',
                         d[context.pvl.settings.id_col] +
                             ' - ' +
@@ -917,27 +1317,6 @@
                             '): ' +
                             d[di.col + '-status']
                     );
-
-                //Apply cell formmating.
-                di.color = (d[di.col + '-color'] || 'white').toLowerCase();
-                cell.style({
-                    'border-top': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color),
-                    'border-bottom': '2px solid ' + (di.color === 'black' ? '#ccc' : di.color)
-                }); // border-bottom
-                if (context.config.display_cell_text) {
-                    if (!/black|white/.test(di.color))
-                        cell.style({
-                            background: i % 2 ? '#eee' : 'white',
-                            color: di.color
-                        }); // color
-                } else {
-                    if (!/black|white/.test(di.color))
-                        cell.style({
-                            background: di.color,
-                            opacity: 0.9
-                        }); // color
-                    cell.style('color', 'transparent');
-                }
             });
         });
     }
@@ -1217,20 +1596,6 @@
         var cell_ref = XLSX.utils.encode_cell({ c: col, r: row });
         ws[cell_ref] = cell;
     }
-
-    var _typeof =
-        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-            ? function(obj) {
-                  return typeof obj;
-              }
-            : function(obj) {
-                  return obj &&
-                      typeof Symbol === 'function' &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? 'symbol'
-                      : typeof obj;
-              };
 
     function clone(obj) {
         var copy = void 0;
@@ -1679,6 +2044,7 @@
     }
 
     function onInit$1() {
+        this.initialized = true;
         this.property = 'ordinalChart';
     }
 
@@ -1756,7 +2122,9 @@
         };
     }
 
-    function onPreprocess$1() {}
+    function onPreprocess$1() {
+        this.config.y.domain = this.pvl.data.sets.id_col.slice().reverse();
+    }
 
     function onDataTransform() {}
 
@@ -1865,6 +2233,7 @@
     }
 
     function onInit$2() {
+        this.initialized = true;
         this.property = 'linearChart';
     }
 
@@ -1878,7 +2247,9 @@
             this.pvl.containers.charts.classed('pvl-hidden', true);
     }
 
-    function onPreprocess$2() {}
+    function onPreprocess$2() {
+        this.config.y.domain = this.pvl.data.sets.id_col.slice().reverse();
+    }
 
     function onDataTransform$1() {}
 
@@ -1960,11 +2331,6 @@
                 col: filterCol,
                 value: 'All'
             });
-            //this.settings.controlsSynced.inputs.find(input => input.value_col === filterCol).values = d3
-            //    .set(this.data.raw.map(d => d[filterCol]))
-            //    .values()
-            //    .filter(value => !/^ *$/.test(value))
-            //    .sort();
         }
     }
 
@@ -1987,57 +2353,6 @@
             );
             d.unscheduled = _this.settings.visit_exclusion_regex.test(d[_this.settings.visit_col]);
         });
-    }
-
-    function defineVisitSet() {
-        var _this = this;
-
-        this.data.sets.visits = d3
-            .set(
-                this.data.analysis.map(function(d) {
-                    return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
-                })
-            )
-            .values();
-        this.data.sets.visit_col = this.data.sets.visits
-            .filter(function(visit) {
-                return !_this.settings.visit_exclusion_regex.test(visit);
-            })
-            .sort(function(a, b) {
-                return a.split(':|:')[0] - b.split(':|:')[0];
-            })
-            .map(function(visit) {
-                return visit.split(':|:')[1];
-            });
-        this.data.sets.scheduledVisits = this.data.sets.visit_col;
-        this.data.sets.unscheduledVisits = d3
-            .set(
-                this.data.sets.visits
-                    .filter(function(visit) {
-                        return _this.settings.visit_exclusion_regex.test(visit);
-                    })
-                    .sort(function(a, b) {
-                        return a.split(':|:')[0] - b.split(':|:')[0];
-                    })
-                    .map(function(order_visit) {
-                        var visit = order_visit.split(':|:')[1];
-                        var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
-                        var yesPlease = visit.replace(extra, '');
-
-                        return yesPlease;
-                    })
-            )
-            .values()
-            .sort();
-
-        //Update ordinal chart settings.
-        this.ordinalChart.config.x.domain = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[0].values[
-            this.settings.visit_col
-        ] = this.data.sets.visit_col;
-        this.ordinalChart.config.marks[1].values[
-            this.settings.visit_col
-        ] = this.data.sets.visit_col;
     }
 
     function defineVisitStatusSet() {
@@ -2127,19 +2442,6 @@
             });
     }
 
-    function defineDefaultSet(col) {
-        var _this = this;
-
-        this.data.sets[col] = d3
-            .set(
-                this.data.filtered.map(function(d) {
-                    return d[_this.settings[col]];
-                })
-            )
-            .values()
-            .sort();
-    }
-
     function defineSets() {
         var _this = this;
 
@@ -2165,51 +2467,42 @@
         });
     }
 
-    function defineColumns() {
-        this.listing.config.cols = ['Site', 'ID', 'Status'].concat(this.data.sets.visit_col);
-        this.listing.config.headers = this.listing.config.cols.slice();
-    }
-
-    function transposeData() {
-        var _this = this;
-
-        this.data.transposed = [];
-
-        this.data.sets.id_col.forEach(function(id, i) {
-            var id_data = _this.data.raw.filter(function(d) {
-                return d[_this.settings.id_col] === id;
-            });
-            var datum = {};
-            datum[_this.settings.site_col] = id_data[0][_this.settings.site_col];
-            datum['Site'] = datum[_this.settings.site_col];
-            datum[_this.settings.id_col] = id;
-            datum['ID'] = datum[_this.settings.id_col];
-            datum[_this.settings.id_status_col] = id_data[0][_this.settings.id_status_col];
-            datum['Status'] = datum[_this.settings.id_status_col];
-
-            if (_this.data.missingVariables.overdue2) datum['overdue2'] = id_data[0]['overdue2'];
-
-            _this.data.sets.visit_col.forEach(function(visit) {
-                var visit_datum = id_data.find(function(d) {
-                    return d[_this.settings.visit_col] === visit;
-                });
-                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
-                datum[visit + '-date'] = visit_datum
-                    ? visit_datum[_this.settings.visit_date_col]
-                    : '';
-                datum[visit + '-status'] = visit_datum
-                    ? visit_datum[_this.settings.visit_status_col]
-                    : '';
-                datum[visit + '-color'] = visit_datum
-                    ? visit_datum[_this.settings.visit_status_color_col]
-                    : '';
-
-                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
-                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
-                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
-            });
-            _this.data.transposed.push(datum);
-        });
+    function addVisitStatusStyles() {
+        var visitStatusStyles = this.data.sets.visit_status_col
+            .map(function(visit_status) {
+                var split = visit_status.split(':|:');
+                var order = split[0];
+                var status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); //.replace(/ /g, '.');
+                var color = split[2];
+                var styles = [
+                    '.pvl-visit-status--' + status + ' {',
+                    '    border-top: 2px solid ' + color + ';',
+                    '    border-bottom: 2px solid ' + color + ';',
+                    '}',
+                    '.pvl-visit-status--heat-map.pvl-visit-status--' + status + ' {',
+                    '    background: ' + color + ';',
+                    '    color: transparent;',
+                    '    opacity: .9;',
+                    '}',
+                    '.pvl-visit-status--cell-text.pvl-visit-status--' + status + ' {',
+                    '    color: ' + color + ';',
+                    '    opacity: 1;',
+                    '}',
+                    'tr:nth-child(odd) .pvl-visit-status--cell-text.pvl-visit-status--' +
+                        status +
+                        ' {',
+                    '    background: white;',
+                    '}',
+                    'tr:nth-child(even) .pvl-visit-status--cell-text.pvl-visit-status--' +
+                        status +
+                        ' {',
+                    '    background: #eee;',
+                    '}'
+                ];
+                return styles.join('\n');
+            })
+            .join('\n');
+        this.containers.style.html(this.containers.style.html() + '\n' + visitStatusStyles);
     }
 
     function addLegend() {
@@ -2256,109 +2549,22 @@
         update.call(this);
     }
 
-    function updateMultiSelects() {
+    function updateMultiSelects$1() {
         this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
                 return d.multiple;
             })
-            .select('select')
+            .selectAll('select')
             .attr('size', 2)
             .selectAll('option')
             .property('selected', true);
     }
 
-    function filterData(d, select) {
-        var _this = this;
-
-        var filter = this.data.filters.find(function(filter) {
-            return filter.col === d.value_col;
-        });
-        filter.value = select.multiple
-            ? d3
-                  .select(select)
-                  .selectAll('option:checked')
-                  .data()
-            : select.value;
-
-        //Apply analysis filters to raw data.
-        this.data.analysis = this.data.raw;
-        this.data.filters
-            .filter(function(filter) {
-                return /^subset\d$/i.test(filter.col);
-            })
-            .forEach(function(filter) {
-                _this.data.analysis = _this.data.analysis.filter(function(di) {
-                    return Array.isArray(filter.value)
-                        ? filter.value.indexOf(di[filter.col]) > -1
-                        : filter.value === 'All' || di[filter.col] === filter.value;
-                });
-            });
-
-        //Apply other filters to analysis data.
-        this.data.filtered = this.data.analysis;
-        this.data.filters
-            .filter(function(filter) {
-                return !/^subset\d$/i.test(filter.col);
-            })
-            .forEach(function(filter) {
-                _this.data.filtered = _this.data.filtered.filter(function(di) {
-                    return Array.isArray(filter.value)
-                        ? filter.value.indexOf(di[filter.col]) > -1
-                        : filter.value === 'All' || di[filter.col] === filter.value;
-                });
-            });
-    }
-
-    function update$1() {
-        var context = this;
-
-        //Capture all data filter dropdowns.
-        var filters = this.controls.wrap
-            .selectAll('.control-group')
-            .filter(function(d) {
-                return d.type === 'subsetter';
-            })
-            .selectAll('select');
-
-        //Remove extra 'All' options; not sure where they're coming from.
-        filters
-            .selectAll('option')
-            .filter(function(d) {
-                return d === 'All';
-            })
-            .filter(function(d, i) {
-                return i > 0;
-            })
-            .remove();
-
-        //Redefine the event listener.
-        filters.on('change', function(d) {
-            filterData.call(context, d, this);
-            defineDefaultSet.call(context, 'id_col');
-
-            //Update visit set and listing columns if the changed filter controls an analysis subset.
-            if (/^Analysis Subset \d$/.test(d.label)) {
-                defineVisitSet.call(context);
-                defineColumns.call(context);
-            }
-
-            transposeData.call(context);
-            update.call(context);
-
-            context.listing.data.raw = context.data.transposed;
-            context.ordinalChart.raw_data = context.data.filtered;
-            context.linearChart.raw_data = context.data.filtered;
-
-            //Redraw displays.
-            if (context.settings.active_tab === 'Charts') {
-                context.ordinalChart.draw();
-                context.linearChart.draw();
-            } else context.listing.draw();
-        });
-    }
-
     function init(data) {
+        var t0 = performance.now();
+        //begin performance test
+
         this.data = {
             raw: data,
             analysis: data,
@@ -2372,14 +2578,30 @@
         checkRequiredVariables.call(this);
         addVariables.call(this);
         defineSets.call(this);
+        addVisitStatusStyles.call(this);
         defineColumns.call(this);
         transposeData.call(this);
         addLegend.call(this);
-        this.ordinalChart.init(this.data.raw);
-        this.linearChart.init(this.data.raw);
-        this.listing.init(this.data.transposed);
-        updateMultiSelects.call(this);
+
+        //end performance test
+        var t1 = performance.now();
+        console.log('data manipulation took ' + (t1 - t0) + ' milliseconds.');
+
+        t0 = performance.now();
+        //begin performance test
+
+        if (this.settings.active_tab === 'Listing') {
+            this.listing.init(this.data.transposed);
+        } else if (this.settings.active_tab === 'Charts') {
+            this.ordinalChart.init(this.data.raw);
+            this.linearChart.init(this.data.raw);
+        }
+        updateMultiSelects$1.call(this);
         update$1.call(this);
+
+        //end performance test
+        t1 = performance.now();
+        console.log('display initialization took ' + (t1 - t0) + ' milliseconds.');
     }
 
     function participantVisitListing() {

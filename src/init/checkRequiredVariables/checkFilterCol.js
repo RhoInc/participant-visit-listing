@@ -9,10 +9,5 @@ export default function checkFilterCols(filterCol) {
             col: filterCol,
             value: 'All'
         });
-        //this.settings.controlsSynced.inputs.find(input => input.value_col === filterCol).values = d3
-        //    .set(this.data.raw.map(d => d[filterCol]))
-        //    .values()
-        //    .filter(value => !/^ *$/.test(value))
-        //    .sort();
     }
 }

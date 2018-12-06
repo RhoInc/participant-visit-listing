@@ -10,4 +10,7 @@ export default function onResize() {
     positionButtons.call(this);
     addAnnotationLegend.call(this);
     classTextMarks.call(this);
+
+    if (this.pvl.settings.active_tab === 'Charts')
+        this.pvl.containers.loadingCharts.classed('pvl-hidden', true);
 }

@@ -27,4 +27,7 @@ export default function onDraw() {
 
     //Add export to .csv.
     exportToCSV.call(this);
+
+    if (this.pvl.settings.active_tab === 'Listing')
+        this.pvl.containers.loadingListing.classed('pvl-hidden', true);
 }

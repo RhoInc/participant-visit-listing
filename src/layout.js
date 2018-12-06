@@ -1,6 +1,8 @@
 import addTabFunctionality from './layout/addTabFunctionality';
 
 export default function layout() {
+    const context = this;
+
     this.containers = {
         main: d3.select(this.element)
             .append('div')
@@ -33,13 +35,31 @@ export default function layout() {
             this.containers.tabContainer = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-tabs', true);
+                this.containers.loadingListing = this.containers.tabContainer
+                    .append('div.pvl-loading')
+                    .classed(`pvl-hidden pvl-loading pvl-loading--listing`, true);
+                    this.containers.loadingListing
+                            .selectAll('div.pvl-loading-ball')
+                                .data([1,2,3])
+                                .enter()
+                            .append('div')
+                            .attr('class', d => `pvl-loading-ball pvl-loading-ball--${d}`);
                 this.containers.tabs = this.containers.tabContainer
-                    .selectAll('div')
+                    .selectAll('div.pvl-tab')
                         .data(['Listing', 'Charts'])
                         .enter()
                     .append('div')
                     .attr('class', d => `pvl-tab pvl-tab--${d.toLowerCase()} ${d === this.settings.active_tab ? 'pvl-tab--active' : ''}`)
                     .text(d => d);
+                this.containers.loadingCharts = this.containers.tabContainer
+                    .append('div.pvl-loading')
+                    .classed(`pvl-hidden pvl-loading pvl-loading--charts`, true);
+                    this.containers.loadingCharts
+                        .selectAll('div.pvl-loading-ball')
+                            .data([1,2,3])
+                            .enter()
+                        .append('div')
+                        .attr('class', d => `pvl-loading-ball pvl-loading-ball--${d}`);
             this.containers.charts = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-charts', true);

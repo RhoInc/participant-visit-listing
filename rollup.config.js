@@ -1,4 +1,3 @@
-import resolve from 'rollup-plugin-node-resolve';
 import babel from 'rollup-plugin-babel';
 
 var pkg = require('./package.json');
@@ -27,13 +26,6 @@ module.exports = {
         return Object.keys(dependencies);
     }()),
     plugins: [
-        resolve({
-            module: true,
-            jsnext: true,
-            main: true,
-            browser: true,
-            extensions: ['.js'],
-        }),
         babel({
             exclude: 'node_modules/**',
             presets: [

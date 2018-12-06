@@ -7,6 +7,35 @@
 })(this, function() {
     'use strict';
 
+    var _typeof =
+        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
+            ? function(obj) {
+                  return typeof obj;
+              }
+            : function(obj) {
+                  return obj &&
+                      typeof Symbol === 'function' &&
+                      obj.constructor === Symbol &&
+                      obj !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof obj;
+              };
+
+    var defineProperty = function(obj, key, value) {
+        if (key in obj) {
+            Object.defineProperty(obj, key, {
+                value: value,
+                enumerable: true,
+                configurable: true,
+                writable: true
+            });
+        } else {
+            obj[key] = value;
+        }
+
+        return obj;
+    };
+
     if (typeof Object.assign != 'function') {
         Object.defineProperty(Object, 'assign', {
             value: function assign(target, varArgs) {
@@ -125,6 +154,417 @@
             }
         });
     }
+
+    //Symbol polyfill because babel does weird things with for-of loops
+    !(function(global, factory) {
+        'object' == (typeof module === 'undefined' ? 'undefined' : _typeof(module)) &&
+        'object' == _typeof(module.exports)
+            ? (module.exports = factory(global))
+            : factory(global);
+    })('undefined' != typeof window ? window : global, function(global) {
+        var defineProperty$$1 = Object.defineProperty,
+            defineProperties = Object.defineProperties,
+            symbolHiddenCounter = 0,
+            globalSymbolRegistry = [],
+            slice = Array.prototype.slice,
+            ES6 = 'object' == _typeof(global.ES6) ? global.ES6 : (global.ES6 = {}),
+            isArray = Array.isArray,
+            objectToString = Object.prototype.toString,
+            push = Array.prototype.push,
+            emptyFunction = function emptyFunction() {},
+            simpleFunction = function simpleFunction(arg) {
+                return arg;
+            },
+            isCallable = function isCallable(fn) {
+                return 'function' == typeof fn;
+            },
+            Iterator = function Iterator() {},
+            ArrayIterator = function ArrayIterator(array, flag) {
+                (this._array = array), (this._flag = flag), (this._nextIndex = 0);
+            },
+            StringIterator = function StringIterator(string, flag) {
+                (this._string = string), (this._flag = flag), (this._nextIndex = 0);
+            },
+            isObject = function isObject(value) {
+                return (
+                    null !== value &&
+                    ('object' == (typeof value === 'undefined' ? 'undefined' : _typeof(value)) ||
+                        'function' == typeof value)
+                );
+            },
+            setupSymbolInternals = function setupSymbolInternals(symbol, desc) {
+                return (
+                    defineProperties(symbol, {
+                        _description: { value: desc },
+                        _isSymbol: { value: !0 },
+                        _id: { value: symbolHiddenCounter++ }
+                    }),
+                    symbol
+                );
+            },
+            appendArray = function appendArray(array1, array2) {
+                if (
+                    'number' == typeof array1.length &&
+                    array1.length >= 0 &&
+                    'number' == typeof array2.length &&
+                    array2.length >= 0
+                ) {
+                    var length1 = Math.floor(array1.length),
+                        length2 = Math.floor(array2.length),
+                        i = 0;
+                    for (array1.length = length1 + length2; i < length2; ++i) {
+                        array2.hasOwnProperty(i) && (array1[length1 + i] = array2[i]);
+                    }
+                }
+            },
+            simpleInheritance = function simpleInheritance(child, parent) {
+                if ('function' != typeof child || 'function' != typeof parent)
+                    throw new TypeError('Child and Parent must be function type');
+                (child.prototype = Object.create(parent.prototype)),
+                    (child.prototype.constructor = child);
+            },
+            _Symbol = function _Symbol2(desc) {
+                if (((desc = void 0 === desc ? '' : String(desc)), this instanceof _Symbol2))
+                    throw new TypeError('Symbol is not a constructor');
+                return setupSymbolInternals(Object.create(_Symbol2.prototype), desc);
+            };
+        defineProperties(_Symbol, {
+            for: {
+                value: function value(key) {
+                    key = String(key);
+                    for (
+                        var record, registryLength = globalSymbolRegistry.length, i = 0;
+                        i < registryLength;
+                        ++i
+                    ) {
+                        if ((record = globalSymbolRegistry[i]).key === key) return record.symbol;
+                    }
+                    return (
+                        (record = { key: key, symbol: _Symbol(key) }),
+                        globalSymbolRegistry.push(record),
+                        record.symbol
+                    );
+                },
+                writable: !0,
+                configurable: !0
+            },
+            keyFor: {
+                value: function value(symbol) {
+                    if (!ES6.isSymbol(symbol))
+                        throw new TypeError(String(symbol) + ' is not a symbol');
+                    for (
+                        var record, registryLength = globalSymbolRegistry.length, i = 0;
+                        i < registryLength;
+                        ++i
+                    ) {
+                        if ((record = globalSymbolRegistry[i]).symbol === symbol) return record.key;
+                    }
+                },
+                writable: !0,
+                configurable: !0
+            },
+            hasInstance: { value: _Symbol('Symbol.hasInstance') },
+            isConcatSpreadable: { value: _Symbol('Symbol.isConcatSpreadable') },
+            iterator: { value: _Symbol('Symbol.iterator') },
+            toStringTag: { value: _Symbol('Symbol.toStringTag') }
+        }),
+            (_Symbol.prototype.toString = function() {
+                return '@@_____' + this._id + '_____';
+            }),
+            (_Symbol.prototype.valueOf = function() {
+                return this;
+            }),
+            defineProperty$$1(Iterator.prototype, _Symbol.iterator.toString(), {
+                value: function value() {
+                    return this;
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            simpleInheritance(ArrayIterator, Iterator),
+            simpleInheritance(StringIterator, Iterator),
+            defineProperty$$1(ArrayIterator.prototype, _Symbol.toStringTag.toString(), {
+                value: 'Array Iterator',
+                configurable: !0
+            }),
+            defineProperty$$1(StringIterator.prototype, _Symbol.toStringTag.toString(), {
+                value: 'String Iterator',
+                configurable: !0
+            }),
+            (ArrayIterator.prototype.next = function() {
+                if (!(this instanceof ArrayIterator))
+                    throw new TypeError(
+                        'Method Array Iterator.prototype.next called on incompatible receiver ' +
+                            String(this)
+                    );
+                var nextValue;
+                return -1 === this._nextIndex
+                    ? { done: !0, value: void 0 }
+                    : 'number' == typeof this._array.length &&
+                      this._array.length >= 0 &&
+                      this._nextIndex < Math.floor(this._array.length)
+                        ? (1 === this._flag
+                              ? (nextValue = [this._nextIndex, this._array[this._nextIndex]])
+                              : 2 === this._flag
+                                  ? (nextValue = this._array[this._nextIndex])
+                                  : 3 === this._flag && (nextValue = this._nextIndex),
+                          this._nextIndex++,
+                          { done: !1, value: nextValue })
+                        : ((this._nextIndex = -1), { done: !0, value: void 0 });
+            }),
+            (StringIterator.prototype.next = function() {
+                if (!(this instanceof StringIterator))
+                    throw new TypeError(
+                        'Method String Iterator.prototype.next called on incompatible receiver ' +
+                            String(this)
+                    );
+                var nextValue,
+                    stringObject = new String(this._string);
+                return -1 === this._nextIndex
+                    ? { done: !0, value: void 0 }
+                    : this._nextIndex < stringObject.length
+                        ? ((nextValue = stringObject[this._nextIndex]),
+                          this._nextIndex++,
+                          { done: !1, value: nextValue })
+                        : ((this._nextIndex = -1), { done: !0, value: void 0 });
+            });
+        var SpreadOperatorImpl = function SpreadOperatorImpl(target, thisArg) {
+            (this._target = target), (this._values = []), (this._thisArg = thisArg);
+        };
+        (SpreadOperatorImpl.prototype.spread = function() {
+            var self = this;
+            return (
+                slice.call(arguments).forEach(function(iterable) {
+                    ES6.forOf(iterable, function(value) {
+                        self._values.push(value);
+                    });
+                }),
+                self
+            );
+        }),
+            (SpreadOperatorImpl.prototype.add = function() {
+                var self = this;
+                return (
+                    slice.call(arguments).forEach(function(value) {
+                        self._values.push(value);
+                    }),
+                    self
+                );
+            }),
+            (SpreadOperatorImpl.prototype.call = function(thisArg) {
+                if ('function' != typeof this._target)
+                    throw new TypeError('Target is not a function');
+                return (
+                    (thisArg = arguments.length <= 0 ? this._thisArg : thisArg),
+                    this._target.apply(thisArg, this._values)
+                );
+            }),
+            (SpreadOperatorImpl.prototype.new = function() {
+                if ('function' != typeof this._target)
+                    throw new TypeError('Target is not a constructor');
+                var temp, returnValue;
+                return (
+                    (temp = Object.create(this._target.prototype)),
+                    (returnValue = this._target.apply(temp, this._values)),
+                    isObject(returnValue) ? returnValue : temp
+                );
+            }),
+            (SpreadOperatorImpl.prototype.array = function() {
+                if (!isArray(this._target)) throw new TypeError('Target is not a array');
+                return push.apply(this._target, this._values), this._target;
+            });
+        return (
+            defineProperties(ES6, {
+                isSymbol: {
+                    value: function value(symbol) {
+                        return (
+                            symbol instanceof _Symbol &&
+                            (function(symbol) {
+                                return (
+                                    !0 === symbol._isSymbol &&
+                                    'number' == typeof symbol._id &&
+                                    'string' == typeof symbol._description
+                                );
+                            })(symbol)
+                        );
+                    },
+                    writable: !0,
+                    configurable: !0
+                },
+                instanceOf: {
+                    value: function value(object, constructor) {
+                        if (!isObject(constructor))
+                            throw new TypeError("Right-hand side of 'instanceof' is not an object");
+                        var hasInstanceSymbolProp = constructor[_Symbol.hasInstance];
+                        if (void 0 === hasInstanceSymbolProp) return object instanceof constructor;
+                        if ('function' != typeof hasInstanceSymbolProp)
+                            throw new TypeError(
+                                (typeof hasInstanceSymbolProp === 'undefined'
+                                    ? 'undefined'
+                                    : _typeof(hasInstanceSymbolProp)) + ' is not a function'
+                            );
+                        return hasInstanceSymbolProp.call(constructor, object);
+                    },
+                    writable: !0,
+                    configurable: !0
+                },
+                forOf: {
+                    value: function value(iterable, callback, thisArg) {
+                        if (
+                            ((callback = 'function' != typeof callback ? emptyFunction : callback),
+                            'function' != typeof iterable[_Symbol.iterator])
+                        )
+                            throw new TypeError('Iterable[Symbol.iterator] is not a function');
+                        var iterationResult,
+                            iterator = iterable[_Symbol.iterator]();
+                        if ('function' != typeof iterator.next)
+                            throw new TypeError('.iterator.next is not a function');
+                        for (;;) {
+                            if (((iterationResult = iterator.next()), !isObject(iterationResult)))
+                                throw new TypeError(
+                                    'Iterator result ' + iterationResult + ' is not an object'
+                                );
+                            if (iterationResult.done) break;
+                            callback.call(thisArg, iterationResult.value);
+                        }
+                    },
+                    writable: !0,
+                    configurable: !0
+                },
+                spreadOperator: {
+                    value: function value(target, thisArg) {
+                        if ('function' != typeof target && !isArray(target))
+                            throw new TypeError(
+                                'Spread operator only supports on array and function objects at this moment'
+                            );
+                        return new SpreadOperatorImpl(target, thisArg);
+                    },
+                    writable: !0,
+                    configurable: !0
+                }
+            }),
+            defineProperty$$1(global, 'Symbol', { value: _Symbol, writable: !0, configurable: !0 }),
+            defineProperty$$1(Function.prototype, _Symbol.hasInstance.toString(), {
+                value: function value(instance) {
+                    return 'function' == typeof this && instance instanceof this;
+                }
+            }),
+            defineProperty$$1(Array.prototype, 'concat', {
+                value: function value() {
+                    if (void 0 === this || null === this)
+                        throw new TypeError('Array.prototype.concat called on null or undefined');
+                    var self = Object(this),
+                        targets = slice.call(arguments),
+                        outputs = [];
+                    return (
+                        targets.unshift(self),
+                        targets.forEach(function(target) {
+                            isObject(target)
+                                ? void 0 !== target[_Symbol.isConcatSpreadable]
+                                    ? target[_Symbol.isConcatSpreadable]
+                                        ? appendArray(outputs, target)
+                                        : outputs.push(target)
+                                    : isArray(target)
+                                        ? appendArray(outputs, target)
+                                        : outputs.push(target)
+                                : outputs.push(target);
+                        }),
+                        outputs
+                    );
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(Object.prototype, 'toString', {
+                value: function value() {
+                    return void 0 === this || null === this
+                        ? objectToString.call(this)
+                        : 'string' == typeof this[_Symbol.toStringTag]
+                            ? '[object ' + this[_Symbol.toStringTag] + ']'
+                            : objectToString.call(this);
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(Array.prototype, _Symbol.iterator.toString(), {
+                value: function value() {
+                    if (void 0 === this || null === this)
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    var self = Object(this);
+                    return new ArrayIterator(self, 2);
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(Array, 'from', {
+                value: function value(arrayLike, mapFn, thisArg) {
+                    var constructor,
+                        length,
+                        outputs,
+                        i = 0;
+                    if (
+                        ((constructor = isCallable(this) ? this : Array),
+                        void 0 === arrayLike || null === arrayLike)
+                    )
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    if (((arrayLike = Object(arrayLike)), void 0 === mapFn)) mapFn = simpleFunction;
+                    else if (!isCallable(mapFn)) throw new TypeError(mapFn + ' is not a function');
+                    if (void 0 === arrayLike[_Symbol.iterator]) {
+                        if (!('number' == typeof arrayLike.length && arrayLike.length >= 0))
+                            return ((outputs = new constructor(0)).length = 0), outputs;
+                        for (
+                            length = Math.floor(arrayLike.length),
+                                (outputs = new constructor(length)).length = length;
+                            i < length;
+                            ++i
+                        ) {
+                            outputs[i] = mapFn.call(thisArg, arrayLike[i]);
+                        }
+                    } else
+                        ((outputs = new constructor()).length = 0),
+                            ES6.forOf(arrayLike, function(value) {
+                                outputs.length++,
+                                    (outputs[outputs.length - 1] = mapFn.call(thisArg, value));
+                            });
+                    return outputs;
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(Array.prototype, 'entries', {
+                value: function value() {
+                    if (void 0 === this || null === this)
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    var self = Object(this);
+                    return new ArrayIterator(self, 1);
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(Array.prototype, 'keys', {
+                value: function value() {
+                    if (void 0 === this || null === this)
+                        throw new TypeError('Cannot convert undefined or null to object');
+                    var self = Object(this);
+                    return new ArrayIterator(self, 3);
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty$$1(String.prototype, _Symbol.iterator.toString(), {
+                value: function value() {
+                    if (void 0 === this || null === this)
+                        throw new TypeError(
+                            'String.prototype[Symbol.iterator] called on null or undefined'
+                        );
+                    return new StringIterator(String(this), 0);
+                },
+                writable: !0,
+                configurable: !0
+            }),
+            ES6
+        );
+    });
 
     function rendererSettings() {
         return {
@@ -583,35 +1023,6 @@
         this.listing.config.headers = this.listing.config.cols.slice();
     }
 
-    var _typeof =
-        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-            ? function(obj) {
-                  return typeof obj;
-              }
-            : function(obj) {
-                  return obj &&
-                      typeof Symbol === 'function' &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? 'symbol'
-                      : typeof obj;
-              };
-
-    var defineProperty = function(obj, key, value) {
-        if (key in obj) {
-            Object.defineProperty(obj, key, {
-                value: value,
-                enumerable: true,
-                configurable: true,
-                writable: true
-            });
-        } else {
-            obj[key] = value;
-        }
-
-        return obj;
-    };
-
     function transposeData() {
         var _this = this;
 
@@ -957,8 +1368,8 @@
         };
 
         /**-------------------------------------------------------------------------------------------\
-          Upper row
-        \-------------------------------------------------------------------------------------------**/
+        Upper row
+      \-------------------------------------------------------------------------------------------**/
 
         this.containers.upperRow = this.containers.main
             .append('div')
@@ -969,8 +1380,8 @@
         this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
 
         /**-------------------------------------------------------------------------------------------\
-          Lower row
-        \-------------------------------------------------------------------------------------------**/
+        Lower row
+      \-------------------------------------------------------------------------------------------**/
 
         this.containers.lowerRow = this.containers.main
             .append('div')
@@ -1028,8 +1439,8 @@
             .classed('pvl-listing', true);
 
         /**-------------------------------------------------------------------------------------------\
-          Functionality
-        \-------------------------------------------------------------------------------------------**/
+        Functionality
+      \-------------------------------------------------------------------------------------------**/
 
         addTabFunctionality.call(this);
     }
@@ -1049,8 +1460,8 @@
                 '}',
 
             /***--------------------------------------------------------------------------------------\
-        Upper row
-      \--------------------------------------------------------------------------------------***/
+      Upper row
+    \--------------------------------------------------------------------------------------***/
 
             '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}',
             '.pvl-row--upper > * {' +
@@ -1059,8 +1470,8 @@
                 '}',
 
             /****---------------------------------------------------------------------------------\
-        Legend
-      \---------------------------------------------------------------------------------****/
+      Legend
+    \---------------------------------------------------------------------------------****/
 
             '.pvl-legend {' + '    width: 35%;' + '    float: left;' + '}',
             '.pvl-legend__label {' + '    font-size: 24px;' + '    font-weight: lighter;' + '}',
@@ -1082,8 +1493,8 @@
                 '}',
 
             /****---------------------------------------------------------------------------------\
-        Controls
-      \---------------------------------------------------------------------------------****/
+      Controls
+    \---------------------------------------------------------------------------------****/
 
             '.pvl-controls {' + '    width: 64%;' + '    float: right;' + '}',
             '.pvl-controls .wc-controls {' +
@@ -1105,15 +1516,15 @@
                 '}',
 
             /***--------------------------------------------------------------------------------------\
-        Lower row
-      \--------------------------------------------------------------------------------------***/
+      Lower row
+    \--------------------------------------------------------------------------------------***/
 
             '.pvl-row--lower {' + '}',
             '.pvl-row--lower > * {' + '}',
 
             /****---------------------------------------------------------------------------------\
-        Tabs
-      \---------------------------------------------------------------------------------****/
+      Tabs
+    \---------------------------------------------------------------------------------****/
 
             '.pvl-tabs {' +
                 '    text-align: center;' +
@@ -1185,8 +1596,8 @@
                 '}',
 
             /****---------------------------------------------------------------------------------\
-        Charts
-      \---------------------------------------------------------------------------------****/
+      Charts
+    \---------------------------------------------------------------------------------****/
 
             '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}',
             '.pvl-chart {' + '    display: inline-block;' + '}',
@@ -1221,8 +1632,8 @@
                 '}',
 
             /****---------------------------------------------------------------------------------\
-        Listing
-      \---------------------------------------------------------------------------------****/
+      Listing
+    \---------------------------------------------------------------------------------****/
 
             '.pvl-listing {' + '}',
             '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
@@ -1242,8 +1653,8 @@
                 '}',
 
             /*****----------------------------------------------------------------------------\
-        thead
-      \----------------------------------------------------------------------------*****/
+      thead
+    \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table thead {' + '}',
             '.pvl-listing .wc-table table thead tr:after {' +
@@ -1259,8 +1670,8 @@
                 '}',
 
             /*****----------------------------------------------------------------------------\
-        tbody
-      \----------------------------------------------------------------------------*****/
+      tbody
+    \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table tbody {' +
                 '    display: block;' +
@@ -1293,8 +1704,8 @@
                 '}',
 
             /*****----------------------------------------------------------------------------\
-        t-agnostic
-      \----------------------------------------------------------------------------*****/
+      t-agnostic
+    \----------------------------------------------------------------------------*****/
 
             '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}',
             '.pvl-listing .wc-table table th,' +
@@ -1805,14 +2216,14 @@
     }
 
     /* FileSaver.js
-     * A saveAs() FileSaver implementation.
-     * 1.3.8
-     * 2018-03-22 14:03:47
-     *
-     * By Eli Grey, https://eligrey.com
-     * License: MIT
-     *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
-     */
+   * A saveAs() FileSaver implementation.
+   * 1.3.8
+   * 2018-03-22 14:03:47
+   *
+   * By Eli Grey, https://eligrey.com
+   * License: MIT
+   *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
+   */
 
     /*global self */
     /*jslint bitwise: true, indent: 4, laxbreak: true, laxcomma: true, smarttabs: true, plusplus: true */

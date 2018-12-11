@@ -2577,26 +2577,111 @@
     }
 
     function minimize() {
-        var thisChart = this.property;
-        var thatChart = this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
-        this.pvl.containers[thisChart].classed('pvl-hidden', true);
-        this.pvl.containers[thatChart].classed('pvl-hidden', false).style('width', '100%');
-        this.pvl[thatChart].draw();
+        var _this = this;
+
+        var t0 = performance.now();
+        //begin performance test
+
+        //indicate loading
+        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+
+        var loading = setInterval(function() {
+            var loadingIndicated =
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
+                'none';
+
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
+                    'pvl-hidden',
+                    true
+                );
+
+                var thisChart = _this.property;
+                var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+                _this.pvl.containers[thisChart].classed('pvl-hidden', true);
+                _this.pvl.containers[thatChart].classed('pvl-hidden', false).style('width', '100%');
+                _this.pvl[thatChart].draw();
+            }
+        });
+
+        //end performance test
+        var t1 = performance.now();
+        console.log('minimize() took ' + (t1 - t0) + ' milliseconds.');
     }
 
     function split() {
-        this.pvl.containers.ordinalChart.classed('pvl-hidden', false).style('width', '49.5%');
-        this.pvl.ordinalChart.draw();
-        this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '49.5%');
-        this.pvl.linearChart.draw();
+        var _this = this;
+
+        var t0 = performance.now();
+        //begin performance test
+
+        //indicate loading
+        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+
+        var loading = setInterval(function() {
+            var loadingIndicated =
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
+                'none';
+
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
+                    'pvl-hidden',
+                    true
+                );
+
+                _this.pvl.containers.ordinalChart
+                    .classed('pvl-hidden', false)
+                    .style('width', '49.5%');
+                _this.pvl.ordinalChart.draw();
+                _this.pvl.containers.linearChart
+                    .classed('pvl-hidden', false)
+                    .style('width', '49.5%');
+                _this.pvl.linearChart.draw();
+            }
+        });
+
+        //end performance test
+        var t1 = performance.now();
+        console.log('split() took ' + (t1 - t0) + ' milliseconds.');
     }
 
     function maximize() {
-        var thisChart = this.property;
-        var thatChart = this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
-        this.pvl.containers[thatChart].classed('pvl-hidden', true);
-        this.pvl.containers[thisChart].classed('pvl-hidden', false).style('width', '100%');
-        this.pvl[thisChart].draw();
+        var _this = this;
+
+        var t0 = performance.now();
+        //begin performance test
+
+        //indicate loading
+        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+
+        var loading = setInterval(function() {
+            var loadingIndicated =
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
+                'none';
+
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
+                    'pvl-hidden',
+                    true
+                );
+
+                var thisChart = _this.property;
+                var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+                _this.pvl.containers[thatChart].classed('pvl-hidden', true);
+                _this.pvl.containers[thisChart].classed('pvl-hidden', false).style('width', '100%');
+                _this.pvl[thisChart].draw();
+            }
+        });
+
+        //end performance test
+        var t1 = performance.now();
+        console.log('maximize() took ' + (t1 - t0) + ' milliseconds.');
     }
 
     function addButtons() {

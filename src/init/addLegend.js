@@ -1,11 +1,17 @@
 import update from './addLegend/update';
 
 export default function addLegend() {
+    const context = this;
+
+    this.containers.legendLabel = this.containers.legend
+        .append('span')
+        .classed('pvl-legend__label', true)
+        .text('Visit Status');
     this.containers.legendItems = this.containers.legend
         .append('ul')
         .classed('pvl-legend__ul', true)
         .selectAll('li.pvl-legend__li')
-        .data(this.data.sets.visit_status_col.map(visit_status => visit_status.split(':|:')))
+        .data(this.data.sets.legend.map(visit_status => visit_status.split(':|:')))
         .enter()
         .append('li')
         .classed('pvl-legend__li', true)
@@ -23,27 +29,15 @@ export default function addLegend() {
             .style({
                 color: d => d[2]
             })
-            .attr('title', d => {
-                let infoText;
-                switch (d[1]) {
-                    case 'In Window':
-                        infoText = 'Visits in black have occurred.';
-                        break;
-                    case 'Expected':
-                        infoText = 'Dates in blue are expected dates for future visits.';
-                        break;
-                    case 'Overdue':
-                        infoText = 'Dates in Red are expected dates for overdue visits.';
-                        break;
-                    case 'Part':
-                        infoText = '"Part" a visit partially entered into EDC.';
-                        break;
-                    default:
-                        infoText = d[1];
-                        break;
-                }
-                return infoText;
-            });
+            .attr(
+                'title',
+                d =>
+                    !context.settings.visit_expectation_regex.test(d[1])
+                        ? d[3]
+                        : `${d[3]}\n${
+                              d[1]
+                          } visits are identified in the charts as cells or circles with medial white circles.`
+            );
     });
     update.call(this);
 }

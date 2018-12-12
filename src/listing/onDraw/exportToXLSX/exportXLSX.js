@@ -5,7 +5,7 @@ export default function exportXLSX(listing) {
     try {
         saveAs(
             new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }),
-            'participant-visit-listing.xlsx'
+            `participant-visit-listing-${d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date())}.xlsx`
         );
     } catch (error) {
         if (typeof console !== 'undefined') console.log(error);

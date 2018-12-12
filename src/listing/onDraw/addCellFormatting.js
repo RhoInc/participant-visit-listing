@@ -1,32 +1,33 @@
 export default function addCellFormatting() {
     const context = this;
 
-    this.tbody.selectAll('tr').each(function(d, i) {
-        const row = d3.select(this);
-
-        row.selectAll('td:nth-child(n+4)').each(function(di, j) {
-            const cell = d3.select(this);
-
-            //Add tooltip to cells.
+    //Formatting cells via .css.
+    this.tbody.selectAll('tr').each(function(d) {
+        const visitCells = d3
+            .select(this)
+            .selectAll('td:nth-child(n + 4)')
+            .attr(
+                'class',
+                di =>
+                    d[`${di.col}-status`]
+                        ? `pvl-visit-status--${d[`${di.col}-status`]
+                              .toLowerCase()
+                              .replace(/[^_a-z-]/g, '-')}`
+                        : ``
+            )
+            .classed('pvl-visit-status', true)
+            .classed('pvl-visit-status--heat-map', !context.config.display_cell_text)
+            .classed('pvl-visit-status--cell-text', context.config.display_cell_text);
+        visitCells.each(function(di) {
+            const visitCell = d3.select(this);
+            di.date = d[`${di.col}-date`];
             if (d[di.col] !== null)
-                cell.attr(
+                visitCell.attr(
                     'title',
-                    `${d[context.parent.settings.rendererSynced.id_col]} - ${di.col}: ${
+                    `${d[context.pvl.settings.id_col]} - ${di.col} (${di.date}): ${
                         d[`${di.col}-status`]
                     }`
                 );
-
-            di.color = (d[`${di.col}-color`] || 'white').toLowerCase();
-
-            //Apply cell border coloring.
-            if (!/white/.test(di.color))
-                cell.style(
-                    'border-bottom',
-                    `2px solid ${di.color === 'black' ? '#ccc' : di.color}`
-                );
-
-            //Apply cell text coloring.
-            if (!/black|white/.test(di.color)) cell.style('color', di.color);
         });
     });
 }

@@ -10,4 +10,7 @@ export default function onResize() {
     positionButtons.call(this);
     rotateXAxisTickLabels.call(this);
     getItHeated.call(this);
+
+    if (this.pvl.settings.active_tab === 'Study Day Chart')
+        this.pvl.containers.loading.classed('pvl-hidden', true);
 }

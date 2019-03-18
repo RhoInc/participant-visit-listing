@@ -27,6 +27,24 @@ export default function syncListingSettings() {
         settings.visit_exclusion_regex = new RegExp(pattern, flags);
     }
 
+    //Check active_tab and chart_layout settings.
+    if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
+        console.warn(`Invalid [ chart_layout ] setting: "${settings.chart_layout}" - defaulting to "tabbed".`);
+        settings.chart_layout = 'tabbed';
+    }
+
+    if (settings.chart_layout === 'tabbed') {
+        if (['Visit Chart', 'Study Day Chart', 'Listing'].indexOf(settings.active_tab) < 0) {
+            console.warn(`[ ${settings.active_tab} ] is invalid when [ chart_layout ] is set to [ tabbed ]. Defaulting to [ Visit Chart ].`);
+            settings.active_tab = 'Visit Chart';
+        }
+    } else if (settings.chart_layout === 'side-by-side') {
+        if (['Charts', 'Listing'].indexOf(settings.active_tab) < 0) {
+            console.warn(`[ ${settings.active_tab} ] is invalid when [ chart_layout ] is set to [ side-by-side ]. Defaulting to [ Charts ].`);
+            settings.active_tab = 'Charts';
+        }
+    }
+
     //Assign settings to settings object.
     this.settings.listingSynced = settings;
     Object.assign(this.settings, settings);

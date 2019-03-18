@@ -23,7 +23,9 @@ export default function rendererSettings() {
         //Miscellaneous
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
         display_cell_text: false,
-        active_tab: 'Listing', // ['Listing', 'Charts']
+        active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
+        chart_layout: 'side-by-side', // ['tabbed', 'side-by-side']
+        chart_layout: 'tabbe', // ['tabbed', 'side-by-side']
         date_format: '%Y-%m-%d', // format of visit dates
         chart_margin: {
             top: 100,

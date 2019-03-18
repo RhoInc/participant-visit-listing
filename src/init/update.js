@@ -24,17 +24,17 @@ export default function update() {
     //Redefine the event listener.
     filters.on('change', function(d) {
         //Indicate loading.
-        context.containers[`loading${context.settings.active_tab}`].classed('pvl-hidden', false);
+        context.containers.loading.classed('pvl-hidden', false);
 
         const loading = setInterval(() => {
             const loadingIndicated =
-                context.containers[`loading${context.settings.active_tab}`].style('display') !==
+                context.containers.loading.style('display') !==
                 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                context.containers[`loading${context.settings.active_tab}`].classed(
+                context.containers.loading.classed(
                     'pvl-hidden',
                     true
                 );
@@ -63,6 +63,10 @@ export default function update() {
                     context.listing.draw();
                 } else if (context.settings.active_tab === 'Charts') {
                     context.ordinalChart.draw();
+                    context.linearChart.draw();
+                } else if (context.settings.active_tab === 'Visit Chart') {
+                    context.ordinalChart.draw();
+                } else if (context.settings.active_tab === 'Study Day Chart') {
                     context.linearChart.draw();
                 }
             }

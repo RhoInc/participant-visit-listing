@@ -22,7 +22,7 @@ export default function rendererSettings() {
 
         //Miscellaneous
         filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
-        display_cell_text: false,
+        display_cell_text: true,
         chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
         active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
         date_format: '%Y-%m-%d', // format of visit dates

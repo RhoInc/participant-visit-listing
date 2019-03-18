@@ -143,14 +143,26 @@
             "default": "Yes",
             "type": "string"
         },
-        "active_tab": {
-            "title": "Initially Active Tab",
-            "description": "name of tab, Listing or Charts, that is displayed initially",
-            "default": "Listing",
+        "chart_layout": {
+            "title": "Chart Layout",
+            "description": "layout of charts, either each in their own tab or side-by-side in a single tab",
+            "default": "tabbed",
             "type": "string",
             "enum": [
-                "Listing",
-                "Charts"
+                "tabbed",
+                "side-by-side"
+            ]
+        },
+        "active_tab": {
+            "title": "Initially Active Tab",
+            "description": "name of tab that is displayed initially",
+            "default": "Visit Chart",
+            "type": "string",
+            "enum": [
+                "Visit Chart",
+                "Study Day Chart",
+                "Charts",
+                "Listing"
             ]
         },
         "date_format": {

@@ -13,8 +13,7 @@ export default function init(data) {
     this.containers.loading.classed('pvl-hidden', false);
 
     const loading = setInterval(() => {
-        const loadingIndicated =
-            this.containers.loading.style('display') !== 'none';
+        const loadingIndicated = this.containers.loading.style('display') !== 'none';
 
         if (loadingIndicated) {
             //Handle loading indicator.

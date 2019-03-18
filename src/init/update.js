@@ -27,17 +27,12 @@ export default function update() {
         context.containers.loading.classed('pvl-hidden', false);
 
         const loading = setInterval(() => {
-            const loadingIndicated =
-                context.containers.loading.style('display') !==
-                'none';
+            const loadingIndicated = context.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                context.containers.loading.classed(
-                    'pvl-hidden',
-                    true
-                );
+                context.containers.loading.classed('pvl-hidden', true);
 
                 //Run code.
                 filterData.call(context, d, this);

@@ -31,8 +31,7 @@ export default function addTabFunctionality() {
                     if (context.settings.chart_layout === 'tabbed') {
                         context.containers.ordinalChart.classed('pvl-hidden', true);
                         context.containers.linearChart.classed('pvl-hidden', true);
-                    } else
-                        context.containers.charts.classed('pvl-hidden', true);
+                    } else context.containers.charts.classed('pvl-hidden', true);
                     context.containers.listing.classed('pvl-hidden', true);
                     context.containers[d.property].classed('pvl-hidden', false);
 

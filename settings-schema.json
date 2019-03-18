@@ -216,24 +216,6 @@
             "data-mapping": true,
             "data-type": "string",
             "required": false
-        },
-        "pagination": {
-            "title": "Listing Pagination?",
-            "description": "disable pagination to view all participants at the same time",
-            "default": false,
-            "type": "boolean"
-        },
-        "exports": {
-            "title": "Listing Export Formats",
-            "description": "default export formats are to .xlsx and .csv; if jsPDF is available export to .pdf will also be available",
-            "defaults": [
-                "xlsx",
-                "csv"
-            ],
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         }
     }
 }

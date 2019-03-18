@@ -1,10 +1,10 @@
 {
     "name": "participant-visit-listing",
-    "version": "1.2.0",
-    "description": "an interactive listing of the schedule of events of a clinical trial by participant",
+    "version": "1.3.0",
+    "description": "an interactive set of data displays of the schedule of events of a clinical trial by participant",
     "homepage": "https://github.com/RhoInc/participant-visit-listing#readme",
-    "main": "./participantVisitListing.js",
     "module": "./src/index.js",
+    "main": "./participantVisitListing.js",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/RhoInc/participant-visit-listing.git"
@@ -13,7 +13,8 @@
         "schedule of events",
         "visit listing",
         "clinical trial",
-        "participant compliance"
+        "participant compliance",
+        "heat map"
     ],
     "author": "Rho, Inc.",
     "license": "MIT",
@@ -25,9 +26,12 @@
         "webcharts": "^1"
     },
     "scripts": {
-        "build": "npm audit fix && npm run bundle && npm run format && npm run build-wiki",
-        "build-wiki": "node ./scripts/build-configuration-wiki.js && node ./scripts/build-data-guidelines-wiki.js",
+        "build": "npm audit fix && npm run bundle && npm run format && npm run build-wiki && npm run check-settings-schema",
+        "build-wiki": "npm run build-configuration-wiki && npm run build-data-guidelines-wiki",
+        "build-configuration-wiki": "node ./scripts/build-configuration-wiki.js",
+        "build-data-guidelines-wiki": "node ./scripts/build-data-guidelines-wiki.js",
         "bundle": "rollup -c",
+        "check-settings-schema": "node ./scripts/check-settings-schema.js",
         "format": "npm run format-src && npm run format-bundle",
         "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/!(*layout|*styles).js\"",
         "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./participantVisitListing.js",

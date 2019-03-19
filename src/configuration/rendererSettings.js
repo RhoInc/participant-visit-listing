@@ -17,6 +17,7 @@ export default function rendererSettings() {
         visit_status_description_col: 'visit_status_description',
         visit_expectation_pattern: '/expect|future|overdue/i',
         visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
+        visit_overdue_pattern: '/overdue/i',
         visit_status_exclusion_col: 'plot_exclude',
         visit_status_exclusion_value: 'Yes',
 

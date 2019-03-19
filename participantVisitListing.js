@@ -585,6 +585,7 @@
             visit_status_description_col: 'visit_status_description',
             visit_expectation_pattern: '/expect|future|overdue/i',
             visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
+            visit_overdue_pattern: '/overdue/i',
             visit_status_exclusion_col: 'plot_exclude',
             visit_status_exclusion_value: 'Yes',
 
@@ -3016,6 +3017,21 @@
         this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
         if (!this.data.missingVariables[filterCol]) {
             this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+            this.ordinalChart.controls.config.inputs = this.ordinalChart.controls.config.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+            this.linearChart.controls.config.inputs = this.linearChart.controls.config.inputs.filter(
+                function(input) {
+                    return input.value_col !== filterCol;
+                }
+            );
+            this.listing.controls.config.inputs = this.listing.controls.config.inputs.filter(
                 function(input) {
                     return input.value_col !== filterCol;
                 }

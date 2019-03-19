@@ -32,11 +32,11 @@ export default function addLegend() {
             .attr(
                 'title',
                 d =>
-                    !context.settings.visit_expectation_regex.test(d[1])
-                        ? d[3]
-                        : `${d[3]}\n${
+                    context.settings.visit_expectation_regex && context.settings.visit_expectation_regex.test(d[1])
+                        ? `${d[3]}\n${
                               d[1]
                           } visits are identified in the charts as cells or circles with medial white circles.`
+                        : d[3]
             );
     });
     update.call(this);

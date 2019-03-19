@@ -7,22 +7,24 @@ export default function defineVisitSet() {
         )
         .values();
     this.data.sets.visit_col = this.data.sets.visits
-        .filter(visit => (
-            this.settings.visit_exclusion_regex
-                ? !this.settings.visit_exclusion_regex.test(visit)
-                : true
-        ))
+        .filter(
+            visit =>
+                this.settings.visit_exclusion_regex
+                    ? !this.settings.visit_exclusion_regex.test(visit)
+                    : true
+        )
         .sort((a, b) => a.split(':|:')[0] - b.split(':|:')[0])
         .map(visit => visit.split(':|:')[1]);
     this.data.sets.scheduledVisits = this.data.sets.visit_col;
     this.data.sets.unscheduledVisits = d3
         .set(
             this.data.sets.visits
-                .filter(visit => (
-                    this.settings.visit_exclusion_regex
-                        ? this.settings.visit_exclusion_regex.test(visit)
-                        : false
-                ))
+                .filter(
+                    visit =>
+                        this.settings.visit_exclusion_regex
+                            ? this.settings.visit_exclusion_regex.test(visit)
+                            : false
+                )
                 .sort((a, b) => a.split(':|:')[0] - b.split(':|:')[0])
                 .map(order_visit => {
                     const visit = order_visit.split(':|:')[1];

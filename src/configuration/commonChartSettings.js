@@ -28,7 +28,7 @@ export default function commonChartSettings() {
                 type: 'circle',
                 per: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
                 tooltip: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
-                radius: 3,
+                radius: 4,
                 attributes: {
                     'fill-opacity': 1,
                     fill: 'white'

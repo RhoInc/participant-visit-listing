@@ -4,6 +4,7 @@ export default function linearChartSettings() {
     const settings = commonChartSettings();
     settings.x.type = 'linear';
     settings.x.label = 'Study Day';
+    settings.x.format = '1d';
     settings.marks.push({
         type: 'text',
         per: null, // set in ./syncLinearSettings.js

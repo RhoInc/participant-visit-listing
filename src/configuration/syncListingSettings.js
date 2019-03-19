@@ -8,6 +8,9 @@ export default function syncListingSettings() {
     settings.visit_exclusion_regex = stringToRegExp(settings.visit_exclusion_pattern);
     settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern);
 
+    //Check filter_cols.
+    settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : [];
+
     //Check active_tab and chart_layout settings.
     if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
         console.warn(

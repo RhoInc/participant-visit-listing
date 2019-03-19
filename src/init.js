@@ -5,6 +5,7 @@ import addVisitStatusStyles from './init/addVisitStatusStyles';
 import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
 import addLegend from './init/addLegend';
+import updateNParticipants from './init/updateNParticipants';
 import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
 
@@ -46,6 +47,7 @@ export default function init(data) {
             defineColumns.call(this);
             transposeData.call(this);
             addLegend.call(this);
+            updateNParticipants.call(this);
 
             //end performance test
             let t1 = performance.now();

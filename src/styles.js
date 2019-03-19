@@ -108,6 +108,15 @@ export default function styles() {
                 '    padding: 6px 0;' +
                 '    position: relative;' +
                 '}',
+                '.pvl-viewing-n-participants {' +
+                '    display: inline-block;' +
+                '    right: 0;' +
+                '    bottom: 0;' +
+                '    position: absolute;' +
+                '}',
+                '.pvl-n-participants {' +
+                '    font-weight: bold;' +
+                '}',
                 '.pvl-tab {' +
                 '    display: inline-block;' +
                 '    border: 2px solid black;' +

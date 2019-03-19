@@ -4,6 +4,7 @@ import defineVisitSet from './defineSets/defineVisitSet';
 import defineColumns from './defineColumns';
 import transposeData from './transposeData';
 import updateLegend from './addLegend/update';
+import updateNParticipants from './updateNParticipants';
 
 export default function update() {
     const context = this;
@@ -46,6 +47,7 @@ export default function update() {
 
                 transposeData.call(context);
                 updateLegend.call(context);
+                updateNParticipants.call(context);
 
                 if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
                 if (context.ordinalChart.initialized)

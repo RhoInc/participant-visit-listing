@@ -6,6 +6,6 @@ import addPDFExport from './onLayout/addPDFExport';
 export default function onLayout() {
     hideListing.call(this);
     disableDefaultSorting.call(this);
-    //toggleCellText.call(this);
+    toggleCellText.call(this);
     addPDFExport.call(this);
 }

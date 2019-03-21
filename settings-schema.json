@@ -180,6 +180,12 @@
         "display_cell_text": {
             "title": "Display Listing Cell Text?",
             "description": "controls the display of the listing, either as a heat map or as a listing",
+            "default": true,
+            "type": "boolean"
+        },
+        "toggle_cell_text": {
+            "title": "Toggle Listing Cell Text?",
+            "description": "controls the display of the listing cell text toggle",
             "default": false,
             "type": "boolean"
         },

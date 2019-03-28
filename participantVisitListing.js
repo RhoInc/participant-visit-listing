@@ -592,6 +592,7 @@
             //Miscellaneous
             filter_cols: ['subset1', 'subset2', 'subset3'], // default filter variables
             display_cell_text: true,
+            toggle_cell_text: false,
             chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
             active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
             date_format: '%Y-%m-%d', // format of visit dates
@@ -1238,6 +1239,12 @@
         });
     }
 
+    function updateNParticipants() {
+        this.containers.nParticipants
+            .select('.pvl-n-participants')
+            .text(this.data.transposed.length);
+    }
+
     function update$1() {
         var context = this;
 
@@ -1287,6 +1294,7 @@
 
                     transposeData.call(context);
                     update.call(context);
+                    updateNParticipants.call(context);
 
                     if (context.listing.initialized)
                         context.listing.data.raw = context.data.transposed;
@@ -1495,8 +1503,12 @@
         this.containers.tabContainer = this.containers.lowerRow
             .append('div')
             .classed('pvl-tabs', true);
+        this.containers.nParticipants = this.containers.tabContainer
+            .append('div')
+            .classed('pvl-viewing-n-participants', true)
+            .html('Viewing <span class = "pvl-n-participants"></span> participants.');
         this.containers.loading = this.containers.tabContainer
-            .append('div.pvl-loading')
+            .append('div')
             .classed('pvl-hidden pvl-loading', true);
         this.containers.loading
             .selectAll('div.pvl-loading-ball')
@@ -1641,6 +1653,13 @@
                 '    padding: 6px 0;' +
                 '    position: relative;' +
                 '}',
+            '.pvl-viewing-n-participants {' +
+                '    display: inline-block;' +
+                '    right: 0;' +
+                '    bottom: 0;' +
+                '    position: absolute;' +
+                '}',
+            '.pvl-n-participants {' + '    font-weight: bold;' + '}',
             '.pvl-tab {' +
                 '    display: inline-block;' +
                 '    border: 2px solid black;' +
@@ -1858,27 +1877,29 @@
     }
 
     function toggleCellText() {
-        var context = this;
+        if (this.pvl.settings.toggle_cell_text) {
+            var context = this;
 
-        this.cellTextToggle = {
-            container: this.wrap
-                .selectAll('.table-top')
-                .insert('div', ':first-child')
-                .classed('interactivity pvl-cell-text-toggle', true)
-        };
-        this.cellTextToggle.label = this.cellTextToggle.container
-            .append('label')
-            .classed('pvl-cell-text-toggle__label', true)
-            .text('Display cell text');
-        this.cellTextToggle.checkbox = this.cellTextToggle.label
-            .append('input')
-            .classed('pvl-cell-text-toggle__checkbox', true)
-            .attr('type', 'checkbox')
-            .property('checked', this.config.display_cell_text);
-        this.cellTextToggle.checkbox.on('click', function() {
-            context.config.display_cell_text = this.checked;
-            context.draw();
-        });
+            this.cellTextToggle = {
+                container: this.wrap
+                    .selectAll('.table-top')
+                    .insert('div', ':first-child')
+                    .classed('interactivity pvl-cell-text-toggle', true)
+            };
+            this.cellTextToggle.label = this.cellTextToggle.container
+                .append('label')
+                .classed('pvl-cell-text-toggle__label', true)
+                .text('Display cell text');
+            this.cellTextToggle.checkbox = this.cellTextToggle.label
+                .append('input')
+                .classed('pvl-cell-text-toggle__checkbox', true)
+                .attr('type', 'checkbox')
+                .property('checked', this.config.display_cell_text);
+            this.cellTextToggle.checkbox.on('click', function() {
+                context.config.display_cell_text = this.checked;
+                context.draw();
+            });
+        }
     }
 
     function addPDFExport() {
@@ -3362,6 +3383,7 @@
                 defineColumns.call(_this);
                 transposeData.call(_this);
                 addLegend.call(_this);
+                updateNParticipants.call(_this);
 
                 //end performance test
                 var t1 = performance.now();

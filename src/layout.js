@@ -48,9 +48,13 @@ export default function layout() {
             this.containers.tabContainer = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-tabs', true);
+                this.containers.nParticipants = this.containers.tabContainer
+                    .append('div')
+                    .classed('pvl-viewing-n-participants', true)
+                    .html('Viewing <span class = "pvl-n-participants"></span> participants.');
                 this.containers.loading = this.containers.tabContainer
-                    .append('div.pvl-loading')
-                    .classed(`pvl-hidden pvl-loading`, true);
+                    .append('div')
+                    .classed('pvl-hidden pvl-loading', true);
                     this.containers.loading
                             .selectAll('div.pvl-loading-ball')
                                 .data([1,2,3])

@@ -190,6 +190,15 @@ a strptime specification of time format directives, used to parse visit date
 
 controls the display of the listing, either as a heat map or as a listing
 
+**default:** `true`
+
+
+
+## settings.toggle_cell_text
+`boolean`
+
+controls the display of the listing cell text toggle
+
 **default:** `false`
 
 

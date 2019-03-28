@@ -149,12 +149,21 @@ value of variable that identifies visit statuses to exclude from visit status le
 
 
 
+## settings.chart_layout
+`string`
+
+layout of charts, either each in their own tab or side-by-side in a single tab
+
+**default:** `"tabbed"`
+
+
+
 ## settings.active_tab
 `string`
 
-name of tab, Listing or Charts, that is displayed initially
+name of tab that is displayed initially
 
-**default:** `"Listing"`
+**default:** `"Visit Chart"`
 
 
 
@@ -215,24 +224,6 @@ space to the left of the chart canvas; if unspecified, imputed to fit y-axis
 `array`
 
 custom filter variables, in addition to site and participant status
-
-**default:** none
-
-
-
-## settings.pagination
-`boolean`
-
-disable pagination to view all participants at the same time
-
-**default:** `false`
-
-
-
-## settings.exports
-`array`
-
-default export formats are to .xlsx and .csv; if jsPDF is available export to .pdf will also be available
 
 **default:** none
 

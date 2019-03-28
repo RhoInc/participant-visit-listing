@@ -135,13 +135,9 @@ export default function styles() {
                 '    width: 100px;' +
                 '    display: inline-block;' +
                 '    position: absolute;' +
-                '    top: 12px;' +
-                '}',
-                '.pvl-loading--listing {' +
-                '    left: 25%;' +
-                '}',
-                '.pvl-loading--charts {' +
-                '    right: 25%;' +
+                '    top: 75px;' +
+                '    left: 50%;' +
+                '    margin-left: -50px;' +
                 '}',
                 '.pvl-loading > div {' +
                 '    width: 15px;' +
@@ -184,12 +180,13 @@ export default function styles() {
                 '}',
                 '.pvl-chart {' +
                 '    display: inline-block;' +
+                '    width: 100%;' +
                 '}',
-                '.pvl-chart--ordinal {' +
+                '.pvl-charts .pvl-chart--ordinal {' +
                 '    width: 49.5%;' +
                 '    float: left;' +
                 '}',
-                '.pvl-chart--linear {' +
+                '.pvl-charts .pvl-chart--linear {' +
                 '    width: 49.5%;' +
                 '    float: right;' +
                 '}',
@@ -197,6 +194,9 @@ export default function styles() {
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +
                 '}' +
+                '.pvl-chart--full .pvl-chart-button {' +
+                '    display: none;' +
+                '}',
                 '.pvl-chart .pvl-chart-button {' +
                 '    font-size: 30px;' +
                 '    cursor: pointer;' +

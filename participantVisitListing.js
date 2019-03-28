@@ -590,8 +590,9 @@
 
             //Miscellaneous
             filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
-            display_cell_text: false,
-            active_tab: 'Listing', // ['Listing', 'Charts']
+            display_cell_text: true,
+            chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
+            active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
             date_format: '%Y-%m-%d', // format of visit dates
             chart_margin: {
                 top: 100,
@@ -696,6 +697,36 @@
                 '$1'
             ); // capture regex pattern from beginning of regex string
             settings.visit_exclusion_regex = new RegExp(_pattern, _flags);
+        }
+
+        //Check active_tab and chart_layout settings.
+        if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
+            console.warn(
+                '[ chart_layout ] must be "tabbed" or "side-by-side", not "' +
+                    settings.chart_layout +
+                    '". Defaulting to "tabbed".'
+            );
+            settings.chart_layout = 'tabbed';
+        }
+
+        if (settings.chart_layout === 'tabbed') {
+            if (['Visit Chart', 'Study Day Chart', 'Listing'].indexOf(settings.active_tab) < 0) {
+                console.warn(
+                    '[ active_tab ] must be "Visit Chart", "Study Day Chart", or "Listing", not "' +
+                        settings.active_tab +
+                        '". Defaulting to "Visit Chart".'
+                );
+                settings.active_tab = 'Visit Chart';
+            }
+        } else if (settings.chart_layout === 'side-by-side') {
+            if (['Charts', 'Listing'].indexOf(settings.active_tab) < 0) {
+                console.warn(
+                    '[ active_tab ] must be "Charts" or "Listing", not "' +
+                        settings.active_tab +
+                        '". Defaulting to "Charts".'
+                );
+                settings.active_tab = 'Charts';
+            }
         }
 
         //Assign settings to settings object.
@@ -899,6 +930,29 @@
         linearChartSettings: linearChartSettings,
         syncLinearChartSettings: syncLinearChartSettings
     };
+
+    var tabs = [
+        {
+            name: 'Visit Chart',
+            class: 'visit-chart',
+            property: 'ordinalChart'
+        },
+        {
+            name: 'Study Day Chart',
+            class: 'study-day-chart',
+            property: 'linearChart'
+        },
+        {
+            name: 'Charts',
+            class: 'charts',
+            property: 'charts'
+        },
+        {
+            name: 'Listing',
+            class: 'listing',
+            property: 'listing'
+        }
+    ];
 
     function filterData(d, select) {
         var _this = this;
@@ -1186,23 +1240,15 @@
             var _this = this;
 
             //Indicate loading.
-            context.containers['loading' + context.settings.active_tab].classed(
-                'pvl-hidden',
-                false
-            );
+            context.containers.loading.classed('pvl-hidden', false);
 
             var loading = setInterval(function() {
-                var loadingIndicated =
-                    context.containers['loading' + context.settings.active_tab].style('display') !==
-                    'none';
+                var loadingIndicated = context.containers.loading.style('display') !== 'none';
 
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    context.containers['loading' + context.settings.active_tab].classed(
-                        'pvl-hidden',
-                        true
-                    );
+                    context.containers.loading.classed('pvl-hidden', true);
 
                     //Run code.
                     filterData.call(context, d, _this);
@@ -1229,6 +1275,10 @@
                         context.listing.draw();
                     } else if (context.settings.active_tab === 'Charts') {
                         context.ordinalChart.draw();
+                        context.linearChart.draw();
+                    } else if (context.settings.active_tab === 'Visit Chart') {
+                        context.ordinalChart.draw();
+                    } else if (context.settings.active_tab === 'Study Day Chart') {
                         context.linearChart.draw();
                     }
                 }
@@ -1290,30 +1340,32 @@
             //begin performance test
 
             //indicate loading
-            context.containers['loading' + d].classed('pvl-hidden', false);
+            context.containers.loading.classed('pvl-hidden', false);
 
             var loading = setInterval(function() {
-                var loadingIndicated =
-                    context.containers['loading' + d].style('display') !== 'none';
+                var loadingIndicated = context.containers.loading.style('display') !== 'none';
 
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    context.containers['loading' + d].classed('pvl-hidden', true);
+                    context.containers.loading.classed('pvl-hidden', true);
 
                     //Run code.
-                    context.settings.active_tab = d;
+                    context.settings.active_tab = d.name;
                     var tab = d3.select(_this);
                     var active = tab.classed('pvl-tab--active');
 
                     if (!active) {
                         context.containers.tabs.classed('pvl-tab--active', false);
                         tab.classed('pvl-tab--active', true);
-                        context.containers.charts.classed('pvl-hidden', true);
+                        if (context.settings.chart_layout === 'tabbed') {
+                            context.containers.ordinalChart.classed('pvl-hidden', true);
+                            context.containers.linearChart.classed('pvl-hidden', true);
+                        } else context.containers.charts.classed('pvl-hidden', true);
                         context.containers.listing.classed('pvl-hidden', true);
-                        context.containers[d.toLowerCase()].classed('pvl-hidden', false);
+                        context.containers[d.property].classed('pvl-hidden', false);
 
-                        if (d === 'Listing') {
+                        if (d.name === 'Listing') {
                             //Initialize or draw listing.
                             if (context.listing.initialized)
                                 context.listing.draw(context.data.transposed);
@@ -1323,7 +1375,27 @@
                                 updateSelects.call(context);
                                 updateMultiSelects.call(context);
                             }
-                        } else if (d === 'Charts') {
+                        } else if (d.name === 'Visit Chart') {
+                            //Initialize or draw ordinal chart.
+                            if (context.ordinalChart.initialized)
+                                context.ordinalChart.draw(context.data.filtered);
+                            else {
+                                context.ordinalChart.init(context.data.filtered);
+                                update$1.call(context);
+                                updateSelects.call(context);
+                                updateMultiSelects.call(context);
+                            }
+                        } else if (d.name === 'Study Day Chart') {
+                            //Initialize or draw linear chart.
+                            if (context.linearChart.initialized)
+                                context.linearChart.draw(context.data.filtered);
+                            else {
+                                context.linearChart.init(context.data.filtered);
+                                update$1.call(context);
+                                updateSelects.call(context);
+                                updateMultiSelects.call(context);
+                            }
+                        } else if (d.name === 'Charts') {
                             //Initialize or draw ordinal chart.
                             if (context.ordinalChart.initialized)
                                 context.ordinalChart.draw(context.data.filtered);
@@ -1386,13 +1458,22 @@
         this.containers.lowerRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--lower', true);
+
+        //tabs
+        var selectedTabs = tabs.filter(function(tab) {
+            return _this.settings.chart_layout === 'tabbed'
+                ? tab.name !== 'Charts'
+                : _this.settings.chart_layout === 'side-by-side'
+                    ? ['Visit Chart', 'Study Day Chart'].indexOf(tab.name) < 0
+                    : true;
+        });
         this.containers.tabContainer = this.containers.lowerRow
             .append('div')
             .classed('pvl-tabs', true);
-        this.containers.loadingListing = this.containers.tabContainer
+        this.containers.loading = this.containers.tabContainer
             .append('div.pvl-loading')
-            .classed('pvl-hidden pvl-loading pvl-loading--listing', true);
-        this.containers.loadingListing
+            .classed('pvl-hidden pvl-loading', true);
+        this.containers.loading
             .selectAll('div.pvl-loading-ball')
             .data([1, 2, 3])
             .enter()
@@ -1402,38 +1483,40 @@
             });
         this.containers.tabs = this.containers.tabContainer
             .selectAll('div.pvl-tab')
-            .data(['Listing', 'Charts'])
+            .data(selectedTabs)
             .enter()
             .append('div')
             .attr('class', function(d) {
                 return (
                     'pvl-tab pvl-tab--' +
-                    d.toLowerCase() +
+                    d.class +
                     ' ' +
-                    (d === _this.settings.active_tab ? 'pvl-tab--active' : '')
+                    (d.name === _this.settings.active_tab ? 'pvl-tab--active' : '')
                 );
             })
             .text(function(d) {
-                return d;
+                return d.name;
             });
-        this.containers.loadingCharts = this.containers.tabContainer
-            .append('div.pvl-loading')
-            .classed('pvl-hidden pvl-loading pvl-loading--charts', true);
-        this.containers.loadingCharts
-            .selectAll('div.pvl-loading-ball')
-            .data([1, 2, 3])
-            .enter()
-            .append('div')
-            .attr('class', function(d) {
-                return 'pvl-loading-ball pvl-loading-ball--' + d;
-            });
-        this.containers.charts = this.containers.lowerRow.append('div').classed('pvl-charts', true);
-        this.containers.ordinalChart = this.containers.charts
-            .append('div')
-            .classed('pvl-chart pvl-chart--ordinal', true);
-        this.containers.linearChart = this.containers.charts
-            .append('div')
-            .classed('pvl-chart pvl-chart--linear', true);
+
+        //display containers
+        if (this.settings.chart_layout === 'tabbed') {
+            this.containers.ordinalChart = this.containers.lowerRow
+                .append('div')
+                .classed('pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+            this.containers.linearChart = this.containers.lowerRow
+                .append('div')
+                .classed('pvl-chart pvl-chart--linear pvl-chart--full', true);
+        } else {
+            this.containers.charts = this.containers.lowerRow
+                .append('div')
+                .classed('pvl-charts', true);
+            this.containers.ordinalChart = this.containers.charts
+                .append('div')
+                .classed('pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
+            this.containers.linearChart = this.containers.charts
+                .append('div')
+                .classed('pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
+        }
         this.containers.listing = this.containers.lowerRow
             .append('div')
             .classed('pvl-listing', true);
@@ -1560,10 +1643,10 @@
                 '    width: 100px;' +
                 '    display: inline-block;' +
                 '    position: absolute;' +
-                '    top: 12px;' +
+                '    top: 75px;' +
+                '    left: 50%;' +
+                '    margin-left: -50px;' +
                 '}',
-            '.pvl-loading--listing {' + '    left: 25%;' + '}',
-            '.pvl-loading--charts {' + '    right: 25%;' + '}',
             '.pvl-loading > div {' +
                 '    width: 15px;' +
                 '    height: 15px;' +
@@ -1600,14 +1683,17 @@
     \---------------------------------------------------------------------------------****/
 
             '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}',
-            '.pvl-chart {' + '    display: inline-block;' + '}',
-            '.pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}',
-            '.pvl-chart--linear {' + '    width: 49.5%;' + '    float: right;' + '}',
+            '.pvl-chart {' + '    display: inline-block;' + '    width: 100%;' + '}',
+            '.pvl-charts .pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}',
+            '.pvl-charts .pvl-chart--linear {' + '    width: 49.5%;' + '    float: right;' + '}',
             '.pvl-chart .axis-title--top {' +
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +
                 '}' +
-                '.pvl-chart .pvl-chart-button {' +
+                '.pvl-chart--full .pvl-chart-button {' +
+                '    display: none;' +
+                '}',
+            '.pvl-chart .pvl-chart-button {' +
                 '    font-size: 30px;' +
                 '    cursor: pointer;' +
                 '    fill: black;' +
@@ -2540,7 +2626,7 @@
         exportToCSV.call(this);
 
         if (this.pvl.settings.active_tab === 'Listing')
-            this.pvl.containers.loadingListing.classed('pvl-hidden', true);
+            this.pvl.containers.loading.classed('pvl-hidden', true);
     }
 
     function onDestroy() {}
@@ -2583,20 +2669,15 @@
         //begin performance test
 
         //indicate loading
-        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+        this.pvl.containers.loading.classed('pvl-hidden', false);
 
         var loading = setInterval(function() {
-            var loadingIndicated =
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
-                'none';
+            var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
-                    'pvl-hidden',
-                    true
-                );
+                _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 var thisChart = _this.property;
                 var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
@@ -2618,20 +2699,15 @@
         //begin performance test
 
         //indicate loading
-        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+        this.pvl.containers.loading.classed('pvl-hidden', false);
 
         var loading = setInterval(function() {
-            var loadingIndicated =
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
-                'none';
+            var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
-                    'pvl-hidden',
-                    true
-                );
+                _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 _this.pvl.containers.ordinalChart
                     .classed('pvl-hidden', false)
@@ -2656,20 +2732,15 @@
         //begin performance test
 
         //indicate loading
-        this.pvl.containers['loading' + this.pvl.settings.active_tab].classed('pvl-hidden', false);
+        this.pvl.containers.loading.classed('pvl-hidden', false);
 
         var loading = setInterval(function() {
-            var loadingIndicated =
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].style('display') !==
-                'none';
+            var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                _this.pvl.containers['loading' + _this.pvl.settings.active_tab].classed(
-                    'pvl-hidden',
-                    true
-                );
+                _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 var thisChart = _this.property;
                 var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
@@ -2724,6 +2795,11 @@
         this.bottomXAxis = {
             container: this.svg.select('.x.axis').classed('x--bottom', true)
         };
+        if (
+            this.pvl.settings.active_tab !== 'Visit Chart' &&
+            this.pvl.settings.chart_layout === 'tabbed'
+        )
+            this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
     }
 
     function onPreprocess$1() {
@@ -2813,6 +2889,9 @@
         positionButtons.call(this);
         rotateXAxisTickLabels.call(this);
         getItHeated.call(this);
+
+        if (this.pvl.settings.active_tab === 'Study Day Chart')
+            this.pvl.containers.loading.classed('pvl-hidden', true);
     }
 
     function onDestroy$1() {}
@@ -2847,8 +2926,16 @@
         this.bottomXAxis = {
             container: this.svg.select('.x.axis').classed('x--bottom', true)
         };
-        if (this.pvl.settings.active_tab !== 'Charts')
+        if (
+            this.pvl.settings.active_tab !== 'Charts' &&
+            this.pvl.settings.chart_layout === 'side-by-side'
+        )
             this.pvl.containers.charts.classed('pvl-hidden', true);
+        if (
+            this.pvl.settings.active_tab !== 'Study Day Chart' &&
+            this.pvl.settings.chart_layout === 'tabbed'
+        )
+            this.pvl.containers.linearChart.classed('pvl-hidden', true);
     }
 
     function onPreprocess$2() {
@@ -2895,8 +2982,8 @@
         addAnnotationLegend.call(this);
         classTextMarks.call(this);
 
-        if (this.pvl.settings.active_tab === 'Charts')
-            this.pvl.containers.loadingCharts.classed('pvl-hidden', true);
+        if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1)
+            this.pvl.containers.loading.classed('pvl-hidden', true);
     }
 
     function onDestroy$2() {}
@@ -3179,16 +3266,15 @@
         var _this = this;
 
         //indicate loading
-        this.containers['loading' + this.settings.active_tab].classed('pvl-hidden', false);
+        this.containers.loading.classed('pvl-hidden', false);
 
         var loading = setInterval(function() {
-            var loadingIndicated =
-                _this.containers['loading' + _this.settings.active_tab].style('display') !== 'none';
+            var loadingIndicated = _this.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
-                _this.containers['loading' + _this.settings.active_tab].classed('pvl-hidden', true);
+                _this.containers.loading.classed('pvl-hidden', true);
 
                 //Run code.
                 var t0 = performance.now();
@@ -3220,11 +3306,13 @@
                 //begin performance test
 
                 if (_this.settings.active_tab === 'Listing') {
-                    _this.containers.loadingCharts.classed('pvl-hidden', true);
                     _this.listing.init(_this.data.transposed);
                 } else if (_this.settings.active_tab === 'Charts') {
-                    _this.containers.loadingListing.classed('pvl-hidden', true);
                     _this.ordinalChart.init(_this.data.raw);
+                    _this.linearChart.init(_this.data.raw);
+                } else if (_this.settings.active_tab === 'Visit Chart') {
+                    _this.ordinalChart.init(_this.data.raw);
+                } else if (_this.settings.active_tab === 'Study Day Chart') {
                     _this.linearChart.init(_this.data.raw);
                 }
                 updateMultiSelects$1.call(_this);

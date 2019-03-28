@@ -1,3 +1,4 @@
+import tabs from './layout/tabs';
 import addTabFunctionality from './layout/addTabFunctionality';
 
 export default function layout() {
@@ -32,13 +33,25 @@ export default function layout() {
         this.containers.lowerRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--lower', true);
+
+            //tabs
+            const selectedTabs = tabs
+                .filter(tab => {
+                    return (
+                        this.settings.chart_layout === 'tabbed'
+                            ? tab.name !== 'Charts'
+                            : this.settings.chart_layout === 'side-by-side'
+                                ? ['Visit Chart', 'Study Day Chart'].indexOf(tab.name) < 0
+                                : true
+                    );
+                });
             this.containers.tabContainer = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-tabs', true);
-                this.containers.loadingListing = this.containers.tabContainer
+                this.containers.loading = this.containers.tabContainer
                     .append('div.pvl-loading')
-                    .classed(`pvl-hidden pvl-loading pvl-loading--listing`, true);
-                    this.containers.loadingListing
+                    .classed(`pvl-hidden pvl-loading`, true);
+                    this.containers.loading
                             .selectAll('div.pvl-loading-ball')
                                 .data([1,2,3])
                                 .enter()
@@ -46,29 +59,31 @@ export default function layout() {
                             .attr('class', d => `pvl-loading-ball pvl-loading-ball--${d}`);
                 this.containers.tabs = this.containers.tabContainer
                     .selectAll('div.pvl-tab')
-                        .data(['Listing', 'Charts'])
+                        .data(selectedTabs)
                         .enter()
                     .append('div')
-                    .attr('class', d => `pvl-tab pvl-tab--${d.toLowerCase()} ${d === this.settings.active_tab ? 'pvl-tab--active' : ''}`)
-                    .text(d => d);
-                this.containers.loadingCharts = this.containers.tabContainer
-                    .append('div.pvl-loading')
-                    .classed(`pvl-hidden pvl-loading pvl-loading--charts`, true);
-                    this.containers.loadingCharts
-                        .selectAll('div.pvl-loading-ball')
-                            .data([1,2,3])
-                            .enter()
+                    .attr('class', d => `pvl-tab pvl-tab--${d.class} ${d.name === this.settings.active_tab ? 'pvl-tab--active' : ''}`)
+                    .text(d => d.name);
+
+            //display containers
+            if (this.settings.chart_layout === 'tabbed') {
+                this.containers.ordinalChart = this.containers.lowerRow
+                    .append('div')
+                    .classed('pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                this.containers.linearChart = this.containers.lowerRow
+                    .append('div')
+                    .classed('pvl-chart pvl-chart--linear pvl-chart--full', true);
+            } else {
+                this.containers.charts = this.containers.lowerRow
+                    .append('div')
+                    .classed('pvl-charts', true);
+                    this.containers.ordinalChart = this.containers.charts
                         .append('div')
-                        .attr('class', d => `pvl-loading-ball pvl-loading-ball--${d}`);
-            this.containers.charts = this.containers.lowerRow
-                .append('div')
-                .classed('pvl-charts', true);
-                this.containers.ordinalChart = this.containers.charts
-                    .append('div')
-                    .classed('pvl-chart pvl-chart--ordinal', true);
-                this.containers.linearChart = this.containers.charts
-                    .append('div')
-                    .classed('pvl-chart pvl-chart--linear', true);
+                        .classed('pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
+                    this.containers.linearChart = this.containers.charts
+                        .append('div')
+                        .classed('pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
+            }
             this.containers.listing = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-listing', true);

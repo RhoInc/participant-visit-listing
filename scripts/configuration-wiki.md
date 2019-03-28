@@ -125,9 +125,18 @@ this string will be converted to a regular expression that will identify visit s
 ## settings.visit_exclusion_pattern
 `string`
 
-this string will be converted to a regular expression that will identify non-scheduled visits, e.g. unscheduled, repeat, and early termination visits
+this string will be converted to a regular expression that will identify unscheduled visits, e.g. unscheduled, repeat, and early termination visits
 
 **default:** `"/unscheduled|early termination|repeat/i"`
+
+
+
+## settings.visit_overdue_pattern
+`string`
+
+this string will be converted to a regular expression that will identify overdue visits
+
+**default:** `"/overdue/i"`
 
 
 
@@ -271,7 +280,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
             "type": "circle",
             "per": null,
             "tooltip": null,
-            "radius": 3,
+            "radius": 4,
             "attributes": {
                 "fill-opacity": 1,
                 "fill": "white"
@@ -305,7 +314,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     "x": {
         "type": "linear",
         "label": "Study Day",
-        "value_col": null
+        "value_col": null,
+        "format": "1d"
     },
     "y": {
         "type": "ordinal",
@@ -330,7 +340,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
             "type": "circle",
             "per": null,
             "tooltip": null,
-            "radius": 3,
+            "radius": 4,
             "attributes": {
                 "fill-opacity": 1,
                 "fill": "white"

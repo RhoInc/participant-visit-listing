@@ -1,3 +1,5 @@
+import idLevel from '../addVariables/idLevel';
+
 export default function filterData(d, select) {
     const filter = this.data.filters.find(filter => filter.col === d.value_col);
     filter.value = select.multiple
@@ -17,6 +19,9 @@ export default function filterData(d, select) {
                     : filter.value === 'All' || di[filter.col] === filter.value
         );
     });
+
+    //Derive ID-level variables on analysis data.
+    idLevel.call(this);
 
     //Apply other filters to analysis data.
     this.data.filtered = this.data.analysis;

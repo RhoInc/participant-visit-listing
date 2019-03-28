@@ -1,7 +1,17 @@
-export default function checkFilterCols(filterCol) {
+export default function checkFilterCol(input) {
+    const filterCol = input.value_col;
     this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
     if (!this.data.missingVariables[filterCol]) {
         this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
+            input => input.value_col !== filterCol
+        );
+        this.ordinalChart.controls.config.inputs = this.ordinalChart.controls.config.inputs.filter(
+            input => input.value_col !== filterCol
+        );
+        this.linearChart.controls.config.inputs = this.linearChart.controls.config.inputs.filter(
+            input => input.value_col !== filterCol
+        );
+        this.listing.controls.config.inputs = this.listing.controls.config.inputs.filter(
             input => input.value_col !== filterCol
         );
     } else {

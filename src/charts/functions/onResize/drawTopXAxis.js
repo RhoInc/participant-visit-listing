@@ -5,9 +5,10 @@ export default function drawTopXAxis() {
         .scale(this.x)
         .orient('top')
         .ticks(this.xAxis.ticks()[0])
-        .tickFormat(this.config.x_displayFormat)
         .innerTickSize(this.xAxis.innerTickSize())
         .outerTickSize(this.xAxis.outerTickSize());
+    if (this.config.x.type === 'linear')
+        this.topXAxis.axis.tickFormat(d3.format(this.config.x.format));
     this.topXAxis.container.call(this.topXAxis.axis);
     this.topXAxis.label
         .attr({

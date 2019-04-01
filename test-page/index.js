@@ -1,14 +1,13 @@
 d3.csv(
-    //'https://raw.githubusercontent.com/RhoInc/viz-library/master/data/dataCleaning/visits/dmv_Visits.csv',
-    '../../viz-library/data/dataCleaning/visits/dmv_Visits.csv',
+    'https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/data-cleaning/visits.csv',
     function(d) {
         return d;
     },
     function(data) {
         const pvl = participantVisitListing(
-            '#container',
+            '#container', // element
             {
-            }
+            } // settings
         );
         pvl.init(data);
     }

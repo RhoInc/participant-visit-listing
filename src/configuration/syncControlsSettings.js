@@ -28,8 +28,6 @@ export default function syncControlsSettings() {
             });
         });
     }
-    listingSettings.filter_cols.splice(0, 0, siteFilter.value_col);
-    listingSettings.filter_cols.splice(1, 0, idStatusFilter.value_col);
 
     this.settings.controlsSynced = controlsSettings;
     Object.assign(this.settings, controlsSettings);

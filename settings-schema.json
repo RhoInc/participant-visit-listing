@@ -124,8 +124,14 @@
         },
         "visit_exclusion_pattern": {
             "title": "Visit Exclusion Text Pattern",
-            "description": "this string will be converted to a regular expression that will identify non-scheduled visits, e.g. unscheduled, repeat, and early termination visits",
+            "description": "this string will be converted to a regular expression that will identify unscheduled visits, e.g. unscheduled, repeat, and early termination visits",
             "default": "/unscheduled|early termination|repeat/i",
+            "type": "string"
+        },
+        "visit_overdue_pattern": {
+            "title": "Visit Overdue Text Pattern",
+            "description": "this string will be converted to a regular expression that will identify overdue visits",
+            "default": "/overdue/i",
             "type": "string"
         },
         "visit_status_exclusion_col": {
@@ -143,14 +149,26 @@
             "default": "Yes",
             "type": "string"
         },
-        "active_tab": {
-            "title": "Initially Active Tab",
-            "description": "name of tab, Listing or Charts, that is displayed initially",
-            "default": "Listing",
+        "chart_layout": {
+            "title": "Chart Layout",
+            "description": "layout of charts, either each in their own tab or side-by-side in a single tab",
+            "default": "tabbed",
             "type": "string",
             "enum": [
-                "Listing",
-                "Charts"
+                "tabbed",
+                "side-by-side"
+            ]
+        },
+        "active_tab": {
+            "title": "Initially Active Tab",
+            "description": "name of tab that is displayed initially",
+            "default": "Visit Chart",
+            "type": "string",
+            "enum": [
+                "Visit Chart",
+                "Study Day Chart",
+                "Charts",
+                "Listing"
             ]
         },
         "date_format": {
@@ -162,6 +180,12 @@
         "display_cell_text": {
             "title": "Display Listing Cell Text?",
             "description": "controls the display of the listing, either as a heat map or as a listing",
+            "default": true,
+            "type": "boolean"
+        },
+        "toggle_cell_text": {
+            "title": "Toggle Listing Cell Text?",
+            "description": "controls the display of the listing cell text toggle",
             "default": false,
             "type": "boolean"
         },
@@ -216,24 +240,6 @@
             "data-mapping": true,
             "data-type": "string",
             "required": false
-        },
-        "pagination": {
-            "title": "Listing Pagination?",
-            "description": "disable pagination to view all participants at the same time",
-            "default": false,
-            "type": "boolean"
-        },
-        "exports": {
-            "title": "Listing Export Formats",
-            "description": "default export formats are to .xlsx and .csv; if jsPDF is available export to .pdf will also be available",
-            "defaults": [
-                "xlsx",
-                "csv"
-            ],
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
         }
     }
 }

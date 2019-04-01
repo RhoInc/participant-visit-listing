@@ -125,9 +125,18 @@ this string will be converted to a regular expression that will identify visit s
 ## settings.visit_exclusion_pattern
 `string`
 
-this string will be converted to a regular expression that will identify non-scheduled visits, e.g. unscheduled, repeat, and early termination visits
+this string will be converted to a regular expression that will identify unscheduled visits, e.g. unscheduled, repeat, and early termination visits
 
 **default:** `"/unscheduled|early termination|repeat/i"`
+
+
+
+## settings.visit_overdue_pattern
+`string`
+
+this string will be converted to a regular expression that will identify overdue visits
+
+**default:** `"/overdue/i"`
 
 
 
@@ -149,12 +158,21 @@ value of variable that identifies visit statuses to exclude from visit status le
 
 
 
+## settings.chart_layout
+`string`
+
+layout of charts, either each in their own tab or side-by-side in a single tab
+
+**default:** `"tabbed"`
+
+
+
 ## settings.active_tab
 `string`
 
-name of tab, Listing or Charts, that is displayed initially
+name of tab that is displayed initially
 
-**default:** `"Listing"`
+**default:** `"Visit Chart"`
 
 
 
@@ -171,6 +189,15 @@ a strptime specification of time format directives, used to parse visit date
 `boolean`
 
 controls the display of the listing, either as a heat map or as a listing
+
+**default:** `true`
+
+
+
+## settings.toggle_cell_text
+`boolean`
+
+controls the display of the listing cell text toggle
 
 **default:** `false`
 
@@ -218,24 +245,6 @@ custom filter variables, in addition to site and participant status
 
 **default:** none
 
-
-
-## settings.pagination
-`boolean`
-
-disable pagination to view all participants at the same time
-
-**default:** `false`
-
-
-
-## settings.exports
-`array`
-
-default export formats are to .xlsx and .csv; if jsPDF is available export to .pdf will also be available
-
-**default:** none
-
 # Webcharts settings
 The objects below contain Webcharts settings for each display as of version 1.2.0 of the Participant Visit Listing.
 
@@ -280,7 +289,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
             "type": "circle",
             "per": null,
             "tooltip": null,
-            "radius": 3,
+            "radius": 4,
             "attributes": {
                 "fill-opacity": 1,
                 "fill": "white"
@@ -314,7 +323,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     "x": {
         "type": "linear",
         "label": "Study Day",
-        "value_col": null
+        "value_col": null,
+        "format": "1d"
     },
     "y": {
         "type": "ordinal",
@@ -339,7 +349,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
             "type": "circle",
             "per": null,
             "tooltip": null,
-            "radius": 3,
+            "radius": 4,
             "attributes": {
                 "fill-opacity": 1,
                 "fill": "white"

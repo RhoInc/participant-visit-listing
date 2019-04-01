@@ -11,6 +11,6 @@ export default function onResize() {
     addAnnotationLegend.call(this);
     classTextMarks.call(this);
 
-    if (this.pvl.settings.active_tab === 'Charts')
-        this.pvl.containers.loadingCharts.classed('pvl-hidden', true);
+    if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1)
+        this.pvl.containers.loading.classed('pvl-hidden', true);
 }

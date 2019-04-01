@@ -17,13 +17,16 @@ export default function rendererSettings() {
         visit_status_description_col: 'visit_status_description',
         visit_expectation_pattern: '/expect|future|overdue/i',
         visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
+        visit_overdue_pattern: '/overdue/i',
         visit_status_exclusion_col: 'plot_exclude',
         visit_status_exclusion_value: 'Yes',
 
         //Miscellaneous
-        filter_cols: ['subset1', 'subset2', 'subset3', 'overdue2'], // default filter variables
-        display_cell_text: false,
-        active_tab: 'Listing', // ['Listing', 'Charts']
+        filter_cols: ['subset1', 'subset2', 'subset3'], // default filter variables
+        display_cell_text: true,
+        toggle_cell_text: false,
+        chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
+        active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
         date_format: '%Y-%m-%d', // format of visit dates
         chart_margin: {
             top: 100,

@@ -3,20 +3,15 @@ export default function minimize() {
     //begin performance test
 
     //indicate loading
-    this.pvl.containers[`loading${this.pvl.settings.active_tab}`].classed('pvl-hidden', false);
+    this.pvl.containers.loading.classed('pvl-hidden', false);
 
     const loading = setInterval(() => {
-        const loadingIndicated =
-            this.pvl.containers[`loading${this.pvl.settings.active_tab}`].style('display') !==
-            'none';
+        const loadingIndicated = this.pvl.containers.loading.style('display') !== 'none';
 
         if (loadingIndicated) {
             //Handle loading indicator.
             clearInterval(loading);
-            this.pvl.containers[`loading${this.pvl.settings.active_tab}`].classed(
-                'pvl-hidden',
-                true
-            );
+            this.pvl.containers.loading.classed('pvl-hidden', true);
 
             const thisChart = this.property;
             const thatChart = this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';

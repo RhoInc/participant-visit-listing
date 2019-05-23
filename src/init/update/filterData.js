@@ -1,5 +1,6 @@
 import { select as d3select } from 'd3';
 import idLevel from '../addVariables/idLevel';
+import updateNOverdueOptions from './filterData/updateNOverdueOptions';
 
 export default function filterData(d, select) {
     const filter = this.data.filters.find(filter => filter.col === d.value_col);
@@ -23,6 +24,9 @@ export default function filterData(d, select) {
 
     //Derive ID-level variables on analysis data.
     idLevel.call(this);
+
+    //Update options in # of Overdue Visits dropdown.
+    updateNOverdueOptions.call(this);
 
     //Apply other filters to analysis data.
     this.data.filtered = this.data.analysis;

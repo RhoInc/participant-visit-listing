@@ -47,11 +47,7 @@ export default function defineXLSX(listing) {
     });
 
     //Define column widths.
-    const tr = listing.tbody
-        .selectAll('tr')
-        //.filter(function() {
-        //    return d3.select(this).style('display') === 'table-row'; })
-        .filter((d, i) => i === 0);
+    const tr = listing.tbody.selectAll('tr').filter((d, i) => i === 0);
     tr.selectAll('td').each(function(d, i) {
         cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
     });

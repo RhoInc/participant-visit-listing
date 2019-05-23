@@ -261,14 +261,14 @@ if (!Array.prototype.findIndex) {
                 : 'number' == typeof this._array.length &&
                   this._array.length >= 0 &&
                   this._nextIndex < Math.floor(this._array.length)
-                    ? (1 === this._flag
-                          ? (nextValue = [this._nextIndex, this._array[this._nextIndex]])
-                          : 2 === this._flag
-                              ? (nextValue = this._array[this._nextIndex])
-                              : 3 === this._flag && (nextValue = this._nextIndex),
-                      this._nextIndex++,
-                      { done: !1, value: nextValue })
-                    : ((this._nextIndex = -1), { done: !0, value: void 0 });
+                ? (1 === this._flag
+                      ? (nextValue = [this._nextIndex, this._array[this._nextIndex]])
+                      : 2 === this._flag
+                      ? (nextValue = this._array[this._nextIndex])
+                      : 3 === this._flag && (nextValue = this._nextIndex),
+                  this._nextIndex++,
+                  { done: !1, value: nextValue })
+                : ((this._nextIndex = -1), { done: !0, value: void 0 });
         }),
         (StringIterator.prototype.next = function() {
             if (!(this instanceof StringIterator))
@@ -281,10 +281,10 @@ if (!Array.prototype.findIndex) {
             return -1 === this._nextIndex
                 ? { done: !0, value: void 0 }
                 : this._nextIndex < stringObject.length
-                    ? ((nextValue = stringObject[this._nextIndex]),
-                      this._nextIndex++,
-                      { done: !1, value: nextValue })
-                    : ((this._nextIndex = -1), { done: !0, value: void 0 });
+                ? ((nextValue = stringObject[this._nextIndex]),
+                  this._nextIndex++,
+                  { done: !1, value: nextValue })
+                : ((this._nextIndex = -1), { done: !0, value: void 0 });
         });
     var SpreadOperatorImpl = function(target, thisArg) {
         (this._target = target), (this._values = []), (this._thisArg = thisArg);
@@ -418,8 +418,8 @@ if (!Array.prototype.findIndex) {
                                     ? appendArray(outputs, target)
                                     : outputs.push(target)
                                 : isArray(target)
-                                    ? appendArray(outputs, target)
-                                    : outputs.push(target)
+                                ? appendArray(outputs, target)
+                                : outputs.push(target)
                             : outputs.push(target);
                     }),
                     outputs
@@ -433,8 +433,8 @@ if (!Array.prototype.findIndex) {
                 return void 0 === this || null === this
                     ? objectToString.call(this)
                     : 'string' == typeof this[Symbol.toStringTag]
-                        ? '[object ' + this[Symbol.toStringTag] + ']'
-                        : objectToString.call(this);
+                    ? '[object ' + this[Symbol.toStringTag] + ']'
+                    : objectToString.call(this);
             },
             writable: !0,
             configurable: !0

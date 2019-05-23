@@ -1,7 +1,8 @@
+import { nest, set, format, select } from 'd3';
+
 export default function participant() {
     // create dictionary of id columns
-    const idDict = d3
-        .nest()
+    const idDict = nest()
         .key(d => d[this.pvl.settings.id_col])
         .rollup(d => d)
         .map(this.pvl.data.raw);
@@ -11,26 +12,24 @@ export default function participant() {
 
     // create ditionary of table cells
     const cellDict = cells.size()
-        ? d3
-              .nest()
+        ? nest()
               .key(d => d[0].__data__.text)
               .rollup(d => d[0])
               .map(cells)
         : [];
 
     // get ids
-    const id_cols = d3.set(this.data.raw.map(d => d[this.pvl.settings.id_col])).values();
+    const id_cols = set(this.data.raw.map(d => d[this.pvl.settings.id_col])).values();
 
     id_cols.forEach(id => {
         const id_data = idDict[id];
         const id_cell = cellDict[id];
         if (id_data && id_cell) {
-            const id_summary = d3
-                .nest()
+            const id_summary = nest()
                 .key(d => d[this.pvl.settings.visit_status_col])
-                .rollup(d => d3.format('%')(d.length / id_data.length))
+                .rollup(d => format('%')(d.length / id_data.length))
                 .entries(id_data);
-            d3.select(id_cell[0]).attr(
+            select(id_cell[0]).attr(
                 'title',
                 id_summary.map(status => `${status.key} (${status.values})`).join('\n')
             );

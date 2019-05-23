@@ -1,3 +1,4 @@
+import { select } from 'd3';
 import tabs from './layout/tabs';
 import addTabFunctionality from './layout/addTabFunctionality';
 
@@ -5,11 +6,11 @@ export default function layout() {
     const context = this;
 
     this.containers = {
-        main: d3.select(this.element)
+        main: select(this.element)
             .append('div')
             .datum(this)
             .classed('participant-visit-listing', true)
-            .attr('id', `participant-visit-listing${d3.selectAll('.participant-visit-listing').size() + 1}`)
+            .attr('id', `participant-visit-listing${this.document.querySelectorAll('.participant-visit-listing').length}`)
     };
 
     /**-------------------------------------------------------------------------------------------\

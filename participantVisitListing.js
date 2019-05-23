@@ -1,27 +1,33 @@
 (function(global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined'
-        ? (module.exports = factory())
+        ? (module.exports = factory(require('d3'), require('webcharts')))
         : typeof define === 'function' && define.amd
-            ? define(factory)
-            : (global.participantVisitListing = factory());
-})(this, function() {
+        ? define(['d3', 'webcharts'], factory)
+        : ((global = global || self),
+          (global.participantVisitListing = factory(global.d3, global.webCharts)));
+})(this, function(d3, webcharts) {
     'use strict';
 
-    var _typeof =
-        typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol'
-            ? function(obj) {
-                  return typeof obj;
-              }
-            : function(obj) {
-                  return obj &&
-                      typeof Symbol === 'function' &&
-                      obj.constructor === Symbol &&
-                      obj !== Symbol.prototype
-                      ? 'symbol'
-                      : typeof obj;
-              };
+    function _typeof(obj) {
+        if (typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol') {
+            _typeof = function(obj) {
+                return typeof obj;
+            };
+        } else {
+            _typeof = function(obj) {
+                return obj &&
+                    typeof Symbol === 'function' &&
+                    obj.constructor === Symbol &&
+                    obj !== Symbol.prototype
+                    ? 'symbol'
+                    : typeof obj;
+            };
+        }
 
-    var defineProperty = function(obj, key, value) {
+        return _typeof(obj);
+    }
+
+    function _defineProperty(obj, key, value) {
         if (key in obj) {
             Object.defineProperty(obj, key, {
                 value: value,
@@ -34,7 +40,7 @@
         }
 
         return obj;
-    };
+    }
 
     if (typeof Object.assign != 'function') {
         Object.defineProperty(Object, 'assign', {
@@ -75,37 +81,32 @@
                     throw new TypeError('"this" is null or not defined');
                 }
 
-                var o = Object(this);
+                var o = Object(this); // 2. Let len be ? ToLength(? Get(O, 'length')).
 
-                // 2. Let len be ? ToLength(? Get(O, 'length')).
-                var len = o.length >>> 0;
+                var len = o.length >>> 0; // 3. If IsCallable(predicate) is false, throw a TypeError exception.
 
-                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
                 if (typeof predicate !== 'function') {
                     throw new TypeError('predicate must be a function');
-                }
+                } // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
 
-                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
-                var thisArg = arguments[1];
+                var thisArg = arguments[1]; // 5. Let k be 0.
 
-                // 5. Let k be 0.
-                var k = 0;
+                var k = 0; // 6. Repeat, while k < len
 
-                // 6. Repeat, while k < len
                 while (k < len) {
                     // a. Let Pk be ! ToString(k).
                     // b. Let kValue be ? Get(O, Pk).
                     // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
                     // d. If testResult is true, return kValue.
                     var kValue = o[k];
+
                     if (predicate.call(thisArg, kValue, k, o)) {
                         return kValue;
-                    }
-                    // e. Increase k by 1.
-                    k++;
-                }
+                    } // e. Increase k by 1.
 
-                // 7. Return undefined.
+                    k++;
+                } // 7. Return undefined.
+
                 return undefined;
             }
         });
@@ -119,50 +120,44 @@
                     throw new TypeError('"this" is null or not defined');
                 }
 
-                var o = Object(this);
+                var o = Object(this); // 2. Let len be ? ToLength(? Get(O, "length")).
 
-                // 2. Let len be ? ToLength(? Get(O, "length")).
-                var len = o.length >>> 0;
+                var len = o.length >>> 0; // 3. If IsCallable(predicate) is false, throw a TypeError exception.
 
-                // 3. If IsCallable(predicate) is false, throw a TypeError exception.
                 if (typeof predicate !== 'function') {
                     throw new TypeError('predicate must be a function');
-                }
+                } // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
 
-                // 4. If thisArg was supplied, let T be thisArg; else let T be undefined.
-                var thisArg = arguments[1];
+                var thisArg = arguments[1]; // 5. Let k be 0.
 
-                // 5. Let k be 0.
-                var k = 0;
+                var k = 0; // 6. Repeat, while k < len
 
-                // 6. Repeat, while k < len
                 while (k < len) {
                     // a. Let Pk be ! ToString(k).
                     // b. Let kValue be ? Get(O, Pk).
                     // c. Let testResult be ToBoolean(? Call(predicate, T, � kValue, k, O �)).
                     // d. If testResult is true, return k.
                     var kValue = o[k];
+
                     if (predicate.call(thisArg, kValue, k, o)) {
                         return k;
-                    }
-                    // e. Increase k by 1.
-                    k++;
-                }
+                    } // e. Increase k by 1.
 
-                // 7. Return -1.
+                    k++;
+                } // 7. Return -1.
+
                 return -1;
             }
         });
-    }
+    } //Symbol polyfill because babel does weird things with for-of loops
 
-    //Symbol polyfill because babel does weird things with for-of loops
     !(function(global, factory) {
         'object' == (typeof module === 'undefined' ? 'undefined' : _typeof(module)) &&
         'object' == _typeof(module.exports)
             ? (module.exports = factory(global))
             : factory(global);
     })('undefined' != typeof window ? window : global, function(global) {
-        var defineProperty$$1 = Object.defineProperty,
+        var defineProperty = Object.defineProperty,
             defineProperties = Object.defineProperties,
             symbolHiddenCounter = 0,
             globalSymbolRegistry = [],
@@ -186,18 +181,20 @@
                 (this._string = string), (this._flag = flag), (this._nextIndex = 0);
             },
             isObject = function isObject(value) {
-                return (
-                    null !== value &&
-                    ('object' == (typeof value === 'undefined' ? 'undefined' : _typeof(value)) ||
-                        'function' == typeof value)
-                );
+                return null !== value && ('object' == _typeof(value) || 'function' == typeof value);
             },
             setupSymbolInternals = function setupSymbolInternals(symbol, desc) {
                 return (
                     defineProperties(symbol, {
-                        _description: { value: desc },
-                        _isSymbol: { value: !0 },
-                        _id: { value: symbolHiddenCounter++ }
+                        _description: {
+                            value: desc
+                        },
+                        _isSymbol: {
+                            value: !0
+                        },
+                        _id: {
+                            value: symbolHiddenCounter++
+                        }
                     }),
                     symbol
                 );
@@ -212,6 +209,7 @@
                     var length1 = Math.floor(array1.length),
                         length2 = Math.floor(array2.length),
                         i = 0;
+
                     for (array1.length = length1 + length2; i < length2; ++i) {
                         array2.hasOwnProperty(i) && (array1[length1 + i] = array2[i]);
                     }
@@ -228,10 +226,12 @@
                     throw new TypeError('Symbol is not a constructor');
                 return setupSymbolInternals(Object.create(_Symbol2.prototype), desc);
             };
+
         defineProperties(_Symbol, {
             for: {
                 value: function value(key) {
                     key = String(key);
+
                     for (
                         var record, registryLength = globalSymbolRegistry.length, i = 0;
                         i < registryLength;
@@ -239,8 +239,12 @@
                     ) {
                         if ((record = globalSymbolRegistry[i]).key === key) return record.symbol;
                     }
+
                     return (
-                        (record = { key: key, symbol: _Symbol(key) }),
+                        (record = {
+                            key: key,
+                            symbol: _Symbol(key)
+                        }),
                         globalSymbolRegistry.push(record),
                         record.symbol
                     );
@@ -252,6 +256,7 @@
                 value: function value(symbol) {
                     if (!ES6.isSymbol(symbol))
                         throw new TypeError(String(symbol) + ' is not a symbol');
+
                     for (
                         var record, registryLength = globalSymbolRegistry.length, i = 0;
                         i < registryLength;
@@ -263,10 +268,18 @@
                 writable: !0,
                 configurable: !0
             },
-            hasInstance: { value: _Symbol('Symbol.hasInstance') },
-            isConcatSpreadable: { value: _Symbol('Symbol.isConcatSpreadable') },
-            iterator: { value: _Symbol('Symbol.iterator') },
-            toStringTag: { value: _Symbol('Symbol.toStringTag') }
+            hasInstance: {
+                value: _Symbol('Symbol.hasInstance')
+            },
+            isConcatSpreadable: {
+                value: _Symbol('Symbol.isConcatSpreadable')
+            },
+            iterator: {
+                value: _Symbol('Symbol.iterator')
+            },
+            toStringTag: {
+                value: _Symbol('Symbol.toStringTag')
+            }
         }),
             (_Symbol.prototype.toString = function() {
                 return '@@_____' + this._id + '_____';
@@ -274,7 +287,7 @@
             (_Symbol.prototype.valueOf = function() {
                 return this;
             }),
-            defineProperty$$1(Iterator.prototype, _Symbol.iterator.toString(), {
+            defineProperty(Iterator.prototype, _Symbol.iterator.toString(), {
                 value: function value() {
                     return this;
                 },
@@ -283,11 +296,11 @@
             }),
             simpleInheritance(ArrayIterator, Iterator),
             simpleInheritance(StringIterator, Iterator),
-            defineProperty$$1(ArrayIterator.prototype, _Symbol.toStringTag.toString(), {
+            defineProperty(ArrayIterator.prototype, _Symbol.toStringTag.toString(), {
                 value: 'Array Iterator',
                 configurable: !0
             }),
-            defineProperty$$1(StringIterator.prototype, _Symbol.toStringTag.toString(), {
+            defineProperty(StringIterator.prototype, _Symbol.toStringTag.toString(), {
                 value: 'String Iterator',
                 configurable: !0
             }),
@@ -299,18 +312,28 @@
                     );
                 var nextValue;
                 return -1 === this._nextIndex
-                    ? { done: !0, value: void 0 }
+                    ? {
+                          done: !0,
+                          value: void 0
+                      }
                     : 'number' == typeof this._array.length &&
                       this._array.length >= 0 &&
                       this._nextIndex < Math.floor(this._array.length)
-                        ? (1 === this._flag
-                              ? (nextValue = [this._nextIndex, this._array[this._nextIndex]])
-                              : 2 === this._flag
-                                  ? (nextValue = this._array[this._nextIndex])
-                                  : 3 === this._flag && (nextValue = this._nextIndex),
-                          this._nextIndex++,
-                          { done: !1, value: nextValue })
-                        : ((this._nextIndex = -1), { done: !0, value: void 0 });
+                    ? (1 === this._flag
+                          ? (nextValue = [this._nextIndex, this._array[this._nextIndex]])
+                          : 2 === this._flag
+                          ? (nextValue = this._array[this._nextIndex])
+                          : 3 === this._flag && (nextValue = this._nextIndex),
+                      this._nextIndex++,
+                      {
+                          done: !1,
+                          value: nextValue
+                      })
+                    : ((this._nextIndex = -1),
+                      {
+                          done: !0,
+                          value: void 0
+                      });
             }),
             (StringIterator.prototype.next = function() {
                 if (!(this instanceof StringIterator))
@@ -321,16 +344,28 @@
                 var nextValue,
                     stringObject = new String(this._string);
                 return -1 === this._nextIndex
-                    ? { done: !0, value: void 0 }
+                    ? {
+                          done: !0,
+                          value: void 0
+                      }
                     : this._nextIndex < stringObject.length
-                        ? ((nextValue = stringObject[this._nextIndex]),
-                          this._nextIndex++,
-                          { done: !1, value: nextValue })
-                        : ((this._nextIndex = -1), { done: !0, value: void 0 });
+                    ? ((nextValue = stringObject[this._nextIndex]),
+                      this._nextIndex++,
+                      {
+                          done: !1,
+                          value: nextValue
+                      })
+                    : ((this._nextIndex = -1),
+                      {
+                          done: !0,
+                          value: void 0
+                      });
             });
+
         var SpreadOperatorImpl = function SpreadOperatorImpl(target, thisArg) {
             (this._target = target), (this._values = []), (this._thisArg = thisArg);
         };
+
         (SpreadOperatorImpl.prototype.spread = function() {
             var self = this;
             return (
@@ -359,7 +394,7 @@
                     this._target.apply(thisArg, this._values)
                 );
             }),
-            (SpreadOperatorImpl.prototype.new = function() {
+            (SpreadOperatorImpl.prototype['new'] = function() {
                 if ('function' != typeof this._target)
                     throw new TypeError('Target is not a constructor');
                 var temp, returnValue;
@@ -399,9 +434,7 @@
                         if (void 0 === hasInstanceSymbolProp) return object instanceof constructor;
                         if ('function' != typeof hasInstanceSymbolProp)
                             throw new TypeError(
-                                (typeof hasInstanceSymbolProp === 'undefined'
-                                    ? 'undefined'
-                                    : _typeof(hasInstanceSymbolProp)) + ' is not a function'
+                                _typeof(hasInstanceSymbolProp) + ' is not a function'
                             );
                         return hasInstanceSymbolProp.call(constructor, object);
                     },
@@ -415,10 +448,13 @@
                             'function' != typeof iterable[_Symbol.iterator])
                         )
                             throw new TypeError('Iterable[Symbol.iterator] is not a function');
+
                         var iterationResult,
                             iterator = iterable[_Symbol.iterator]();
+
                         if ('function' != typeof iterator.next)
                             throw new TypeError('.iterator.next is not a function');
+
                         for (;;) {
                             if (((iterationResult = iterator.next()), !isObject(iterationResult)))
                                 throw new TypeError(
@@ -443,13 +479,17 @@
                     configurable: !0
                 }
             }),
-            defineProperty$$1(global, 'Symbol', { value: _Symbol, writable: !0, configurable: !0 }),
-            defineProperty$$1(Function.prototype, _Symbol.hasInstance.toString(), {
+            defineProperty(global, 'Symbol', {
+                value: _Symbol,
+                writable: !0,
+                configurable: !0
+            }),
+            defineProperty(Function.prototype, _Symbol.hasInstance.toString(), {
                 value: function value(instance) {
                     return 'function' == typeof this && instance instanceof this;
                 }
             }),
-            defineProperty$$1(Array.prototype, 'concat', {
+            defineProperty(Array.prototype, 'concat', {
                 value: function value() {
                     if (void 0 === this || null === this)
                         throw new TypeError('Array.prototype.concat called on null or undefined');
@@ -465,8 +505,8 @@
                                         ? appendArray(outputs, target)
                                         : outputs.push(target)
                                     : isArray(target)
-                                        ? appendArray(outputs, target)
-                                        : outputs.push(target)
+                                    ? appendArray(outputs, target)
+                                    : outputs.push(target)
                                 : outputs.push(target);
                         }),
                         outputs
@@ -475,18 +515,18 @@
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(Object.prototype, 'toString', {
+            defineProperty(Object.prototype, 'toString', {
                 value: function value() {
                     return void 0 === this || null === this
                         ? objectToString.call(this)
                         : 'string' == typeof this[_Symbol.toStringTag]
-                            ? '[object ' + this[_Symbol.toStringTag] + ']'
-                            : objectToString.call(this);
+                        ? '[object ' + this[_Symbol.toStringTag] + ']'
+                        : objectToString.call(this);
                 },
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(Array.prototype, _Symbol.iterator.toString(), {
+            defineProperty(Array.prototype, _Symbol.iterator.toString(), {
                 value: function value() {
                     if (void 0 === this || null === this)
                         throw new TypeError('Cannot convert undefined or null to object');
@@ -496,7 +536,7 @@
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(Array, 'from', {
+            defineProperty(Array, 'from', {
                 value: function value(arrayLike, mapFn, thisArg) {
                     var constructor,
                         length,
@@ -509,9 +549,11 @@
                         throw new TypeError('Cannot convert undefined or null to object');
                     if (((arrayLike = Object(arrayLike)), void 0 === mapFn)) mapFn = simpleFunction;
                     else if (!isCallable(mapFn)) throw new TypeError(mapFn + ' is not a function');
+
                     if (void 0 === arrayLike[_Symbol.iterator]) {
                         if (!('number' == typeof arrayLike.length && arrayLike.length >= 0))
                             return ((outputs = new constructor(0)).length = 0), outputs;
+
                         for (
                             length = Math.floor(arrayLike.length),
                                 (outputs = new constructor(length)).length = length;
@@ -526,12 +568,13 @@
                                 outputs.length++,
                                     (outputs[outputs.length - 1] = mapFn.call(thisArg, value));
                             });
+
                     return outputs;
                 },
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(Array.prototype, 'entries', {
+            defineProperty(Array.prototype, 'entries', {
                 value: function value() {
                     if (void 0 === this || null === this)
                         throw new TypeError('Cannot convert undefined or null to object');
@@ -541,7 +584,7 @@
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(Array.prototype, 'keys', {
+            defineProperty(Array.prototype, 'keys', {
                 value: function value() {
                     if (void 0 === this || null === this)
                         throw new TypeError('Cannot convert undefined or null to object');
@@ -551,7 +594,7 @@
                 writable: !0,
                 configurable: !0
             }),
-            defineProperty$$1(String.prototype, _Symbol.iterator.toString(), {
+            defineProperty(String.prototype, _Symbol.iterator.toString(), {
                 value: function value() {
                     if (void 0 === this || null === this)
                         throw new TypeError(
@@ -572,7 +615,6 @@
             site_col: 'site_name',
             id_col: 'subjectnameoridentifier',
             id_status_col: 'subject_status',
-
             //Visit-level variables
             visit_col: 'visit_name',
             visit_order_col: 'visit_number',
@@ -581,21 +623,25 @@
             visit_status_col: 'visit_status',
             visit_status_order_col: 'visit_status_order',
             visit_text_col: 'visit_text',
-            visit_status_color_col: 'visit_status_color', // must be hex RGB
+            visit_status_color_col: 'visit_status_color',
+            // must be hex RGB
             visit_status_description_col: 'visit_status_description',
             visit_expectation_pattern: '/expect|future|overdue/i',
             visit_exclusion_pattern: '/unscheduled|early termination|repeat/i',
             visit_overdue_pattern: '/overdue/i',
             visit_status_exclusion_col: 'plot_exclude',
             visit_status_exclusion_value: 'Yes',
-
             //Miscellaneous
-            filter_cols: ['subset1', 'subset2', 'subset3'], // default filter variables
+            filter_cols: ['subset1', 'subset2', 'subset3'],
+            // default filter variables
             display_cell_text: true,
             toggle_cell_text: false,
-            chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
-            active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
-            date_format: '%Y-%m-%d', // format of visit dates
+            chart_layout: 'tabbed',
+            // ['tabbed', 'side-by-side']
+            active_tab: 'Visit Chart',
+            // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
+            date_format: '%Y-%m-%d',
+            // format of visit dates
             chart_margin: {
                 top: 100,
                 bottom: 100
@@ -628,21 +674,18 @@
 
     function syncControlsSettings() {
         var listingSettings = this.settings.listingSynced;
-        var controlsSettings = this.settings.controlsMerged;
+        var controlsSettings = this.settings.controlsMerged; //Sync site filter.
 
-        //Sync site filter.
         var siteFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Site';
         });
-        siteFilter.value_col = listingSettings.site_col;
+        siteFilter.value_col = listingSettings.site_col; //Sync ID status filter.
 
-        //Sync ID status filter.
         var idStatusFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Participant Status';
         });
-        idStatusFilter.value_col = listingSettings.id_status_col;
+        idStatusFilter.value_col = listingSettings.id_status_col; //Add user-specified filters.
 
-        //Add user-specified filters.
         if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols) {
             var labels = {
                 subset1: 'Analysis Subset 1',
@@ -666,20 +709,26 @@
     function listingSettings() {
         var exports = ['csv'];
         var isBrowser = new Function('try {return this===window;}catch(e){ return false;}');
+
         if (isBrowser()) {
             if (window !== undefined && window.XLSX) exports.unshift('xlsx');
         }
+
         return {
-            pagination: false, // turn off pagination to view all IDs at the same time
+            pagination: false,
+            // turn off pagination to view all IDs at the same time
             exports: exports // default exports are to .xlsx and .csv
         };
     }
 
     function stringToRegExp(string) {
-        var regex = void 0;
+        var regex;
+
         if (typeof string === 'string' && string !== '') {
             var flags = string.replace(/.*?\/([gimy]*)$/, '$1'); // capture regex flags from end of regex string
+
             var pattern = string.replace(new RegExp('^/(.*?)/' + flags + '$'), '$1'); // capture regex pattern from beginning of regex string
+
             regex = new RegExp(pattern, flags);
         } else regex = null;
 
@@ -687,22 +736,20 @@
     }
 
     function syncListingSettings() {
-        var settings = this.settings.listingMerged;
+        var settings = this.settings.listingMerged; //Define regular expressions.
 
-        //Define regular expressions.
         settings.visit_expectation_regex = stringToRegExp(settings.visit_expectation_pattern);
         settings.visit_exclusion_regex = stringToRegExp(settings.visit_exclusion_pattern);
-        settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern);
+        settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern); //Check filter_cols.
 
-        //Check filter_cols.
-        settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : [];
+        settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : []; //Check active_tab and chart_layout settings.
 
-        //Check active_tab and chart_layout settings.
         if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
             console.warn(
-                '[ chart_layout ] must be "tabbed" or "side-by-side", not "' +
-                    settings.chart_layout +
+                '[ chart_layout ] must be "tabbed" or "side-by-side", not "'.concat(
+                    settings.chart_layout,
                     '". Defaulting to "tabbed".'
+                )
             );
             settings.chart_layout = 'tabbed';
         }
@@ -710,24 +757,25 @@
         if (settings.chart_layout === 'tabbed') {
             if (['Visit Chart', 'Study Day Chart', 'Listing'].indexOf(settings.active_tab) < 0) {
                 console.warn(
-                    '[ active_tab ] must be "Visit Chart", "Study Day Chart", or "Listing", not "' +
-                        settings.active_tab +
+                    '[ active_tab ] must be "Visit Chart", "Study Day Chart", or "Listing", not "'.concat(
+                        settings.active_tab,
                         '". Defaulting to "Visit Chart".'
+                    )
                 );
                 settings.active_tab = 'Visit Chart';
             }
         } else if (settings.chart_layout === 'side-by-side') {
             if (['Charts', 'Listing'].indexOf(settings.active_tab) < 0) {
                 console.warn(
-                    '[ active_tab ] must be "Charts" or "Listing", not "' +
-                        settings.active_tab +
+                    '[ active_tab ] must be "Charts" or "Listing", not "'.concat(
+                        settings.active_tab,
                         '". Defaulting to "Charts".'
+                    )
                 );
                 settings.active_tab = 'Charts';
             }
-        }
+        } //Assign settings to settings object.
 
-        //Assign settings to settings object.
         this.settings.listingSynced = settings;
         Object.assign(this.settings, settings);
     }
@@ -735,14 +783,17 @@
     function commonChartSettings() {
         return {
             x: {
-                type: null, // set in ./ordinalChartSettings and ./linearChartSettings.js
-                label: null, // set in ./ordinalChartSettings.js and ./linearChartSettings.js
+                type: null,
+                // set in ./ordinalChartSettings and ./linearChartSettings.js
+                label: null,
+                // set in ./ordinalChartSettings.js and ./linearChartSettings.js
                 value_col: null // set in ./ordinalChartSettings and ./syncLinearSettings.js
             },
             y: {
                 type: 'ordinal',
                 label: '',
-                value_col: null, // set in ./syncOrdinalChartSettings and ./syncLinearChartSettings.js
+                value_col: null,
+                // set in ./syncOrdinalChartSettings and ./syncLinearChartSettings.js
                 range_band: 15,
                 behavior: 'flex',
                 sort: 'alphabetical-descending'
@@ -750,8 +801,10 @@
             marks: [
                 {
                     type: 'circle',
-                    per: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
-                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    per: null,
+                    // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+                    tooltip: null,
+                    // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
                     radius: 5,
                     attributes: {
                         'fill-opacity': 1
@@ -760,8 +813,10 @@
                 },
                 {
                     type: 'circle',
-                    per: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
-                    tooltip: null, // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    per: null,
+                    // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
+                    tooltip: null,
+                    // set in ./syncOrdinalChartSettings and ./syncOrdinalSettings.js
                     radius: 4,
                     attributes: {
                         'fill-opacity': 1,
@@ -772,8 +827,10 @@
                     }
                 }
             ],
-            color_by: null, // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
-            color_dom: null, // set in ../init/defineSets/defineVisitStatusSet.js
+            color_by: null,
+            // set in ./syncOrdinalChartSettings and ./syncLinearSettings.js
+            color_dom: null,
+            // set in ../init/defineSets/defineVisitStatusSet.js
             legend: {
                 location: 'top',
                 label: 'Visit Status',
@@ -790,7 +847,6 @@
         settings.x.type = 'ordinal';
         settings.x.label = 'Visit';
         settings.marks[1].values.unscheduled = [false];
-
         return settings;
     }
 
@@ -798,42 +854,28 @@
         var listingSettings = this.settings.listingSynced;
         var ordinalChartSettings = this.settings.ordinalChartMerged;
         ordinalChartSettings.margin = listingSettings.chart_margin;
-        ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40;
+        ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; //Update ordinal chart settings.
 
-        //Update ordinal chart settings.
         ordinalChartSettings.x.column = listingSettings.visit_col;
         ordinalChartSettings.y.column = listingSettings.id_col;
         var circles = ordinalChartSettings.marks[0];
         circles.per = [listingSettings.id_col, listingSettings.visit_col];
-        circles.tooltip =
-            '[' +
-            listingSettings.id_col +
-            '] - [' +
-            listingSettings.visit_col +
-            '] ([' +
-            listingSettings.visit_date_col +
-            ']: Day [' +
-            listingSettings.visit_day_col +
-            ']): [' +
-            listingSettings.visit_status_col +
-            ']';
+        circles.tooltip = '['
+            .concat(listingSettings.id_col, '] - [')
+            .concat(listingSettings.visit_col, '] ([')
+            .concat(listingSettings.visit_date_col, ']: Day [')
+            .concat(listingSettings.visit_day_col, ']): [')
+            .concat(listingSettings.visit_status_col, ']');
         var expectedCircles = ordinalChartSettings.marks[1];
         expectedCircles.per = [listingSettings.id_col, listingSettings.visit_col];
-        expectedCircles.tooltip =
-            '[' +
-            listingSettings.id_col +
-            '] - [' +
-            listingSettings.visit_col +
-            '] ([' +
-            listingSettings.visit_date_col +
-            ']: Day [' +
-            listingSettings.visit_day_col +
-            ']): [' +
-            listingSettings.visit_status_col +
-            ']';
-        ordinalChartSettings.color_by = listingSettings.visit_status_col;
+        expectedCircles.tooltip = '['
+            .concat(listingSettings.id_col, '] - [')
+            .concat(listingSettings.visit_col, '] ([')
+            .concat(listingSettings.visit_date_col, ']: Day [')
+            .concat(listingSettings.visit_day_col, ']): [')
+            .concat(listingSettings.visit_status_col, ']');
+        ordinalChartSettings.color_by = listingSettings.visit_status_col; //Assign settings to settings object.
 
-        //Assign settings to settings object.
         this.settings.ordinalChartSynced = ordinalChartSettings;
     }
 
@@ -844,8 +886,10 @@
         settings.x.format = '1d';
         settings.marks.push({
             type: 'text',
-            per: null, // set in ./syncLinearSettings.js
-            tooltip: null, // set in ./syncLinearSettings.js
+            per: null,
+            // set in ./syncLinearSettings.js
+            tooltip: null,
+            // set in ./syncLinearSettings.js
             text: '[visitCharacter]',
             attributes: {
                 'font-size': '10px',
@@ -858,63 +902,42 @@
                 unscheduled: [true]
             }
         });
-
         return settings;
     }
 
     function syncLinearChartSettings() {
         var listingSettings = this.settings.listingSynced;
         var linearChartSettings = this.settings.linearChartMerged;
-        linearChartSettings.margin = listingSettings.chart_margin;
+        linearChartSettings.margin = listingSettings.chart_margin; //Update linear chart settings.
 
-        //Update linear chart settings.
         linearChartSettings.x.column = listingSettings.visit_day_col;
         linearChartSettings.y.column = listingSettings.id_col;
         var circles = linearChartSettings.marks[0];
         circles.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        circles.tooltip =
-            '[' +
-            listingSettings.id_col +
-            '] - [' +
-            listingSettings.visit_col +
-            '] ([' +
-            listingSettings.visit_date_col +
-            ']: Day [' +
-            listingSettings.visit_day_col +
-            ']): [' +
-            listingSettings.visit_status_col +
-            ']';
+        circles.tooltip = '['
+            .concat(listingSettings.id_col, '] - [')
+            .concat(listingSettings.visit_col, '] ([')
+            .concat(listingSettings.visit_date_col, ']: Day [')
+            .concat(listingSettings.visit_day_col, ']): [')
+            .concat(listingSettings.visit_status_col, ']');
         var expectedCircles = linearChartSettings.marks[1];
         expectedCircles.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        expectedCircles.tooltip =
-            '[' +
-            listingSettings.id_col +
-            '] - [' +
-            listingSettings.visit_col +
-            '] ([' +
-            listingSettings.visit_date_col +
-            ']: Day [' +
-            listingSettings.visit_day_col +
-            ']): [' +
-            listingSettings.visit_status_col +
-            ']';
+        expectedCircles.tooltip = '['
+            .concat(listingSettings.id_col, '] - [')
+            .concat(listingSettings.visit_col, '] ([')
+            .concat(listingSettings.visit_date_col, ']: Day [')
+            .concat(listingSettings.visit_day_col, ']): [')
+            .concat(listingSettings.visit_status_col, ']');
         var text = linearChartSettings.marks[2];
         text.per = [listingSettings.id_col, listingSettings.visit_day_col];
-        text.tooltip =
-            '[' +
-            listingSettings.id_col +
-            '] - [' +
-            listingSettings.visit_col +
-            '] ([' +
-            listingSettings.visit_date_col +
-            ']: Day [' +
-            listingSettings.visit_day_col +
-            ']): [' +
-            listingSettings.visit_status_col +
-            ']';
-        linearChartSettings.color_by = listingSettings.visit_status_col;
+        text.tooltip = '['
+            .concat(listingSettings.id_col, '] - [')
+            .concat(listingSettings.visit_col, '] ([')
+            .concat(listingSettings.visit_date_col, ']: Day [')
+            .concat(listingSettings.visit_day_col, ']): [')
+            .concat(listingSettings.visit_status_col, ']');
+        linearChartSettings.color_by = listingSettings.visit_status_col; //Assign settings to settings object.
 
-        //Assign settings to settings object.
         this.settings.linearChartSynced = linearChartSettings;
     }
 
@@ -985,9 +1008,8 @@
                   .select(select)
                   .selectAll('option:checked')
                   .data()
-            : select.value;
+            : select.value; //Apply analysis filters to raw data.
 
-        //Apply analysis filters to raw data.
         this.data.analysis = this.data.raw;
         this.data.filters
             .filter(function(filter) {
@@ -999,12 +1021,10 @@
                         ? filter.value.indexOf(di[filter.col]) > -1
                         : filter.value === 'All' || di[filter.col] === filter.value;
                 });
-            });
+            }); //Derive ID-level variables on analysis data.
 
-        //Derive ID-level variables on analysis data.
-        idLevel.call(this);
+        idLevel.call(this); //Apply other filters to analysis data.
 
-        //Apply other filters to analysis data.
         this.data.filtered = this.data.analysis;
         this.data.filters
             .filter(function(filter) {
@@ -1029,9 +1049,8 @@
                 })
             )
             .values()
-            .sort();
+            .sort(); //Sort set numerically if possible.
 
-        //Sort set numerically if possible.
         if (
             this.data.sets[col].every(function(value) {
                 return !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')));
@@ -1050,7 +1069,9 @@
         this.data.sets.visits = d3
             .set(
                 this.data.analysis.map(function(d) {
-                    return d[_this.settings.visit_order_col] + ':|:' + d[_this.settings.visit_col];
+                    return ''
+                        .concat(d[_this.settings.visit_order_col], ':|:')
+                        .concat(d[_this.settings.visit_col]);
                 })
             )
             .values();
@@ -1082,14 +1103,12 @@
                         var visit = order_visit.split(':|:')[1];
                         var extra = visit.replace(_this.settings.visit_exclusion_regex, '');
                         var yesPlease = visit.replace(extra, '');
-
                         return yesPlease;
                     })
             )
             .values()
-            .sort();
+            .sort(); //Update ordinal chart settings.
 
-        //Update ordinal chart settings.
         this.ordinalChart.config.x.domain = this.data.sets.visit_col;
         this.ordinalChart.config.marks[0].values[
             this.settings.visit_col
@@ -1108,103 +1127,108 @@
         var _this = this;
 
         this.data.transposed = new Array(this.data.sets.id_col.length);
-
         var i = 0;
-
-        var _loop = function _loop(id) {
-            var _datum;
-
-            var id_data = _this.data.raw.filter(function(d) {
-                return d[_this.settings.id_col] === id;
-            });
-            var datum = ((_datum = {}),
-            defineProperty(_datum, _this.settings.site_col, id_data[0][_this.settings.site_col]),
-            defineProperty(_datum, 'Site', id_data[0][_this.settings.site_col]),
-            defineProperty(_datum, _this.settings.id_col, id),
-            defineProperty(_datum, 'ID', id),
-            defineProperty(
-                _datum,
-                _this.settings.id_status_col,
-                id_data[0][_this.settings.id_status_col]
-            ),
-            defineProperty(_datum, 'Status', id_data[0][_this.settings.id_status_col]),
-            defineProperty(_datum, 'nOverdue', id_data[0].nOverdue),
-            _datum);
-
-            var _loop2 = function _loop2(visit) {
-                var visit_datum = id_data.find(function(d) {
-                    return d[_this.settings.visit_col] === visit;
-                });
-                datum[visit] = visit_datum ? visit_datum[_this.settings.visit_text_col] : '';
-                datum[visit + '-date'] = visit_datum
-                    ? visit_datum[_this.settings.visit_date_col]
-                    : '';
-                datum[visit + '-status'] = visit_datum
-                    ? visit_datum[_this.settings.visit_status_col]
-                    : '';
-                datum[visit + '-color'] = visit_datum
-                    ? visit_datum[_this.settings.visit_status_color_col]
-                    : '';
-
-                if (_this.data.missingVariables.subset1) datum['subset1'] = id_data[0]['subset1'];
-                if (_this.data.missingVariables.subset2) datum['subset2'] = id_data[0]['subset2'];
-                if (_this.data.missingVariables.subset3) datum['subset3'] = id_data[0]['subset3'];
-            };
-
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (
-                    var _iterator2 = _this.data.sets.visit_col[Symbol.iterator](), _step2;
-                    !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
-                    _iteratorNormalCompletion2 = true
-                ) {
-                    var visit = _step2.value;
-
-                    _loop2(visit);
-                }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
-
-            _this.data.transposed[i] = datum;
-            i += 1;
-        };
-
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
+            var _loop = function _loop() {
+                var _datum;
+
+                var id = _step.value;
+
+                var id_data = _this.data.raw.filter(function(d) {
+                    return d[_this.settings.id_col] === id;
+                });
+
+                var datum = ((_datum = {}),
+                _defineProperty(
+                    _datum,
+                    _this.settings.site_col,
+                    id_data[0][_this.settings.site_col]
+                ),
+                _defineProperty(_datum, 'Site', id_data[0][_this.settings.site_col]),
+                _defineProperty(_datum, _this.settings.id_col, id),
+                _defineProperty(_datum, 'ID', id),
+                _defineProperty(
+                    _datum,
+                    _this.settings.id_status_col,
+                    id_data[0][_this.settings.id_status_col]
+                ),
+                _defineProperty(_datum, 'Status', id_data[0][_this.settings.id_status_col]),
+                _defineProperty(_datum, 'nOverdue', id_data[0].nOverdue),
+                _datum);
+                var _iteratorNormalCompletion2 = true;
+                var _didIteratorError2 = false;
+                var _iteratorError2 = undefined;
+
+                try {
+                    var _loop2 = function _loop2() {
+                        var visit = _step2.value;
+                        var visit_datum = id_data.find(function(d) {
+                            return d[_this.settings.visit_col] === visit;
+                        });
+                        datum[visit] = visit_datum
+                            ? visit_datum[_this.settings.visit_text_col]
+                            : '';
+                        datum[''.concat(visit, '-date')] = visit_datum
+                            ? visit_datum[_this.settings.visit_date_col]
+                            : '';
+                        datum[''.concat(visit, '-status')] = visit_datum
+                            ? visit_datum[_this.settings.visit_status_col]
+                            : '';
+                        datum[''.concat(visit, '-color')] = visit_datum
+                            ? visit_datum[_this.settings.visit_status_color_col]
+                            : '';
+                        if (_this.data.missingVariables.subset1)
+                            datum['subset1'] = id_data[0]['subset1'];
+                        if (_this.data.missingVariables.subset2)
+                            datum['subset2'] = id_data[0]['subset2'];
+                        if (_this.data.missingVariables.subset3)
+                            datum['subset3'] = id_data[0]['subset3'];
+                    };
+
+                    for (
+                        var _iterator2 = _this.data.sets.visit_col[Symbol.iterator](), _step2;
+                        !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done);
+                        _iteratorNormalCompletion2 = true
+                    ) {
+                        _loop2();
+                    }
+                } catch (err) {
+                    _didIteratorError2 = true;
+                    _iteratorError2 = err;
+                } finally {
+                    try {
+                        if (!_iteratorNormalCompletion2 && _iterator2['return'] != null) {
+                            _iterator2['return']();
+                        }
+                    } finally {
+                        if (_didIteratorError2) {
+                            throw _iteratorError2;
+                        }
+                    }
+                }
+
+                _this.data.transposed[i] = datum;
+                i += 1;
+            };
+
             for (
                 var _iterator = this.data.sets.id_col[Symbol.iterator](), _step;
                 !(_iteratorNormalCompletion = (_step = _iterator.next()).done);
                 _iteratorNormalCompletion = true
             ) {
-                var id = _step.value;
-
-                _loop(id);
+                _loop();
             }
         } catch (err) {
             _didIteratorError = true;
             _iteratorError = err;
         } finally {
             try {
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                    _iterator.return();
+                if (!_iteratorNormalCompletion && _iterator['return'] != null) {
+                    _iterator['return']();
                 }
             } finally {
                 if (_didIteratorError) {
@@ -1230,12 +1254,10 @@
             var numerator = _this.data.filtered.filter(function(di) {
                 return di[_this.settings.visit_status_col] === d[1];
             }).length;
-            return (
-                d[1] +
-                ' (' +
-                (denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A') +
-                ')'
-            );
+
+            return ''
+                .concat(d[1], ' (')
+                .concat(denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A', ')');
         });
     }
 
@@ -1246,17 +1268,15 @@
     }
 
     function update$1() {
-        var context = this;
+        var context = this; //Capture all data filter dropdowns.
 
-        //Capture all data filter dropdowns.
         var filters = this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
                 return d.type === 'subsetter';
             })
-            .selectAll('select');
+            .selectAll('select'); //Remove extra 'All' options; not sure where they're coming from.
 
-        //Remove extra 'All' options; not sure where they're coming from.
         filters
             .selectAll('option')
             .filter(function(d) {
@@ -1265,28 +1285,24 @@
             .filter(function(d, i) {
                 return i > 0;
             })
-            .remove();
+            .remove(); //Redefine the event listener.
 
-        //Redefine the event listener.
         filters.on('change', function(d) {
             var _this = this;
 
             //Indicate loading.
             context.containers.loading.classed('pvl-hidden', false);
-
             var loading = setInterval(function() {
                 var loadingIndicated = context.containers.loading.style('display') !== 'none';
 
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    context.containers.loading.classed('pvl-hidden', true);
+                    context.containers.loading.classed('pvl-hidden', true); //Run code.
 
-                    //Run code.
                     filterData.call(context, d, _this);
-                    defineDefaultSet.call(context, 'id_col');
+                    defineDefaultSet.call(context, 'id_col'); //Update visit set and listing columns if the changed filter controls an analysis subset.
 
-                    //Update visit set and listing columns if the changed filter controls an analysis subset.
                     if (/^Analysis Subset \d$/.test(d.label)) {
                         defineVisitSet.call(context);
                         defineColumns.call(context);
@@ -1295,15 +1311,13 @@
                     transposeData.call(context);
                     update.call(context);
                     updateNParticipants.call(context);
-
                     if (context.listing.initialized)
                         context.listing.data.raw = context.data.transposed;
                     if (context.ordinalChart.initialized)
                         context.ordinalChart.raw_data = context.data.filtered;
                     if (context.linearChart.initialized)
-                        context.linearChart.raw_data = context.data.filtered;
+                        context.linearChart.raw_data = context.data.filtered; //Redraw displays.
 
-                    //Redraw displays.
                     if (context.settings.active_tab === 'Listing') {
                         context.listing.draw();
                     } else if (context.settings.active_tab === 'Charts') {
@@ -1321,7 +1335,6 @@
 
     function updateSelects() {
         var context = this;
-
         this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
@@ -1342,7 +1355,6 @@
 
     function updateMultiSelects() {
         var context = this;
-
         this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
@@ -1365,25 +1377,21 @@
 
     function addTabFunctionality() {
         var context = this;
-
         this.containers.tabs.on('click', function(d) {
             var _this = this;
 
-            var t0 = performance.now();
-            //begin performance test
-
+            var t0 = this.performance.now(); //begin performance test
             //indicate loading
-            context.containers.loading.classed('pvl-hidden', false);
 
+            context.containers.loading.classed('pvl-hidden', false);
             var loading = setInterval(function() {
                 var loadingIndicated = context.containers.loading.style('display') !== 'none';
 
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    context.containers.loading.classed('pvl-hidden', true);
+                    context.containers.loading.classed('pvl-hidden', true); //Run code.
 
-                    //Run code.
                     context.settings.active_tab = d.name;
                     var tab = d3.select(_this);
                     var active = tab.classed('pvl-tab--active');
@@ -1391,10 +1399,12 @@
                     if (!active) {
                         context.containers.tabs.classed('pvl-tab--active', false);
                         tab.classed('pvl-tab--active', true);
+
                         if (context.settings.chart_layout === 'tabbed') {
                             context.containers.ordinalChart.classed('pvl-hidden', true);
                             context.containers.linearChart.classed('pvl-hidden', true);
                         } else context.containers.charts.classed('pvl-hidden', true);
+
                         context.containers.listing.classed('pvl-hidden', true);
                         context.containers[d.property].classed('pvl-hidden', false);
 
@@ -1403,7 +1413,7 @@
                             if (context.listing.initialized)
                                 context.listing.draw(context.data.transposed);
                             else {
-                                context.listing.init(context.data.transposed);
+                                context.listing.init(context.data.transposed, context.test);
                                 update$1.call(context);
                                 updateSelects.call(context);
                                 updateMultiSelects.call(context);
@@ -1413,7 +1423,7 @@
                             if (context.ordinalChart.initialized)
                                 context.ordinalChart.draw(context.data.filtered);
                             else {
-                                context.ordinalChart.init(context.data.filtered);
+                                context.ordinalChart.init(context.data.filtered, context.test);
                                 update$1.call(context);
                                 updateSelects.call(context);
                                 updateMultiSelects.call(context);
@@ -1423,7 +1433,7 @@
                             if (context.linearChart.initialized)
                                 context.linearChart.draw(context.data.filtered);
                             else {
-                                context.linearChart.init(context.data.filtered);
+                                context.linearChart.init(context.data.filtered, context.test);
                                 update$1.call(context);
                                 updateSelects.call(context);
                                 updateMultiSelects.call(context);
@@ -1433,14 +1443,13 @@
                             if (context.ordinalChart.initialized)
                                 context.ordinalChart.draw(context.data.filtered);
                             else {
-                                context.ordinalChart.init(context.data.filtered);
-                            }
+                                context.ordinalChart.init(context.data.filtered, context.test);
+                            } //Initialize or draw linear chart.
 
-                            //Initialize or draw linear chart.
                             if (context.linearChart.initialized)
                                 context.linearChart.draw(context.data.filtered);
                             else {
-                                context.linearChart.init(context.data.filtered);
+                                context.linearChart.init(context.data.filtered, context.test);
                                 update$1.call(context);
                                 updateSelects.call(context);
                                 updateMultiSelects.call(context);
@@ -1448,17 +1457,15 @@
                         }
                     }
                 }
-            });
+            }); //end performance test
 
-            //end performance test
-            var t1 = performance.now();
-            console.log('addTabFunctionality.click() took ' + (t1 - t0) + ' milliseconds.');
+            var t1 = this.performance.now();
+            console.log('addTabFunctionality.click() took '.concat(t1 - t0, ' milliseconds.'));
         });
     }
 
     function layout() {
         var _this = this;
-
         this.containers = {
             main: d3
                 .select(this.element)
@@ -1467,14 +1474,14 @@
                 .classed('participant-visit-listing', true)
                 .attr(
                     'id',
-                    'participant-visit-listing' +
-                        (d3.selectAll('.participant-visit-listing').size() + 1)
+                    'participant-visit-listing'.concat(
+                        this.document.querySelectorAll('.participant-visit-listing').length
+                    )
                 )
         };
-
         /**-------------------------------------------------------------------------------------------\
-        Upper row
-      \-------------------------------------------------------------------------------------------**/
+      Upper row
+    \-------------------------------------------------------------------------------------------**/
 
         this.containers.upperRow = this.containers.main
             .append('div')
@@ -1483,22 +1490,20 @@
             .append('div')
             .classed('pvl-controls', true);
         this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
-
         /**-------------------------------------------------------------------------------------------\
-        Lower row
-      \-------------------------------------------------------------------------------------------**/
+      Lower row
+    \-------------------------------------------------------------------------------------------**/
 
         this.containers.lowerRow = this.containers.main
             .append('div')
-            .classed('pvl-row pvl-row--lower', true);
+            .classed('pvl-row pvl-row--lower', true); //tabs
 
-        //tabs
         var selectedTabs = tabs.filter(function(tab) {
             return _this.settings.chart_layout === 'tabbed'
                 ? tab.name !== 'Charts'
                 : _this.settings.chart_layout === 'side-by-side'
-                    ? ['Visit Chart', 'Study Day Chart'].indexOf(tab.name) < 0
-                    : true;
+                ? ['Visit Chart', 'Study Day Chart'].indexOf(tab.name) < 0
+                : true;
         });
         this.containers.tabContainer = this.containers.lowerRow
             .append('div')
@@ -1516,7 +1521,7 @@
             .enter()
             .append('div')
             .attr('class', function(d) {
-                return 'pvl-loading-ball pvl-loading-ball--' + d;
+                return 'pvl-loading-ball pvl-loading-ball--'.concat(d);
             });
         this.containers.tabs = this.containers.tabContainer
             .selectAll('div.pvl-tab')
@@ -1524,18 +1529,14 @@
             .enter()
             .append('div')
             .attr('class', function(d) {
-                return (
-                    'pvl-tab pvl-tab--' +
-                    d.class +
-                    ' ' +
-                    (d.name === _this.settings.active_tab ? 'pvl-tab--active' : '')
-                );
+                return 'pvl-tab pvl-tab--'
+                    .concat(d['class'], ' ')
+                    .concat(d.name === _this.settings.active_tab ? 'pvl-tab--active' : '');
             })
             .text(function(d) {
                 return d.name;
-            });
+            }); //display containers
 
-        //display containers
         if (this.settings.chart_layout === 'tabbed') {
             this.containers.ordinalChart = this.containers.lowerRow
                 .append('div')
@@ -1554,13 +1555,13 @@
                 .append('div')
                 .classed('pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
         }
+
         this.containers.listing = this.containers.lowerRow
             .append('div')
             .classed('pvl-listing', true);
-
         /**-------------------------------------------------------------------------------------------\
-        Functionality
-      \-------------------------------------------------------------------------------------------**/
+      Functionality
+    \-------------------------------------------------------------------------------------------**/
 
         addTabFunctionality.call(this);
     }
@@ -1578,21 +1579,17 @@
                 '    width: 100%;' +
                 '    display: inline-block;' +
                 '}',
-
             /***--------------------------------------------------------------------------------------\
       Upper row
     \--------------------------------------------------------------------------------------***/
-
             '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}',
             '.pvl-row--upper > * {' +
                 '    vertical-align: bottom;' +
                 '    display: inline-block;' +
                 '}',
-
             /****---------------------------------------------------------------------------------\
       Legend
     \---------------------------------------------------------------------------------****/
-
             '.pvl-legend {' + '    width: 35%;' + '    float: left;' + '}',
             '.pvl-legend__label {' + '    font-size: 24px;' + '    font-weight: lighter;' + '}',
             '.pvl-legend__ul {' +
@@ -1611,11 +1608,9 @@
                 '    font-weight: bold;' +
                 '    cursor: help;' +
                 '}',
-
             /****---------------------------------------------------------------------------------\
       Controls
     \---------------------------------------------------------------------------------****/
-
             '.pvl-controls {' + '    width: 64%;' + '    float: right;' + '}',
             '.pvl-controls .wc-controls {' +
                 '    float: right;' +
@@ -1634,18 +1629,14 @@
                 '    text-align: right;' +
                 '    font-size: 14px;' +
                 '}',
-
             /***--------------------------------------------------------------------------------------\
       Lower row
     \--------------------------------------------------------------------------------------***/
-
             '.pvl-row--lower {' + '}',
             '.pvl-row--lower > * {' + '}',
-
             /****---------------------------------------------------------------------------------\
       Tabs
     \---------------------------------------------------------------------------------****/
-
             '.pvl-tabs {' +
                 '    text-align: center;' +
                 '    border-top: 1px solid lightgray;' +
@@ -1721,11 +1712,9 @@
                 '        transform: scale(1.0);' +
                 '    }' +
                 '}',
-
             /****---------------------------------------------------------------------------------\
       Charts
     \---------------------------------------------------------------------------------****/
-
             '.pvl-charts {' + '    width: 100%;' + '    display: inline-block;' + '}',
             '.pvl-chart {' + '    display: inline-block;' + '    width: 100%;' + '}',
             '.pvl-charts .pvl-chart--ordinal {' + '    width: 49.5%;' + '    float: left;' + '}',
@@ -1760,11 +1749,9 @@
                 '    font-size: 14px;' +
                 '    font-family: courier;' +
                 '}',
-
             /****---------------------------------------------------------------------------------\
       Listing
     \---------------------------------------------------------------------------------****/
-
             '.pvl-listing {' + '}',
             '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
             '.interactivity.pvl-cell-text-toggle {' +
@@ -1781,11 +1768,9 @@
                 '    border-collapse: collapse;' +
                 '    min-width: 100%;' +
                 '}',
-
             /*****----------------------------------------------------------------------------\
       thead
     \----------------------------------------------------------------------------*****/
-
             '.pvl-listing .wc-table table thead {' + '}',
             '.pvl-listing .wc-table table thead tr:after {' +
                 '    content: "";' +
@@ -1798,11 +1783,9 @@
                 '    display: block;' +
                 '    border-top: 2px solid white;' +
                 '}',
-
             /*****----------------------------------------------------------------------------\
       tbody
     \----------------------------------------------------------------------------*****/
-
             '.pvl-listing .wc-table table tbody {' +
                 '    display: block;' +
                 '    width: 100%;' +
@@ -1832,30 +1815,26 @@
             '.pvl-listing .wc-table table tbody tr td.pvl-emboldened {' +
                 '    font-weight: bold;' +
                 '}',
-
             /*****----------------------------------------------------------------------------\
       t-agnostic
     \----------------------------------------------------------------------------*****/
-
             '.pvl-listing .wc-table table tr {' + '    display: flex;' + '}',
             '.pvl-listing .wc-table table th,' +
                 '.pvl-listing .wc-table table td {' +
                 '    flex: 1 auto;' +
                 '    width: 100px;' +
                 '}'
-        ];
+        ]; //Attach styles to DOM.
 
-        //Attach styles to DOM.
-        this.style = document.createElement('style');
+        this.style = this.document.createElement('style');
         this.style.type = 'text/css';
         this.style.innerHTML = this.styles.join('\n');
-        document.getElementsByTagName('head')[0].appendChild(this.style);
+        this.document.getElementsByTagName('head')[0].appendChild(this.style);
         this.containers.style = d3.select(this.style);
     }
 
     function controls() {
-        //Define controls.
-        this.controls = new webCharts.createControls(
+        this.controls = webcharts.createControls(
             this.containers.controls.node(),
             this.settings.controlsSynced
         );
@@ -1879,7 +1858,6 @@
     function toggleCellText() {
         if (this.pvl.settings.toggle_cell_text) {
             var context = this;
-
             this.cellTextToggle = {
                 container: this.wrap
                     .selectAll('.table-top')
@@ -1926,26 +1904,34 @@
             .selectAll('th')
             .on('mouseover', function(d, i) {
                 d3.select(this).classed('pvl-header-hover', true);
-                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', true);
+                d3.selectAll('tr td:nth-child('.concat(i + 1, ')')).classed(
+                    'pvl-header-hover',
+                    true
+                );
             })
             .on('mouseout', function(d, i) {
                 d3.select(this).classed('pvl-header-hover', false);
-                d3.selectAll('tr td:nth-child(' + (i + 1) + ')').classed('pvl-header-hover', false);
+                d3.selectAll('tr td:nth-child('.concat(i + 1, ')')).classed(
+                    'pvl-header-hover',
+                    false
+                );
             });
     }
 
     function addCellFormatting() {
-        var context = this;
+        var context = this; //Formatting cells via .css.
 
-        //Formatting cells via .css.
         this.tbody.selectAll('tr').each(function(d) {
             var visitCells = d3
                 .select(this)
                 .selectAll('td:nth-child(n + 4)')
                 .attr('class', function(di) {
-                    return d[di.col + '-status']
-                        ? 'pvl-visit-status--' +
-                              d[di.col + '-status'].toLowerCase().replace(/[^_a-z-]/g, '-')
+                    return d[''.concat(di.col, '-status')]
+                        ? 'pvl-visit-status--'.concat(
+                              d[''.concat(di.col, '-status')]
+                                  .toLowerCase()
+                                  .replace(/[^_a-z-]/g, '-')
+                          )
                         : '';
                 })
                 .classed('pvl-visit-status', true)
@@ -1953,17 +1939,15 @@
                 .classed('pvl-visit-status--cell-text', context.config.display_cell_text);
             visitCells.each(function(di) {
                 var visitCell = d3.select(this);
-                di.date = d[di.col + '-date'];
+                di.date = d[''.concat(di.col, '-date')];
                 if (d[di.col] !== null)
                     visitCell.attr(
                         'title',
-                        d[context.pvl.settings.id_col] +
-                            ' - ' +
-                            di.col +
-                            ' (' +
-                            di.date +
-                            '): ' +
-                            d[di.col + '-status']
+                        ''
+                            .concat(d[context.pvl.settings.id_col], ' - ')
+                            .concat(di.col, ' (')
+                            .concat(di.date, '): ')
+                            .concat(d[''.concat(di.col, '-status')])
                     );
             });
         });
@@ -1981,12 +1965,10 @@
             .rollup(function(d) {
                 return d;
             })
-            .map(this.pvl.data.raw);
+            .map(this.pvl.data.raw); // get all the cells
 
-        // get all the cells
-        var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)');
+        var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)'); // create ditionary of table cells
 
-        // create ditionary of table cells
         var cellDict = cells.size()
             ? d3
                   .nest()
@@ -1997,9 +1979,8 @@
                       return d[0];
                   })
                   .map(cells)
-            : [];
+            : []; // get ids
 
-        // get ids
         var id_cols = d3
             .set(
                 this.data.raw.map(function(d) {
@@ -2007,10 +1988,10 @@
                 })
             )
             .values();
-
         id_cols.forEach(function(id) {
             var id_data = idDict[id];
             var id_cell = cellDict[id];
+
             if (id_data && id_cell) {
                 var id_summary = d3
                     .nest()
@@ -2025,7 +2006,7 @@
                     'title',
                     id_summary
                         .map(function(status) {
-                            return status.key + ' (' + status.values + ')';
+                            return ''.concat(status.key, ' (').concat(status.values, ')');
                         })
                         .join('\n')
                 );
@@ -2040,6 +2021,7 @@
             var visit_data = _this.pvl.data.raw.filter(function(d) {
                 return d[_this.pvl.settings.visit_col] === visit;
             });
+
             var visit_summary = d3
                 .nest()
                 .key(function(d) {
@@ -2049,17 +2031,19 @@
                     return d3.format('%')(d.length / visit_data.length);
                 })
                 .entries(visit_data);
+
             var visit_cell = _this.table
                 .selectAll('thead tr')
                 .selectAll('th:not(:first-child)')
                 .filter(function(d) {
                     return d === visit;
                 });
+
             visit_cell.attr(
                 'title',
                 visit_summary
                     .map(function(status) {
-                        return status.key + ' (' + status.values + ')';
+                        return ''.concat(status.key, ' (').concat(status.values, ')');
                     })
                     .join('\n')
             );
@@ -2078,8 +2062,12 @@
             var order = 0;
 
             _this.sortable.order.forEach(function(item) {
-                var aCell = a[item.col + '-date'] ? a[item.col + '-date'] : a[item.col];
-                var bCell = b[item.col + '-date'] ? b[item.col + '-date'] : b[item.col];
+                var aCell = a[''.concat(item.col, '-date')]
+                    ? a[''.concat(item.col, '-date')]
+                    : a[item.col];
+                var bCell = b[''.concat(item.col, '-date')]
+                    ? b[''.concat(item.col, '-date')]
+                    : b[item.col];
 
                 if (order === 0) {
                     if (aCell !== null && bCell !== null) {
@@ -2109,21 +2097,21 @@
     function onClick(th, header) {
         var context = this,
             selection = d3.select(th),
-            col = this.config.cols[this.config.headers.indexOf(header)];
+            col = this.config.cols[this.config.headers.indexOf(header)]; //Check if column is already a part of current sort order.
 
-        //Check if column is already a part of current sort order.
         var sortItem = this.sortable.order.filter(function(item) {
             return item.col === col;
-        })[0];
+        })[0]; //If it isn't, add it to sort order.
 
-        //If it isn't, add it to sort order.
         if (!sortItem) {
             sortItem = {
                 col: col,
                 direction: 'ascending',
                 wrap: this.sortable.wrap
                     .append('div')
-                    .datum({ key: col })
+                    .datum({
+                        key: col
+                    })
                     .classed('wc-button sort-box', true)
                     .text(header)
             };
@@ -2142,18 +2130,15 @@
             sortItem.wrap
                 .select('span.sort-direction')
                 .html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
-        }
+        } //Hide sort instructions.
 
-        //Hide sort instructions.
-        this.sortable.wrap.select('.instruction').classed('hidden', true);
+        this.sortable.wrap.select('.instruction').classed('hidden', true); //Add sort container deletion functionality.
 
-        //Add sort container deletion functionality.
         this.sortable.order.forEach(function(item, i) {
             item.wrap.on('click', function(d) {
                 //Remove column's sort container.
-                d3.select(this).remove();
+                d3.select(this).remove(); //Remove column from sort.
 
-                //Remove column from sort.
                 context.sortable.order.splice(
                     context.sortable.order
                         .map(function(d) {
@@ -2161,434 +2146,47 @@
                         })
                         .indexOf(d.key),
                     1
-                );
+                ); //Display sorting instruction.
 
-                //Display sorting instruction.
                 context.sortable.wrap
                     .select('.instruction')
-                    .classed('hidden', context.sortable.order.length);
+                    .classed('hidden', context.sortable.order.length); //Redraw chart.
 
-                //Redraw chart.
                 if (context.sortable.order.length) sortData.call(context);
                 else context.data.raw = context.data.initial.slice();
                 context.draw();
             });
-        });
+        }); //Redraw chart.
 
-        //Redraw chart.
         sortData.call(this);
         this.draw();
     }
 
     function sortChronologically() {
         var context = this;
-
         this.thead_cells.on('click', function(header) {
             onClick.call(context, this, header);
-        });
-    }
-
-    var headerStyle = {
-        font: {
-            bold: true
-        },
-        fill: {
-            fgColor: { rgb: 'FFcccccc' }
-        },
-        alignment: {
-            wrapText: true
-        }
-    };
-
-    var bodyStyle = {
-        font: {
-            sz: 10,
-            color: {
-                rgb: null // set in defineXLSX
-            }
-        },
-        fill: {
-            fgColor: {
-                rgb: 'FFeeeeee'
-            }
-        },
-        alignment: {
-            wrapText: true
-        },
-        border: {
-            bottom: {
-                style: 'thick',
-                color: {
-                    rgb: null // set in defineXLSX
-                }
-            }
-        }
-    };
-
-    function workBook() {
-        this.SheetNames = [];
-        this.Sheets = {};
-    }
-
-    function updateRange(range, row, col) {
-        if (range.s.r > row) range.s.r = row;
-        if (range.s.c > col) range.s.c = col;
-        if (range.e.r < row) range.e.r = row;
-        if (range.e.c < col) range.e.c = col;
-    }
-
-    function addCell(wb, ws, value, type, styles, range, row, col) {
-        updateRange(range, row, col);
-        styles.fill.fgColor.rgb = row > 0 && row % 2 ? 'FFffffff' : styles.fill.fgColor.rgb;
-        var cell = { v: value, t: type, s: styles };
-        var cell_ref = XLSX.utils.encode_cell({ c: col, r: row });
-        ws[cell_ref] = cell;
-    }
-
-    function clone(obj) {
-        var copy = void 0;
-
-        //boolean, number, string, null, undefined
-        if ('object' != (typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) || null == obj)
-            return obj;
-
-        //date
-        if (obj instanceof Date) {
-            copy = new Date();
-            copy.setTime(obj.getTime());
-            return copy;
-        }
-
-        //array
-        if (obj instanceof Array) {
-            copy = [];
-            for (var i = 0, len = obj.length; i < len; i++) {
-                copy[i] = clone(obj[i]);
-            }
-            return copy;
-        }
-
-        //object
-        if (obj instanceof Object) {
-            copy = {};
-            for (var attr in obj) {
-                if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-            }
-            return copy;
-        }
-
-        throw new Error('Unable to copy [obj]! Its type is not supported.');
-    }
-
-    function defineXLSX(listing) {
-        var name = 'Participant Visit Listing';
-        var wb = new workBook();
-        var ws = {};
-        var cols = [];
-        var range = { s: { c: 10000000, r: 10000000 }, e: { c: 0, r: 0 } };
-        var wbOptions = {
-            bookType: 'xlsx',
-            bookSST: true,
-            type: 'binary'
-        };
-
-        var filterRange =
-            'A1:' +
-            String.fromCharCode(64 + listing.config.cols.length) +
-            (listing.data.filtered.length + 1);
-
-        //Header row
-        listing.config.headers.forEach(function(header, col) {
-            addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
-        });
-
-        //Data rows
-        listing.data.filtered.forEach(function(d, row) {
-            listing.config.cols.forEach(function(variable, col) {
-                var cellStyle = clone(bodyStyle);
-                var color = d[variable + '-color'];
-                var fontColor = /^#[a-z0-9]{6}$/i.test(color)
-                    ? color.replace('#', 'FF')
-                    : 'FF000000';
-                var borderColor = /^#[a-z0-9]{6}$/i.test(color)
-                    ? color.replace('#', 'FF')
-                    : 'FFCCCCCC';
-                if (col > 2) {
-                    cellStyle.font.color.rgb = fontColor;
-                    cellStyle.border.bottom.color.rgb = borderColor;
-                } else {
-                    delete cellStyle.font.color.rgb;
-                    delete cellStyle.border.bottom;
-                }
-                addCell(wb, ws, d[variable] || '', 'c', cellStyle, range, row + 1, col);
-            });
-        });
-
-        //Define column widths.
-        var tr = listing.tbody
-            .selectAll('tr')
-            //.filter(function() {
-            //    return d3.select(this).style('display') === 'table-row'; })
-            .filter(function(d, i) {
-                return i === 0;
-            });
-        tr.selectAll('td').each(function(d, i) {
-            cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
-        });
-
-        ws['!ref'] = XLSX.utils.encode_range(range);
-        ws['!cols'] = cols;
-        ws['!autofilter'] = { ref: filterRange };
-        //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
-
-        wb.SheetNames.push(name);
-        wb.Sheets[name] = ws;
-
-        listing.XLSX = XLSX.write(wb, wbOptions);
-    }
-
-    /* FileSaver.js
-   * A saveAs() FileSaver implementation.
-   * 1.3.8
-   * 2018-03-22 14:03:47
-   *
-   * By Eli Grey, https://eligrey.com
-   * License: MIT
-   *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
-   */
-
-    /*global self */
-    /*jslint bitwise: true, indent: 4, laxbreak: true, laxcomma: true, smarttabs: true, plusplus: true */
-
-    /*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js */
-
-    var saveAs =
-        saveAs ||
-        (function(view) {
-            // IE <10 is explicitly unsupported
-
-            if (
-                typeof view === 'undefined' ||
-                (typeof navigator !== 'undefined' && /MSIE [1-9]\./.test(navigator.userAgent))
-            ) {
-                return;
-            }
-            var doc = view.document,
-                // only get URL when necessary in case Blob.js hasn't overridden it yet
-                get_URL = function get_URL() {
-                    return view.URL || view.webkitURL || view;
-                },
-                save_link = doc.createElementNS('http://www.w3.org/1999/xhtml', 'a'),
-                can_use_save_link = 'download' in save_link,
-                click = function click(node) {
-                    var event = new MouseEvent('click');
-                    node.dispatchEvent(event);
-                },
-                is_safari = /constructor/i.test(view.HTMLElement) || view.safari,
-                is_chrome_ios = /CriOS\/[\d]+/.test(navigator.userAgent),
-                setImmediate = view.setImmediate || view.setTimeout,
-                throw_outside = function throw_outside(ex) {
-                    setImmediate(function() {
-                        throw ex;
-                    }, 0);
-                },
-                force_saveable_type = 'application/octet-stream',
-                // the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-                arbitrary_revoke_timeout = 1000 * 40,
-                // in ms
-                revoke = function revoke(file) {
-                    var revoker = function revoker() {
-                        if (typeof file === 'string') {
-                            // file is an object URL
-                            get_URL().revokeObjectURL(file);
-                        } else {
-                            // file is a File
-                            file.remove();
-                        }
-                    };
-                    setTimeout(revoker, arbitrary_revoke_timeout);
-                },
-                dispatch = function dispatch(filesaver, event_types, event) {
-                    event_types = [].concat(event_types);
-                    var i = event_types.length;
-                    while (i--) {
-                        var listener = filesaver['on' + event_types[i]];
-                        if (typeof listener === 'function') {
-                            try {
-                                listener.call(filesaver, event || filesaver);
-                            } catch (ex) {
-                                throw_outside(ex);
-                            }
-                        }
-                    }
-                },
-                auto_bom = function auto_bom(blob) {
-                    // prepend BOM for UTF-8 XML and text/* types (including HTML)
-                    // note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
-                    if (
-                        /^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(
-                            blob.type
-                        )
-                    ) {
-                        return new Blob([String.fromCharCode(0xfeff), blob], { type: blob.type });
-                    }
-                    return blob;
-                },
-                FileSaver = function FileSaver(blob, name, no_auto_bom) {
-                    if (!no_auto_bom) {
-                        blob = auto_bom(blob);
-                    }
-                    // First try a.download, then web filesystem, then object URLs
-                    var filesaver = this,
-                        type = blob.type,
-                        force = type === force_saveable_type,
-                        object_url,
-                        dispatch_all = function dispatch_all() {
-                            dispatch(filesaver, 'writestart progress write writeend'.split(' '));
-                        },
-                        // on any filesys errors revert to saving with object URLs
-                        fs_error = function fs_error() {
-                            if ((is_chrome_ios || (force && is_safari)) && view.FileReader) {
-                                // Safari doesn't allow downloading of blob urls
-                                var reader = new FileReader();
-                                reader.onloadend = function() {
-                                    var url = is_chrome_ios
-                                        ? reader.result
-                                        : reader.result.replace(
-                                              /^data:[^;]*;/,
-                                              'data:attachment/file;'
-                                          );
-                                    var popup = view.open(url, '_blank');
-                                    if (!popup) view.location.href = url;
-                                    url = undefined; // release reference before dispatching
-                                    filesaver.readyState = filesaver.DONE;
-                                    dispatch_all();
-                                };
-                                reader.readAsDataURL(blob);
-                                filesaver.readyState = filesaver.INIT;
-                                return;
-                            }
-                            // don't create more object URLs than needed
-                            if (!object_url) {
-                                object_url = get_URL().createObjectURL(blob);
-                            }
-                            if (force) {
-                                view.location.href = object_url;
-                            } else {
-                                var opened = view.open(object_url, '_blank');
-                                if (!opened) {
-                                    // Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
-                                    view.location.href = object_url;
-                                }
-                            }
-                            filesaver.readyState = filesaver.DONE;
-                            dispatch_all();
-                            revoke(object_url);
-                        };
-                    filesaver.readyState = filesaver.INIT;
-
-                    if (can_use_save_link) {
-                        object_url = get_URL().createObjectURL(blob);
-                        setImmediate(function() {
-                            save_link.href = object_url;
-                            save_link.download = name;
-                            click(save_link);
-                            dispatch_all();
-                            revoke(object_url);
-                            filesaver.readyState = filesaver.DONE;
-                        }, 0);
-                        return;
-                    }
-
-                    fs_error();
-                },
-                FS_proto = FileSaver.prototype,
-                saveAs = function saveAs(blob, name, no_auto_bom) {
-                    return new FileSaver(blob, name || blob.name || 'download', no_auto_bom);
-                };
-
-            // IE 10+ (native saveAs)
-            if (typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob) {
-                return function(blob, name, no_auto_bom) {
-                    name = name || blob.name || 'download';
-
-                    if (!no_auto_bom) {
-                        blob = auto_bom(blob);
-                    }
-                    return navigator.msSaveOrOpenBlob(blob, name);
-                };
-            }
-
-            // todo: detect chrome extensions & packaged apps
-            //save_link.target = "_blank";
-
-            FS_proto.abort = function() {};
-            FS_proto.readyState = FS_proto.INIT = 0;
-            FS_proto.WRITING = 1;
-            FS_proto.DONE = 2;
-
-            FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
-
-            return saveAs;
-        })((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));
-
-    //Convert XLSX file for download.
-    function s2ab(s) {
-        var i = void 0;
-        if (typeof ArrayBuffer !== 'undefined') {
-            var buf = new ArrayBuffer(s.length);
-            var view = new Uint8Array(buf);
-
-            for (i = 0; i !== s.length; ++i) {
-                view[i] = s.charCodeAt(i) & 0xff;
-            }
-            return buf;
-        } else {
-            var buf = new Array(s.length);
-
-            for (i = 0; i !== s.length; ++i) {
-                buf[i] = s.charCodeAt(i) & 0xff;
-            }
-            return buf;
-        }
-    }
-
-    function exportXLSX(listing) {
-        try {
-            saveAs(
-                new Blob([s2ab(listing.XLSX)], { type: 'application/octet-stream' }),
-                'participant-visit-listing-' +
-                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
-                    '.xlsx'
-            );
-        } catch (error) {
-            if (typeof console !== 'undefined') console.log(error);
-        }
-    }
-
-    function exportToXLSX() {
-        var _this = this;
-
-        this.wrap.select('.export#xlsx').on('click', function() {
-            defineXLSX(_this);
-            exportXLSX(_this);
         });
     }
 
     function exportToPDF() {
         var _this = this;
 
-        this.wrap.select('.export#pdf').on('click', function() {
-            var doc = new jsPDF('l', 'pt');
-            var tableNode = _this.table.node();
-            var json = doc.autoTableHtmlToJson(tableNode);
-            doc.autoTable(json.columns, json.data);
-            doc.save(
-                'participant-visit-listing-' +
-                    d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
-                    '.pdf'
-            );
-        });
+        if (this.config.exportable)
+            this.wrap.select('.export#pdf').on('click', function() {
+                var doc = new jsPDF('l', 'pt');
+
+                var tableNode = _this.table.node();
+
+                var json = doc.autoTableHtmlToJson(tableNode);
+                doc.autoTable(json.columns, json.data);
+                doc.save(
+                    'participant-visit-listing-'.concat(
+                        d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()),
+                        '.pdf'
+                    )
+                );
+            });
     }
 
     function download(fileType, data) {
@@ -2598,16 +2196,13 @@
                 fileType === 'csv'
                     ? 'text/csv;charset=utf-8;'
                     : fileType === 'xlsx'
-                        ? 'application/octet-stream'
-                        : console.warn('File type not supported: ' + fileType)
+                    ? 'application/octet-stream'
+                    : console.warn('File type not supported: '.concat(fileType))
         });
-        var fileName =
-            'participant-visit-listing-' +
-            d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()) +
-            '.' +
-            fileType;
-        var link = this.wrap.select('.export#' + fileType);
-
+        var fileName = 'participant-visit-listing-'
+            .concat(d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), '.')
+            .concat(fileType);
+        var link = this.wrap.select('.export#'.concat(fileType));
         if (navigator.msSaveBlob)
             //IE
             navigator.msSaveBlob(blob, fileName);
@@ -2622,55 +2217,45 @@
     function exportToCSV() {
         var _this = this;
 
-        this.wrap.select('.export#csv').on('click', function() {
-            var CSVarray = [];
+        if (this.config.exportable)
+            this.wrap.select('.export#csv').on('click', function() {
+                var CSVarray = []; //add headers to CSV array
 
-            //add headers to CSV array
-            var headers = _this.config.headers.map(function(header) {
-                return '"' + header.replace(/"/g, '""') + '"';
-            });
-            CSVarray.push(headers);
-
-            //add rows to CSV array
-            _this.data.filtered.forEach(function(d, i) {
-                var row = _this.config.cols.map(function(col) {
-                    var value = d[col];
-
-                    if (typeof value === 'string') value = value.replace(/"/g, '""');
-
-                    return '"' + value + '"';
+                var headers = _this.config.headers.map(function(header) {
+                    return '"'.concat(header.replace(/"/g, '""'), '"');
                 });
 
-                CSVarray.push(row);
-            });
+                CSVarray.push(headers); //add rows to CSV array
 
-            //Download .csv file.
-            download.call(_this, 'csv', [CSVarray.join('\n')]);
-        });
+                _this.data.filtered.forEach(function(d, i) {
+                    var row = _this.config.cols.map(function(col) {
+                        var value = d[col];
+                        if (typeof value === 'string') value = value.replace(/"/g, '""');
+                        return '"'.concat(value, '"');
+                    });
+
+                    CSVarray.push(row);
+                }); //Download .csv file.
+
+                download.call(_this, 'csv', [CSVarray.join('\n')]);
+            });
     }
 
     function onDraw() {
         //Highlight column when hovering over column header.
-        addHeaderHover.call(this);
+        addHeaderHover.call(this); //Sort columns on click chronologically.
 
-        //Sort columns on click chronologically.
-        sortChronologically.call(this);
+        sortChronologically.call(this); //Add row and column summaries.
 
-        //Add row and column summaries.
-        addSummaries.call(this);
+        addSummaries.call(this); //Add data-driven cell formatting.
 
-        //Add data-driven cell formatting.
-        addCellFormatting.call(this);
-
-        //Add styled export to .xlsx.
-        exportToXLSX.call(this);
-
+        addCellFormatting.call(this); //Add styled export to .xlsx.
+        //exportToXLSX.call(this);
         //Add styled (eventually) export to .pdf.
-        exportToPDF.call(this);
 
-        //Add export to .csv.
+        exportToPDF.call(this); //Add export to .csv.
+
         exportToCSV.call(this);
-
         if (this.pvl.settings.active_tab === 'Listing')
             this.pvl.containers.loading.classed('pvl-hidden', true);
     }
@@ -2679,14 +2264,13 @@
 
     function listing() {
         //Define listing.
-        this.listing = new webCharts.createTable(
+        this.listing = webcharts.createTable(
             this.containers.listing.node(),
             this.settings.listingSynced,
             this.controls
         );
-        this.listing.pvl = this;
+        this.listing.pvl = this; //Define callbacks.
 
-        //Define callbacks.
         this.listing.on('init', onInit);
         this.listing.on('layout', onLayout);
         this.listing.on('preprocess', onPreprocess);
@@ -2711,94 +2295,97 @@
     function minimize() {
         var _this = this;
 
-        var t0 = performance.now();
-        //begin performance test
-
+        var t0 = this.pvl.performance.now(); //begin performance test
         //indicate loading
-        this.pvl.containers.loading.classed('pvl-hidden', false);
 
+        this.pvl.containers.loading.classed('pvl-hidden', false);
         var loading = setInterval(function() {
             var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
+
                 _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 var thisChart = _this.property;
                 var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+
                 _this.pvl.containers[thisChart].classed('pvl-hidden', true);
+
                 _this.pvl.containers[thatChart].classed('pvl-hidden', false).style('width', '100%');
+
                 _this.pvl[thatChart].draw();
             }
-        });
+        }); //end performance test
 
-        //end performance test
-        var t1 = performance.now();
-        console.log('minimize() took ' + (t1 - t0) + ' milliseconds.');
+        var t1 = this.pvl.performance.now();
+        console.log('minimize() took '.concat(t1 - t0, ' milliseconds.'));
     }
 
     function split() {
         var _this = this;
 
-        var t0 = performance.now();
-        //begin performance test
-
+        var t0 = this.pvl.performance.now(); //begin performance test
         //indicate loading
-        this.pvl.containers.loading.classed('pvl-hidden', false);
 
+        this.pvl.containers.loading.classed('pvl-hidden', false);
         var loading = setInterval(function() {
             var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
+
                 _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 _this.pvl.containers.ordinalChart
                     .classed('pvl-hidden', false)
                     .style('width', '49.5%');
+
                 _this.pvl.ordinalChart.draw();
+
                 _this.pvl.containers.linearChart
                     .classed('pvl-hidden', false)
                     .style('width', '49.5%');
+
                 _this.pvl.linearChart.draw();
             }
-        });
+        }); //end performance test
 
-        //end performance test
-        var t1 = performance.now();
-        console.log('split() took ' + (t1 - t0) + ' milliseconds.');
+        var t1 = this.pvl.performance.now();
+        console.log('split() took '.concat(t1 - t0, ' milliseconds.'));
     }
 
     function maximize() {
         var _this = this;
 
-        var t0 = performance.now();
-        //begin performance test
-
+        var t0 = this.pvl.performance.now(); //begin performance test
         //indicate loading
-        this.pvl.containers.loading.classed('pvl-hidden', false);
 
+        this.pvl.containers.loading.classed('pvl-hidden', false);
         var loading = setInterval(function() {
             var loadingIndicated = _this.pvl.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
+
                 _this.pvl.containers.loading.classed('pvl-hidden', true);
 
                 var thisChart = _this.property;
                 var thatChart = _this.property === 'linearChart' ? 'ordinalChart' : 'linearChart';
+
                 _this.pvl.containers[thatChart].classed('pvl-hidden', true);
+
                 _this.pvl.containers[thisChart].classed('pvl-hidden', false).style('width', '100%');
+
                 _this.pvl[thisChart].draw();
             }
-        });
+        }); //end performance test
 
-        //end performance test
-        var t1 = performance.now();
-        console.log('maximize() took ' + (t1 - t0) + ' milliseconds.');
+        var t1 = this.pvl.performance.now();
+        console.log('maximize() took '.concat(t1 - t0, ' milliseconds.'));
     }
 
     function addButtons() {
@@ -2812,9 +2399,8 @@
             .on('click', function() {
                 return minimize.call(_this);
             });
-        this.topXAxis.minimize.append('title').text('MinimizeChart');
+        this.topXAxis.minimize.append('title').text('MinimizeChart'); //Add split chart button.
 
-        //Add split chart button.
         this.topXAxis.split = this.topXAxis.container
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--split', true)
@@ -2822,9 +2408,8 @@
             .on('click', function() {
                 return split.call(_this);
             });
-        this.topXAxis.split.append('title').text('View both charts');
+        this.topXAxis.split.append('title').text('View both charts'); //Add maximize chart button.
 
-        //Add maximize chart button.
         this.topXAxis.maximize = this.topXAxis.container
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--maximize', true)
@@ -2877,7 +2462,7 @@
                 transform: 'translate(' + this.plot_width / 2 + ',' + -(this.margin.top - 20) + ')',
                 'text-anchor': 'middle'
             })
-            .text('Schedule of Events by ' + this.config.x.label);
+            .text('Schedule of Events by '.concat(this.config.x.label));
     }
 
     function positionButtons() {
@@ -2900,9 +2485,8 @@
         this.topXAxis.container
             .selectAll('.tick text')
             .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'start');
+            .style('text-anchor', 'start'); //Rotate bottom x-axis tick labels.
 
-        //Rotate bottom x-axis tick labels.
         this.bottomXAxis.container
             .selectAll('.tick text')
             .attr('transform', 'rotate(-45)')
@@ -2911,7 +2495,6 @@
 
     function getItHeated() {
         var context = this;
-
         this.marks[0].groups.each(function(d) {
             var group = d3.select(this);
             group.select('rect.pvl-heat-rect').remove();
@@ -2936,7 +2519,6 @@
         positionButtons.call(this);
         rotateXAxisTickLabels.call(this);
         getItHeated.call(this);
-
         if (this.pvl.settings.active_tab === 'Study Day Chart')
             this.pvl.containers.loading.classed('pvl-hidden', true);
     }
@@ -2945,14 +2527,13 @@
 
     function ordinalChart() {
         //Define listing.
-        this.ordinalChart = new webCharts.createChart(
+        this.ordinalChart = webcharts.createChart(
             this.containers.ordinalChart.node(),
             this.settings.ordinalChartSynced,
             this.controls
         );
-        this.ordinalChart.pvl = this;
+        this.ordinalChart.pvl = this; //Define callbacks.
 
-        //Define callbacks.
         this.ordinalChart.on('init', onInit$1);
         this.ordinalChart.on('layout', onLayout$1);
         this.ordinalChart.on('preprocess', onPreprocess$1);
@@ -3004,14 +2585,11 @@
                 .datum(visit)
                 .classed('pvl-unscheduled-legend-item', true)
                 .attr({
-                    transform:
-                        'translate(-' +
-                        (_this.margin.left - 15) +
-                        ',' +
-                        (-_this.margin.top + 16 * (i + 1) + 3) +
-                        ')'
+                    transform: 'translate(-'
+                        .concat(_this.margin.left - 15, ',')
+                        .concat(-_this.margin.top + 16 * (i + 1) + 3, ')')
                 })
-                .text(visit.substring(0, 1) + ' - ' + visit + ' Visit');
+                .text(''.concat(visit.substring(0, 1), ' - ').concat(visit, ' Visit'));
         });
     }
 
@@ -3029,7 +2607,6 @@
         positionButtons.call(this);
         addAnnotationLegend.call(this);
         classTextMarks.call(this);
-
         if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1)
             this.pvl.containers.loading.classed('pvl-hidden', true);
     }
@@ -3038,14 +2615,13 @@
 
     function linearChart() {
         //Define listing.
-        this.linearChart = new webCharts.createChart(
+        this.linearChart = new webcharts.createChart(
             this.containers.linearChart.node(),
             this.settings.linearChartSynced,
             this.controls
         );
-        this.linearChart.pvl = this;
+        this.linearChart.pvl = this; //Define callbacks.
 
-        //Define callbacks.
         this.linearChart.on('init', onInit$2);
         this.linearChart.on('layout', onLayout$2);
         this.linearChart.on('preprocess', onPreprocess$2);
@@ -3063,6 +2639,7 @@
     function checkFilterCol(input) {
         var filterCol = input.value_col;
         this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
+
         if (!this.data.missingVariables[filterCol]) {
             this.settings.controlsSynced.inputs = this.settings.controlsSynced.inputs.filter(
                 function(input) {
@@ -3135,23 +2712,18 @@
         this.data.sets.visit_status_col = d3
             .set(
                 this.data.raw.map(function(d) {
-                    return (
-                        d[_this.settings.visit_status_order_col] +
-                        ':|:' +
-                        d[_this.settings.visit_status_col] +
-                        ':|:' +
-                        d[_this.settings.visit_status_color_col].toLowerCase() +
-                        ':|:' +
-                        d[_this.settings.visit_status_description_col]
-                    );
+                    return ''
+                        .concat(d[_this.settings.visit_status_order_col], ':|:')
+                        .concat(d[_this.settings.visit_status_col], ':|:')
+                        .concat(d[_this.settings.visit_status_color_col].toLowerCase(), ':|:')
+                        .concat(d[_this.settings.visit_status_description_col]);
                 })
             )
             .values()
             .sort(function(a, b) {
                 return +a.split(':|:')[0] - +b.split(':|:')[0];
-            });
+            }); //Update ordinal chart settings.
 
-        //Update ordinal chart settings.
         this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function(
             visit_status
         ) {
@@ -3166,9 +2738,8 @@
             visit_status
         ) {
             return visit_status.split(':|:')[1];
-        });
+        }); //Update linear chart settings.
 
-        //Update linear chart settings.
         this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function(
             visit_status
         ) {
@@ -3199,15 +2770,11 @@
                         );
                     })
                     .map(function(d) {
-                        return (
-                            d[_this.settings.visit_status_order_col] +
-                            ':|:' +
-                            d[_this.settings.visit_status_col] +
-                            ':|:' +
-                            d[_this.settings.visit_status_color_col].toLowerCase() +
-                            ':|:' +
-                            d[_this.settings.visit_status_description_col]
-                        );
+                        return ''
+                            .concat(d[_this.settings.visit_status_order_col], ':|:')
+                            .concat(d[_this.settings.visit_status_col], ':|:')
+                            .concat(d[_this.settings.visit_status_color_col].toLowerCase(), ':|:')
+                            .concat(d[_this.settings.visit_status_description_col]);
                     })
             )
             .values()
@@ -3230,10 +2797,12 @@
                 case 'visit_col':
                     defineVisitSet.call(_this);
                     break;
+
                 case 'visit_status_col':
                     defineVisitStatusSet.call(_this);
                     defineLegendSet.call(_this);
                     break;
+
                 default:
                     defineDefaultSet.call(_this, col);
                     break;
@@ -3247,41 +2816,45 @@
                 var split = visit_status.split(':|:');
                 var order = split[0];
                 var status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); //.replace(/ /g, '.');
+
                 var color = split[2];
                 var styles = [
-                    '.pvl-visit-status--' + status + ' {',
-                    '    border-top: 2px solid ' + color + ';',
-                    '    border-bottom: 2px solid ' + color + ';',
+                    '.pvl-visit-status--'.concat(status, ' {'),
+                    '    border-top: 2px solid '.concat(color, ';'),
+                    '    border-bottom: 2px solid '.concat(color, ';'),
                     '}',
-                    '.pvl-visit-status--heat-map.pvl-visit-status--' + status + ' {',
-                    '    background: ' + color + ';',
+                    '.pvl-visit-status--heat-map.pvl-visit-status--'.concat(status, ' {'),
+                    '    background: '.concat(color, ';'),
                     '    color: transparent;',
                     '    opacity: .9;',
                     '}',
-                    '.pvl-visit-status--cell-text.pvl-visit-status--' + status + ' {',
-                    '    color: ' + color + ';',
+                    '.pvl-visit-status--cell-text.pvl-visit-status--'.concat(status, ' {'),
+                    '    color: '.concat(color, ';'),
                     '    opacity: 1;',
                     '}',
-                    'tr:nth-child(odd) .pvl-visit-status--cell-text.pvl-visit-status--' +
-                        status +
-                        ' {',
+                    'tr:nth-child(odd) .pvl-visit-status--cell-text.pvl-visit-status--'.concat(
+                        status,
+                        ' {'
+                    ),
                     '    background: white;',
                     '}',
-                    'tr:nth-child(even) .pvl-visit-status--cell-text.pvl-visit-status--' +
-                        status +
-                        ' {',
+                    'tr:nth-child(even) .pvl-visit-status--cell-text.pvl-visit-status--'.concat(
+                        status,
+                        ' {'
+                    ),
                     '    background: #eee;',
                     '}'
                 ];
                 return styles.join('\n');
             })
             .join('\n');
-        this.containers.style.html(this.containers.style.html() + '\n' + visitStatusStyles);
+        this.containers.style.html(
+            ''.concat(this.containers.style.html(), '\n').concat(visitStatusStyles)
+        );
     }
 
     function addLegend() {
         var context = this;
-
         this.containers.legendLabel = this.containers.legend
             .append('span')
             .classed('pvl-legend__label', true)
@@ -3300,7 +2873,7 @@
             .classed('pvl-legend__li', true)
             .style({
                 'border-bottom': function borderBottom(d) {
-                    return '2px solid ' + (d[2] === 'black' ? '#ccc' : d[2]);
+                    return '2px solid '.concat(d[2] === 'black' ? '#ccc' : d[2]);
                 },
                 color: function color(d) {
                     return d[2];
@@ -3321,10 +2894,12 @@
                 .attr('title', function(d) {
                     return context.settings.visit_expectation_regex &&
                         context.settings.visit_expectation_regex.test(d[1])
-                        ? d[3] +
-                              '\n' +
-                              d[1] +
-                              ' visits are identified in the charts as cells or circles with medial white circles.'
+                        ? ''
+                              .concat(d[3], '\n')
+                              .concat(
+                                  d[1],
+                                  ' visits are identified in the charts as cells or circles with medial white circles.'
+                              )
                         : d[3];
                 });
         });
@@ -3348,23 +2923,21 @@
 
         //indicate loading
         this.containers.loading.classed('pvl-hidden', false);
-
         var loading = setInterval(function() {
             var loadingIndicated = _this.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
                 //Handle loading indicator.
                 clearInterval(loading);
+
                 _this.containers.loading.classed('pvl-hidden', true);
-
                 /****---------------------------------------------------------------------------------\
-                Data maniuplation
-              \---------------------------------------------------------------------------------****/
+          Data manipulation
+        \---------------------------------------------------------------------------------****/
 
-                var t0 = performance.now();
-                //begin performance test
-
+                var t0 = _this.performance.now(); //begin performance test
                 //Attach data.
+
                 _this.data = {
                     raw: data,
                     analysis: data,
@@ -3375,7 +2948,6 @@
                     filters: [],
                     sets: {}
                 };
-
                 addVariables.call(_this);
                 checkRequiredVariables.call(_this);
                 defineSets.call(_this);
@@ -3383,43 +2955,57 @@
                 defineColumns.call(_this);
                 transposeData.call(_this);
                 addLegend.call(_this);
-                updateNParticipants.call(_this);
+                updateNParticipants.call(_this); //end performance test
 
-                //end performance test
-                var t1 = performance.now();
-                console.log('data manipulation took ' + (t1 - t0) + ' milliseconds.');
+                var t1 = _this.performance.now();
 
+                console.log('data manipulation took '.concat(t1 - t0, ' milliseconds.'));
                 /****---------------------------------------------------------------------------------\
-                Display initialization
-              \---------------------------------------------------------------------------------****/
+          Display initialization
+        \---------------------------------------------------------------------------------****/
 
-                t0 = performance.now();
-                //begin performance test
+                t0 = _this.performance.now(); //begin performance test
 
                 if (_this.settings.active_tab === 'Listing') {
-                    _this.listing.init(_this.data.transposed);
+                    _this.listing.init(_this.data.transposed, _this.test);
                 } else if (_this.settings.active_tab === 'Charts') {
-                    _this.ordinalChart.init(_this.data.raw);
-                    _this.linearChart.init(_this.data.raw);
-                } else if (_this.settings.active_tab === 'Visit Chart') {
-                    _this.ordinalChart.init(_this.data.raw);
-                } else if (_this.settings.active_tab === 'Study Day Chart') {
-                    _this.linearChart.init(_this.data.raw);
-                }
-                updateMultiSelects$1.call(_this);
-                update$1.call(_this);
+                    _this.ordinalChart.init(_this.data.raw, _this.test);
 
-                //end performance test
-                t1 = performance.now();
-                console.log('display initialization took ' + (t1 - t0) + ' milliseconds.');
+                    _this.linearChart.init(_this.data.raw, _this.test);
+                } else if (_this.settings.active_tab === 'Visit Chart') {
+                    _this.ordinalChart.init(_this.data.raw, _this.test);
+                } else if (_this.settings.active_tab === 'Study Day Chart') {
+                    _this.linearChart.init(_this.data.raw, _this.test);
+                }
+
+                updateMultiSelects$1.call(_this);
+                update$1.call(_this); //end performance test
+
+                t1 = _this.performance.now();
+                console.log('display initialization took '.concat(t1 - t0, ' milliseconds.'));
             }
         });
+    }
+
+    function destroy() {
+        //Remove displays.
+        this.ordinalChart.destroy();
+        this.linearChart.destroy();
+        this.listing.destroy(); //Remove stylesheet.
+
+        this.style.remove(); //Clear container, removing one child node at a time.
+
+        var node = d3.select(this.element).node();
+
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
     }
 
     function participantVisitListing() {
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
         var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
+        var testingUtilities = arguments.length > 2 ? arguments[2] : undefined;
         //Instantiate central object.
         var pvl = {
             element: element,
@@ -3427,14 +3013,17 @@
                 user: settings,
                 rendererSettings: configuration.rendererSettings(),
                 controlsSettings: configuration.controlsSettings(),
-                listingSettings: configuration.listingSettings(),
                 ordinalChartSettings: configuration.ordinalChartSettings(),
-                linearChartSettings: configuration.linearChartSettings()
+                linearChartSettings: configuration.linearChartSettings(),
+                listingSettings: configuration.listingSettings()
             },
-            init: init
-        };
+            document: testingUtilities ? testingUtilities.dom.window.document : document,
+            performance: testingUtilities ? testingUtilities.performance : performance,
+            test: !!testingUtilities,
+            init: init,
+            destroy: destroy
+        }; //Merge and sync user settings with default settings.
 
-        //Merge and sync user settings with default settings.
         pvl.settings.listingMerged = Object.assign(
             {},
             pvl.settings.listingSettings,
@@ -3442,34 +3031,35 @@
             pvl.settings.user
         );
         configuration.syncListingSettings.call(pvl);
-
         pvl.settings.ordinalChartMerged = Object.assign(
             {},
             pvl.settings.ordinalChartSettings,
             pvl.settings.user
         );
         configuration.syncOrdinalChartSettings.call(pvl);
-
         pvl.settings.linearChartMerged = Object.assign(
             {},
             pvl.settings.linearChartSettings,
             pvl.settings.user
         );
         configuration.syncLinearChartSettings.call(pvl);
-
         pvl.settings.controlsMerged = Object.assign(
             {},
             pvl.settings.controlsSettings,
             pvl.settings.user
         );
         configuration.syncControlsSettings.call(pvl);
-
         layout.call(pvl); // attaches containers object to central object ([pvl])
+
         styles.call(pvl); // attaches styles object to central object ([pvl])
+
         controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
-        listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
+
         charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+
         charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+
+        listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
 
         return pvl;
     }

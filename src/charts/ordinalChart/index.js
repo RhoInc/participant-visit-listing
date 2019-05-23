@@ -1,3 +1,4 @@
+import { createChart } from 'webcharts';
 import onInit from './onInit';
 import onLayout from './onLayout';
 import onPreprocess from './onPreprocess';
@@ -8,7 +9,7 @@ import onDestroy from './onDestroy';
 
 export default function ordinalChart() {
     //Define listing.
-    this.ordinalChart = new webCharts.createChart(
+    this.ordinalChart = createChart(
         this.containers.ordinalChart.node(),
         this.settings.ordinalChartSynced,
         this.controls

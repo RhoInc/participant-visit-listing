@@ -2,7 +2,7 @@ import addHeaderHover from './onDraw/addHeaderHover';
 import addCellFormatting from './onDraw/addCellFormatting';
 import addSummaries from './onDraw/addSummaries';
 import sortChronologically from './onDraw/sortChronologically';
-import exportToXLSX from './onDraw/exportToXLSX';
+//import exportToXLSX from './onDraw/exportToXLSX';
 import exportToPDF from './onDraw/exportToPDF';
 import exportToCSV from './onDraw/exportToCSV';
 
@@ -20,7 +20,7 @@ export default function onDraw() {
     addCellFormatting.call(this);
 
     //Add styled export to .xlsx.
-    exportToXLSX.call(this);
+    //exportToXLSX.call(this);
 
     //Add styled (eventually) export to .pdf.
     exportToPDF.call(this);

@@ -1,6 +1,7 @@
+import { set } from 'd3';
+
 export default function defineDefaultSet(col) {
-    this.data.sets[col] = d3
-        .set(this.data.filtered.map(d => d[this.settings[col]]))
+    this.data.sets[col] = set(this.data.filtered.map(d => d[this.settings[col]]))
         .values()
         .sort();
 

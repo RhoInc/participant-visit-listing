@@ -1,3 +1,4 @@
+import { select } from 'd3';
 import update from './addLegend/update';
 
 export default function addLegend() {
@@ -20,7 +21,7 @@ export default function addLegend() {
             color: d => d[2]
         });
     this.containers.legendItems.each(function(d) {
-        const legendItem = d3.select(this);
+        const legendItem = select(this);
         legendItem.append('span').classed('pvl-legend-item-label', true);
         legendItem
             .append('span')
@@ -29,15 +30,13 @@ export default function addLegend() {
             .style({
                 color: d => d[2]
             })
-            .attr(
-                'title',
-                d =>
-                    context.settings.visit_expectation_regex &&
-                    context.settings.visit_expectation_regex.test(d[1])
-                        ? `${d[3]}\n${
-                              d[1]
-                          } visits are identified in the charts as cells or circles with medial white circles.`
-                        : d[3]
+            .attr('title', d =>
+                context.settings.visit_expectation_regex &&
+                context.settings.visit_expectation_regex.test(d[1])
+                    ? `${d[3]}\n${
+                          d[1]
+                      } visits are identified in the charts as cells or circles with medial white circles.`
+                    : d[3]
             );
     });
     update.call(this);

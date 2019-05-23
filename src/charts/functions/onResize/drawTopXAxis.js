@@ -1,6 +1,8 @@
+import { svg, format } from 'd3';
+
 export default function drawTopXAxis() {
     //Draw top x-axis.
-    this.topXAxis.axis = d3.svg
+    this.topXAxis.axis = svg
         .axis()
         .scale(this.x)
         .orient('top')
@@ -8,7 +10,7 @@ export default function drawTopXAxis() {
         .innerTickSize(this.xAxis.innerTickSize())
         .outerTickSize(this.xAxis.outerTickSize());
     if (this.config.x.type === 'linear')
-        this.topXAxis.axis.tickFormat(d3.format(this.config.x.format));
+        this.topXAxis.axis.tickFormat(format(this.config.x.format));
     this.topXAxis.container.call(this.topXAxis.axis);
     this.topXAxis.label
         .attr({

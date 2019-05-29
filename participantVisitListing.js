@@ -1448,7 +1448,7 @@
         this.containers.tabs.on('click', function(d) {
             var _this = this;
 
-            var t0 = this.performance.now(); //begin performance test
+            var t0 = context.performance.now(); //begin performance test
             //indicate loading
 
             context.containers.loading.classed('pvl-hidden', false);
@@ -1527,7 +1527,7 @@
                 }
             }); //end performance test
 
-            var t1 = this.performance.now();
+            var t1 = context.performance.now();
             console.log('addTabFunctionality.click() took '.concat(t1 - t0, ' milliseconds.'));
         });
     }

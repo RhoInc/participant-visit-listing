@@ -1,5 +1,5 @@
 import jsdom from 'jsdom';
-import participantVistiListing from '../src/index.js';
+import participantVisitListing from '../src/index.js';
 import expect from 'expect';
 import d3 from 'd3';
 
@@ -17,7 +17,7 @@ describe('The destroy method is called.', () => {
     });
 
     beforeEach(() => {
-        instance = participantVistiListing(container, {}, {dom});
+        instance = participantVisitListing(container, {}, {dom});
     });
 
     afterEach(() => {

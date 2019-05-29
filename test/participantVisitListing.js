@@ -1,10 +1,11 @@
 import jsdom from 'jsdom';
-import participantVistiListing from '../src/index.js';
+import { performance } from 'perf_hooks';
+import participantVisitListing from '../src/index.js';
 import expect from 'expect';
 import d3 from 'd3';
 import { createChart, createTable, createControls } from 'webcharts';
 
-describe('The participantVistiListing function is called.', () => {
+describe('The participantVisitListing function is called.', () => {
     const { JSDOM } = jsdom;
     global.window = (new JSDOM(``, { runScripts: "dangerously" })).window;
     let dom, container, instance;
@@ -18,10 +19,18 @@ describe('The participantVistiListing function is called.', () => {
     });
 
     beforeEach(() => {
-        instance = participantVistiListing(container, {}, {dom});
+        instance = participantVisitListing(container, {}, {dom,performance});
     });
 
     afterEach(() => {
+    });
+
+    it('should return the Performance interface object and the document object', () => {
+        const utilities = [
+            'performance',
+            'document',
+        ];
+        expect(Object.keys(instance)).toEqual(expect.arrayContaining(utilities));
     });
 
     it('should return a containers object with properties that reference d3 selections', () => {
@@ -37,7 +46,7 @@ describe('The participantVistiListing function is called.', () => {
             'tabs',
             'ordinalChart',
             'linearChart',
-            'listing'
+            'listing',
         ];
         const d3selections = Object.keys(instance.containers)
             .filter(key => (

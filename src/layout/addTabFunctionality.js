@@ -7,7 +7,7 @@ export default function addTabFunctionality() {
     const context = this;
 
     this.containers.tabs.on('click', function(d) {
-        const t0 = this.performance.now();
+        const t0 = context.performance.now();
         //begin performance test
 
         //indicate loading
@@ -89,7 +89,7 @@ export default function addTabFunctionality() {
         });
 
         //end performance test
-        const t1 = this.performance.now();
+        const t1 = context.performance.now();
         console.log(`addTabFunctionality.click() took ${t1 - t0} milliseconds.`);
     });
 }

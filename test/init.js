@@ -21,15 +21,20 @@ describe('The init method is called.', () => {
     });
 
     beforeEach(() => {
-        //instance = participantVisitListing(container, {exportable: false}, dom);
-        //instance.init(data, true);
     });
 
     afterEach(() => {
-        //instance.destroy();
     });
 
-    it('should attach data to the webcharts chart object', async function() {
-        await expect(instance.data.raw.length).toEqual(data.length);
+    it('should attach data to the participantVisitListing object', () => {
+        const loading = setInterval(() => {
+            const loadingIndicated = instance.hasOwnProperty('data');
+
+            if (loadingIndicated) {
+                //Handle loading indicator.
+                clearInterval(loading);
+                expect(instance.data.raw.length).toEqual(data.length);
+            }
+        });
     });
 });

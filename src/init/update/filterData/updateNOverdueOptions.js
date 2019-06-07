@@ -1,3 +1,5 @@
+import { set } from 'd3';
+
 export default function updateNOverdueOptions() {
     //Define new set of nOverdue options with analysis data.
     const nOverdue = ['All', ...d3.set(this.data.analysis.map(d => d.nOverdue)).values()];

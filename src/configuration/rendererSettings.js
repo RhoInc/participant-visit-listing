@@ -29,7 +29,7 @@ export default function rendererSettings() {
         active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
         date_format: '%Y-%m-%d', // format of visit dates
         chart_margin: {
-            top: 100,
+            top: 0,
             bottom: 100
         }
     };

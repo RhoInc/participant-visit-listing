@@ -4,7 +4,7 @@ import maximize from './addButtons/maximize';
 
 export default function addButtons() {
     //Add minimize chart button.
-    this.topXAxis.minimize = this.topXAxis.container
+    this.topXAxis.minimize = this.topXAxis.svg
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--minimize', true)
         .text('\u2212')
@@ -12,7 +12,7 @@ export default function addButtons() {
     this.topXAxis.minimize.append('title').text('MinimizeChart');
 
     //Add split chart button.
-    this.topXAxis.split = this.topXAxis.container
+    this.topXAxis.split = this.topXAxis.svg
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--split', true)
         .text('\u25A1\u25A1')
@@ -20,7 +20,7 @@ export default function addButtons() {
     this.topXAxis.split.append('title').text('View both charts');
 
     //Add maximize chart button.
-    this.topXAxis.maximize = this.topXAxis.container
+    this.topXAxis.maximize = this.topXAxis.svg
         .append('text')
         .classed('pvl-chart-button pvl-chart-button--maximize', true)
         .text('\u002B')

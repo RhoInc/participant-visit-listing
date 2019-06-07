@@ -1,10 +1,12 @@
+import { select } from 'd3';
+
 export default function loading(event, callback) {
     let t0 = this.performance.now();
     //begin performance test
 
     //indicate loading
-    d3.select('html').classed('pvl-wait', true);
-    d3.select('body').classed('pvl-wait', true);
+    select('html').classed('pvl-wait', true);
+    select('body').classed('pvl-wait', true);
     this.containers.loading.classed('pvl-hidden', false);
 
     const loading = setInterval(() => {
@@ -17,8 +19,8 @@ export default function loading(event, callback) {
 
             //Run callback.
             callback();
-            d3.select('html').classed('pvl-wait', false);
-            d3.select('body').classed('pvl-wait', false);
+            select('html').classed('pvl-wait', false);
+            select('body').classed('pvl-wait', false);
 
             //end performance test
             let t1 = this.performance.now();

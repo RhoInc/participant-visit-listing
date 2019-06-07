@@ -1,5 +1,6 @@
 import addTopXAxis from '../functions/onLayout/addTopXAxis';
 import addButtons from '../functions/onLayout/addButtons';
+import scrolling from '../functions/onLayout/scrolling';
 
 export default function onLayout() {
     addTopXAxis.call(this);
@@ -17,4 +18,5 @@ export default function onLayout() {
         this.pvl.settings.chart_layout === 'tabbed'
     )
         this.pvl.containers.linearChart.classed('pvl-hidden', true);
+    scrolling.call(this);
 }

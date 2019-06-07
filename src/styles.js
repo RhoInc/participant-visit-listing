@@ -205,6 +205,17 @@ export default function styles() {
                 '    width: 49.5%;' +
                 '    float: right;' +
                 '}',
+                '.pvl-floating-axis {' +
+                '    width: 100%;' +
+                '    z-index: 99;' +
+                '    position: static;' +
+                '}',
+                '.pvl-floating-axis.pvl-sticky {' +
+                '    position: fixed;' +
+                '    top: 0;' +
+                '    background-color: #F6F6F6;' +
+                '    opacity: 0.8;' +
+                '}',
                 '.pvl-chart .axis-title--top {' +
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +

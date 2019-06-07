@@ -11,9 +11,6 @@ import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
 
 export default function init(data) {
-    let t0 = performance.now();
-    //begin performance test
-
     //Data manipulation
     loading.call(this, 'Data manipulation', () => {
         this.data = {
@@ -52,8 +49,4 @@ export default function init(data) {
             update.call(this);
         });
     });
-
-    //end performance test
-    let t1 = performance.now();
-    console.log(`init took ${(t1 - t0)*1000} milliseconds.`);
 }

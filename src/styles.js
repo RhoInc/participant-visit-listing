@@ -2,7 +2,11 @@ import { select } from 'd3';
 
 export default function styles() {
     this.styles = [
-        'body {' +
+        'html.pvl-wait, html.pvl-wait * {' +
+        '    cursor: wait !important;' +
+        '}',
+        'body.pvl-wait, body.pvl-wait * {' +
+        '    cursor: wait !important;' +
         '}',
         '.participant-visit-listing {' +
         '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' +

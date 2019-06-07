@@ -25,8 +25,7 @@ export default function addTabFunctionality() {
 
                 if (d.name === 'Listing') {
                     //Initialize or draw listing.
-                    if (context.listing.initialized)
-                        context.listing.draw(context.data.transposed);
+                    if (context.listing.initialized) context.listing.draw(context.data.transposed);
                     else {
                         context.listing.init(context.data.transposed, context.test);
                         update.call(context);

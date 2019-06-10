@@ -727,7 +727,6 @@
         }
 
         this.settings.controlsSynced = controlsSettings;
-        Object.assign(this.settings, controlsSettings);
     }
 
     function listingSettings() {
@@ -1010,8 +1009,10 @@
         var t0 = this.performance.now(); //begin performance test
         //indicate loading
 
-        d3$1.select('html').classed('pvl-wait', true);
-        d3$1.select('body').classed('pvl-wait', true);
+        var html = this.document.getElementsByTagName('html')[0];
+        if (!html.classList.contains('pvl-wait')) html.className += ' pvl-wait';
+        var body = this.document.body;
+        if (!body.classList.contains('pvl-wait')) body.className += ' pvl-wait';
         this.containers.loading.classed('pvl-hidden', false);
         var loading = setInterval(function() {
             var loadingIndicated = _this.containers.loading.style('display') !== 'none';
@@ -1020,11 +1021,12 @@
                 //Handle loading indicator.
                 clearInterval(loading);
 
-                _this.containers.loading.classed('pvl-hidden', true); //Run callback.
+                _this.containers.loading.classed('pvl-hidden', true);
 
-                callback();
-                d3$1.select('html').classed('pvl-wait', false);
-                d3$1.select('body').classed('pvl-wait', false); //end performance test
+                html.className = html.className.replace(' pvl-wait', '');
+                body.className = body.className.replace(' pvl-wait', ''); //Run callback.
+
+                callback(); //end performance test
 
                 var t1 = _this.performance.now();
 
@@ -2879,37 +2881,50 @@
         this.topXAxis.maximize.append('title').text('Maximize Chart');
     }
 
-    function scrolling() {
+    function scrollTopXAxis() {
         var context = this;
         var div_top = this.topXAxis.container.node().getBoundingClientRect().top;
-        console.log(div_top);
         window.addEventListener('scroll', function() {
             var window_top = window.scrollY - 0;
             console.log(window_top);
 
             if (window_top > div_top) {
-                console.log('window greater');
                 if (!context.topXAxis.container.classed('pvl-sticky'))
                     context.topXAxis.container.classed('pvl-sticky', true);
             } else {
-                console.log('div greater');
                 context.topXAxis.container.classed('pvl-sticky', false);
             }
         });
     }
 
-    function onLayout$1() {
-        addTopXAxis.call(this);
-        addButtons.call(this);
+    function attachBottomXAxis() {
         this.bottomXAxis = {
             container: this.svg.select('.x.axis').classed('x--bottom', true)
         };
+    }
+
+    function hideCharts() {
         if (
-            this.pvl.settings.active_tab !== 'Visit Chart' &&
-            this.pvl.settings.chart_layout === 'tabbed'
+            this.property === 'linearChart' &&
+            this.pvl.settings.active_tab !== 'Charts' &&
+            this.pvl.settings.chart_layout === 'side-by-side'
         )
-            this.pvl.containers.ordinalChart.classed('pvl-hidden', true);
-        scrolling.call(this);
+            this.pvl.containers.charts.classed('pvl-hidden', true);
+        if (
+            this.pvl.settings.chart_layout === 'tabbed' &&
+            ((this.property === 'ordinalChart' && this.pvl.settings.active_tab !== 'Visit Chart') ||
+                (this.property === 'linearChart' &&
+                    this.pvl.settings.active_tab !== 'Study Day Chart'))
+        )
+            this.pvl.containers[this.property].classed('pvl-hidden', true);
+    }
+
+    function onLayout$1() {
+        addTopXAxis.call(this);
+        addButtons.call(this);
+        scrollTopXAxis.call(this);
+        attachBottomXAxis.call(this);
+        hideCharts.call(this);
     }
 
     function onPreprocess$1() {
@@ -2950,7 +2965,7 @@
         this.topXAxis.label
             .attr({
                 transform: 'translate('
-                    .concat(this.plot_width / 2, ',')
+                    .concat(this.plot_width / 2, ',-')
                     .concat(this.pvl.settings.chart_margin.top - 25, ')'),
                 'text-anchor': 'middle'
             })
@@ -3049,20 +3064,9 @@
     function onLayout$2() {
         addTopXAxis.call(this);
         addButtons.call(this);
-        this.bottomXAxis = {
-            container: this.svg.select('.x.axis').classed('x--bottom', true)
-        };
-        if (
-            this.pvl.settings.active_tab !== 'Charts' &&
-            this.pvl.settings.chart_layout === 'side-by-side'
-        )
-            this.pvl.containers.charts.classed('pvl-hidden', true);
-        if (
-            this.pvl.settings.active_tab !== 'Study Day Chart' &&
-            this.pvl.settings.chart_layout === 'tabbed'
-        )
-            this.pvl.containers.linearChart.classed('pvl-hidden', true);
-        scrolling.call(this);
+        scrollTopXAxis.call(this);
+        attachBottomXAxis.call(this);
+        hideCharts.call(this);
     }
 
     function onPreprocess$2() {

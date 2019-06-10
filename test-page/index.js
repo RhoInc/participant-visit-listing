@@ -7,7 +7,6 @@ d3.csv(
         const instance = participantVisitListing(
             '#container', // element
             {
-                chart_layout: 'side-by-side'
             } // settings
         );
         instance.init(data);

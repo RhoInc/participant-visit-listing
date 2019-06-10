@@ -24,7 +24,7 @@ export default function drawTopXAxis() {
         .call(this.topXAxis.axis);
     this.topXAxis.label
         .attr({
-            transform: `translate(${this.plot_width / 2},${this.pvl.settings.chart_margin.top -
+            transform: `translate(${this.plot_width / 2},-${this.pvl.settings.chart_margin.top -
                 25})`,
             'text-anchor': 'middle'
         })

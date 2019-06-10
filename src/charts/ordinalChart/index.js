@@ -9,7 +9,7 @@ import onDestroy from './onDestroy';
 
 export default function ordinalChart() {
     //Define listing.
-    this.ordinalChart = createChart(
+    this.ordinalChart = new createChart(
         this.containers.ordinalChart.node(),
         this.settings.ordinalChartSynced,
         this.controls

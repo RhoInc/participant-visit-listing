@@ -4,5 +4,8 @@ export default function controls() {
     const context = this;
 
     //Define controls.
-    this.controls = createControls(this.containers.controls.node(), this.settings.controlsSynced);
+    this.controls = new createControls(
+        this.containers.controls.node(),
+        this.settings.controlsSynced
+    );
 }

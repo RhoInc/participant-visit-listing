@@ -1,3 +1,5 @@
+import { select } from 'd3';
+
 export default function updateSelects() {
     const context = this;
 
@@ -7,7 +9,7 @@ export default function updateSelects() {
         .selectAll('select')
         .each(function(d) {
             const filter = context.data.filters.find(filter => filter.col === d.value_col);
-            d3.select(this)
+            select(this)
                 .selectAll('option')
                 .property('selected', d => filter.value === d);
         });

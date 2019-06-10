@@ -1,8 +1,9 @@
+import { select } from 'd3';
 export default function getItHeated() {
     const context = this;
 
     this.marks[0].groups.each(function(d) {
-        const group = d3.select(this);
+        const group = select(this);
         group.select('rect.pvl-heat-rect').remove();
         d.heat = group
             .append('rect')

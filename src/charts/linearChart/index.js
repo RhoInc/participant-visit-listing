@@ -1,3 +1,4 @@
+import { createChart } from 'webcharts';
 import onInit from './onInit';
 import onLayout from './onLayout';
 import onPreprocess from './onPreprocess';
@@ -8,7 +9,7 @@ import onDestroy from './onDestroy';
 
 export default function linearChart() {
     //Define listing.
-    this.linearChart = new webCharts.createChart(
+    this.linearChart = new createChart(
         this.containers.linearChart.node(),
         this.settings.linearChartSynced,
         this.controls

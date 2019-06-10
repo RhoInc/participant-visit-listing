@@ -1,3 +1,5 @@
+import { select } from 'd3';
+
 export default function styles() {
     this.styles = [
         'body {' +
@@ -340,9 +342,9 @@ export default function styles() {
     ];
 
     //Attach styles to DOM.
-    this.style = document.createElement('style');
+    this.style = this.document.createElement('style');
     this.style.type = 'text/css';
     this.style.innerHTML = this.styles.join('\n');
-    document.getElementsByTagName('head')[0].appendChild(this.style);
-    this.containers.style = d3.select(this.style);
+    this.document.getElementsByTagName('head')[0].appendChild(this.style);
+    this.containers.style = select(this.style);
 }

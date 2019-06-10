@@ -1,8 +1,9 @@
+import { select } from 'd3';
 import sortData from './sortData';
 
 export default function onClick(th, header) {
     const context = this,
-        selection = d3.select(th),
+        selection = select(th),
         col = this.config.cols[this.config.headers.indexOf(header)];
 
     //Check if column is already a part of current sort order.
@@ -43,7 +44,7 @@ export default function onClick(th, header) {
     this.sortable.order.forEach((item, i) => {
         item.wrap.on('click', function(d) {
             //Remove column's sort container.
-            d3.select(this).remove();
+            select(this).remove();
 
             //Remove column from sort.
             context.sortable.order.splice(context.sortable.order.map(d => d.col).indexOf(d.key), 1);

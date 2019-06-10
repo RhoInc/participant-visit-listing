@@ -22,10 +22,10 @@ export default function init(data) {
             this.containers.loading.classed('pvl-hidden', true);
 
             /****---------------------------------------------------------------------------------\
-              Data maniuplation
+              Data manipulation
             \---------------------------------------------------------------------------------****/
 
-            let t0 = performance.now();
+            let t0 = this.performance.now();
             //begin performance test
 
             //Attach data.
@@ -50,31 +50,31 @@ export default function init(data) {
             updateNParticipants.call(this);
 
             //end performance test
-            let t1 = performance.now();
+            let t1 = this.performance.now();
             console.log(`data manipulation took ${t1 - t0} milliseconds.`);
 
             /****---------------------------------------------------------------------------------\
               Display initialization
             \---------------------------------------------------------------------------------****/
 
-            t0 = performance.now();
+            t0 = this.performance.now();
             //begin performance test
 
             if (this.settings.active_tab === 'Listing') {
-                this.listing.init(this.data.transposed);
+                this.listing.init(this.data.transposed, this.test);
             } else if (this.settings.active_tab === 'Charts') {
-                this.ordinalChart.init(this.data.raw);
-                this.linearChart.init(this.data.raw);
+                this.ordinalChart.init(this.data.raw, this.test);
+                this.linearChart.init(this.data.raw, this.test);
             } else if (this.settings.active_tab === 'Visit Chart') {
-                this.ordinalChart.init(this.data.raw);
+                this.ordinalChart.init(this.data.raw, this.test);
             } else if (this.settings.active_tab === 'Study Day Chart') {
-                this.linearChart.init(this.data.raw);
+                this.linearChart.init(this.data.raw, this.test);
             }
             updateMultiSelects.call(this);
             update.call(this);
 
             //end performance test
-            t1 = performance.now();
+            t1 = this.performance.now();
             console.log(`display initialization took ${t1 - t0} milliseconds.`);
         }
     });

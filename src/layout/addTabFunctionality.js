@@ -1,3 +1,4 @@
+import { select } from 'd3';
 import update from '../init/update';
 import updateSelects from './addTabFunctionality/updateSelects';
 import updateMultiSelects from './addTabFunctionality/updateMultiSelects';
@@ -6,7 +7,7 @@ export default function addTabFunctionality() {
     const context = this;
 
     this.containers.tabs.on('click', function(d) {
-        const t0 = performance.now();
+        const t0 = context.performance.now();
         //begin performance test
 
         //indicate loading
@@ -22,7 +23,7 @@ export default function addTabFunctionality() {
 
                 //Run code.
                 context.settings.active_tab = d.name;
-                const tab = d3.select(this);
+                const tab = select(this);
                 const active = tab.classed('pvl-tab--active');
 
                 if (!active) {
@@ -40,7 +41,7 @@ export default function addTabFunctionality() {
                         if (context.listing.initialized)
                             context.listing.draw(context.data.transposed);
                         else {
-                            context.listing.init(context.data.transposed);
+                            context.listing.init(context.data.transposed, context.test);
                             update.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
@@ -50,7 +51,7 @@ export default function addTabFunctionality() {
                         if (context.ordinalChart.initialized)
                             context.ordinalChart.draw(context.data.filtered);
                         else {
-                            context.ordinalChart.init(context.data.filtered);
+                            context.ordinalChart.init(context.data.filtered, context.test);
                             update.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
@@ -60,7 +61,7 @@ export default function addTabFunctionality() {
                         if (context.linearChart.initialized)
                             context.linearChart.draw(context.data.filtered);
                         else {
-                            context.linearChart.init(context.data.filtered);
+                            context.linearChart.init(context.data.filtered, context.test);
                             update.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
@@ -70,14 +71,14 @@ export default function addTabFunctionality() {
                         if (context.ordinalChart.initialized)
                             context.ordinalChart.draw(context.data.filtered);
                         else {
-                            context.ordinalChart.init(context.data.filtered);
+                            context.ordinalChart.init(context.data.filtered, context.test);
                         }
 
                         //Initialize or draw linear chart.
                         if (context.linearChart.initialized)
                             context.linearChart.draw(context.data.filtered);
                         else {
-                            context.linearChart.init(context.data.filtered);
+                            context.linearChart.init(context.data.filtered, context.test);
                             update.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
@@ -88,7 +89,7 @@ export default function addTabFunctionality() {
         });
 
         //end performance test
-        const t1 = performance.now();
+        const t1 = context.performance.now();
         console.log(`addTabFunctionality.click() took ${t1 - t0} milliseconds.`);
     });
 }

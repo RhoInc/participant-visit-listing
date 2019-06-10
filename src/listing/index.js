@@ -1,3 +1,4 @@
+import { createTable } from 'webcharts';
 import onInit from './onInit';
 import onLayout from './onLayout';
 import onPreprocess from './onPreprocess';
@@ -6,7 +7,7 @@ import onDestroy from './onDestroy';
 
 export default function listing() {
     //Define listing.
-    this.listing = new webCharts.createTable(
+    this.listing = new createTable(
         this.containers.listing.node(),
         this.settings.listingSynced,
         this.controls

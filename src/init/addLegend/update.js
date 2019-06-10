@@ -1,3 +1,5 @@
+import { format } from 'd3';
+
 export default function update() {
     const denominator = this.data.filtered.filter(
         d =>
@@ -9,6 +11,6 @@ export default function update() {
         const numerator = this.data.filtered.filter(
             di => di[this.settings.visit_status_col] === d[1]
         ).length;
-        return `${d[1]} (${denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A'})`;
+        return `${d[1]} (${denominator > 0 ? format('%')(numerator / denominator) : 'N/A'})`;
     });
 }

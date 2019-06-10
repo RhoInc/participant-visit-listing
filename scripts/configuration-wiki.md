@@ -313,7 +313,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     },
     "gridlines": "y",
     "padding": 0,
-    "scale_text": false
+    "scale_text": false,
+    "resizable": false
 }
 ```
 
@@ -388,6 +389,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     },
     "gridlines": "y",
     "padding": 0,
-    "scale_text": false
+    "scale_text": false,
+    "resizable": false
 }
 ```

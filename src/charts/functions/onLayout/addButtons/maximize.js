@@ -1,5 +1,5 @@
 export default function maximize() {
-    const t0 = performance.now();
+    const t0 = this.pvl.performance.now();
     //begin performance test
 
     //indicate loading
@@ -22,6 +22,6 @@ export default function maximize() {
     });
 
     //end performance test
-    const t1 = performance.now();
+    const t1 = this.pvl.performance.now();
     console.log(`maximize() took ${t1 - t0} milliseconds.`);
 }

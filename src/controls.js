@@ -1,10 +1,10 @@
-import updateLegend from './init/addLegend/update';
+import { createControls } from 'webcharts';
 
 export default function controls() {
     const context = this;
 
     //Define controls.
-    this.controls = new webCharts.createControls(
+    this.controls = new createControls(
         this.containers.controls.node(),
         this.settings.controlsSynced
     );

@@ -1,3 +1,5 @@
+import { select } from 'd3';
+
 export default function updateMultiSelects() {
     const context = this;
 
@@ -7,8 +9,7 @@ export default function updateMultiSelects() {
         .selectAll('select')
         .each(function(d) {
             const filter = context.data.filters.find(filter => filter.col === d.value_col);
-            const options = d3
-                .select(this)
+            const options = select(this)
                 .attr('size', 2)
                 .selectAll('option');
             options.property(

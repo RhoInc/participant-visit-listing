@@ -6,8 +6,9 @@ import controls from './controls';
 import listing from './listing/index';
 import charts from './charts/index';
 import init from './init';
+import destroy from './destroy';
 
-export default function participantVisitListing(element = 'body', settings = {}) {
+export default function participantVisitListing(element = 'body', settings = {}, testingUtilities) {
     //Instantiate central object.
     const pvl = {
         element,
@@ -15,11 +16,15 @@ export default function participantVisitListing(element = 'body', settings = {})
             user: settings,
             rendererSettings: configuration.rendererSettings(),
             controlsSettings: configuration.controlsSettings(),
-            listingSettings: configuration.listingSettings(),
             ordinalChartSettings: configuration.ordinalChartSettings(),
-            linearChartSettings: configuration.linearChartSettings()
+            linearChartSettings: configuration.linearChartSettings(),
+            listingSettings: configuration.listingSettings()
         },
-        init
+        document: testingUtilities ? testingUtilities.dom.window.document : document,
+        performance: testingUtilities ? testingUtilities.performance : performance,
+        test: !!testingUtilities,
+        init,
+        destroy
     };
 
     //Merge and sync user settings with default settings.
@@ -55,9 +60,9 @@ export default function participantVisitListing(element = 'body', settings = {})
     layout.call(pvl); // attaches containers object to central object ([pvl])
     styles.call(pvl); // attaches styles object to central object ([pvl])
     controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
-    listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
     charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
     charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+    listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
 
     return pvl;
 }

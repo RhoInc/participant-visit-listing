@@ -253,9 +253,16 @@ export default function styles() {
 
                 '.pvl-listing {' +
                 '}',
-                '.pvl-listing .wc-table {' +
+                '.pvl-listing .pvl-scroll-bar--outer {' +
                 '    width: 100%;' +
                 '    overflow-x: scroll;' +
+                '    overflow-y: hidden;' +
+                '}',
+                '.pvl-listing .pvl-scroll-bar--upper {' +
+                '    height: 20px;' +
+                '}',
+                '.pvl-listing .wc-table {' +
+                '    overflow: none;' +
                 '}',
                 '.interactivity.pvl-cell-text-toggle {' +
                 '    margin-right: 10px;' +
@@ -302,7 +309,7 @@ export default function styles() {
                     '    display: block;' +
                     '    width: 100%;' +
                     '    overflow-y: auto;' +
-                    '    height: 66vh;' +
+                    '    height: 50vh;' +
                     '}',
                     '.pvl-listing .wc-table table tbody tr {' +
                     '    background: white !important;' +

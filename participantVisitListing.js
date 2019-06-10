@@ -1841,7 +1841,13 @@
       Listing
     \---------------------------------------------------------------------------------****/
             '.pvl-listing {' + '}',
-            '.pvl-listing .wc-table {' + '    width: 100%;' + '    overflow-x: scroll;' + '}',
+            '.pvl-listing .pvl-scroll-bar--outer {' +
+                '    width: 100%;' +
+                '    overflow-x: scroll;' +
+                '    overflow-y: hidden;' +
+                '}',
+            '.pvl-listing .pvl-scroll-bar--upper {' + '    height: 20px;' + '}',
+            '.pvl-listing .wc-table {' + '    overflow: none;' + '}',
             '.interactivity.pvl-cell-text-toggle {' +
                 '    margin-right: 10px;' +
                 '    border: 1px solid #aaa;' +
@@ -1878,7 +1884,7 @@
                 '    display: block;' +
                 '    width: 100%;' +
                 '    overflow-y: auto;' +
-                '    height: 66vh;' +
+                '    height: 50vh;' +
                 '}',
             '.pvl-listing .wc-table table tbody tr {' +
                 '    background: white !important;' +
@@ -1939,6 +1945,24 @@
             this.pvl.containers.listing.classed('pvl-hidden', true);
     }
 
+    function addTopScrollBar() {
+        this.scrollBars = {};
+        this.scrollBars.upper_outer = this.pvl.containers.listing
+            .insert('div', ':first-child')
+            .classed('pvl-scroll-bar pvl-scroll-bar--upper pvl-scroll-bar--outer', true);
+        this.scrollBars.upper_inner = this.scrollBars.upper_outer
+            .append('div')
+            .classed('pvl-scroll-bar pvl-scroll-bar--upper pvl-scroll-bar--inner', true);
+        this.scrollBars.lower_outer = this.pvl.containers.listing
+            .insert('div', '.wc-chart')
+            .classed('pvl-scroll-bar pvl-scroll-bar--lower pvl-scroll-bar--outer', true);
+        this.scrollBars.lower_inner = this.wrap.classed(
+            'pvl-scroll-bar pvl-scroll-bar--lower pvl-scroll-bar--inner',
+            true
+        );
+        this.scrollBars.lower_outer.node().appendChild(this.scrollBars.lower_inner.node());
+    }
+
     function disableDefaultSorting() {
         this.config.sortable = false;
     }
@@ -1979,12 +2003,25 @@
 
     function onLayout() {
         hideListing.call(this);
+        addTopScrollBar.call(this);
         disableDefaultSorting.call(this);
         toggleCellText.call(this);
         addPDFExport.call(this);
     }
 
     function onPreprocess() {}
+
+    function syncScrollBars() {
+        var context = this;
+        this.scrollBars.upper_outer.on('scroll', function() {
+            context.scrollBars.lower_outer.node().scrollLeft = this.scrollLeft;
+        });
+        this.scrollBars.lower_outer.on('scroll', function() {
+            context.scrollBars.upper_outer.node().scrollLeft = this.scrollLeft;
+        });
+        this.scrollBars.upper_inner.style('width', ''.concat(this.table.node().offsetWidth, 'px'));
+        this.scrollBars.lower_inner.style('width', ''.concat(this.table.node().offsetWidth, 'px'));
+    }
 
     function addHeaderHover() {
         //Highlight column when hovering over column header.
@@ -2748,7 +2785,9 @@
     }
 
     function onDraw() {
-        //Highlight column when hovering over column header.
+        //Sync top and bottom scroll bars.
+        syncScrollBars.call(this); //Highlight column when hovering over column header.
+
         addHeaderHover.call(this); //Sort columns on click chronologically.
 
         sortChronologically.call(this); //Add row and column summaries.

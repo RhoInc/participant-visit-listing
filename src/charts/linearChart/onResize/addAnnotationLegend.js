@@ -7,7 +7,8 @@ export default function addAnnotationLegend() {
             .datum(visit)
             .classed('pvl-unscheduled-legend-item', true)
             .attr({
-                transform: `translate(-${this.margin.left - 15},-${this.pvl.settings.chart_margin.top -
+                transform: `translate(-${this.margin.left - 15},-${this.pvl.settings.chart_margin
+                    .top -
                     16 * (i + 1) -
                     3})`
             })

@@ -7,7 +7,7 @@ import onDestroy from './onDestroy';
 
 export default function listing() {
     //Define listing.
-    this.listing = createTable(
+    this.listing = new createTable(
         this.containers.listing.node(),
         this.settings.listingSynced,
         this.controls

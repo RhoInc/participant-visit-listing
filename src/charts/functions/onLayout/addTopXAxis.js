@@ -3,7 +3,7 @@ export default function addTopXAxis() {
         container: this.wrap
             .insert('div', ':first-child')
             .classed('pvl-floating-axis', true)
-            .style('height', `${this.pvl.settings.chart_margin.top}px`),
+            .style('height', `${this.pvl.settings.chart_margin.top}px`)
     };
     this.topXAxis.svg = this.topXAxis.container
         .append('svg')

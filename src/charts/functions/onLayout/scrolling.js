@@ -7,7 +7,7 @@ export default function scrolling() {
         const window_top = window.scrollY - 0;
         console.log(window_top);
         if (window_top > div_top) {
-            console.log('window greater')
+            console.log('window greater');
             if (!context.topXAxis.container.classed('pvl-sticky'))
                 context.topXAxis.container.classed('pvl-sticky', true);
         } else {

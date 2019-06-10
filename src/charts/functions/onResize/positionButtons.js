@@ -4,7 +4,9 @@ export default function positionButtons() {
         'text-anchor': 'middle'
     });
     this.topXAxis.split.attr({
-        transform: `translate(${this.plot_width - 35},-${this.pvl.settings.chart_margin.top - 25 + 6})`,
+        transform: `translate(${this.plot_width - 35},-${this.pvl.settings.chart_margin.top -
+            25 +
+            6})`,
         'text-anchor': 'middle'
     });
     this.topXAxis.maximize.attr({

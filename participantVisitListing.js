@@ -510,7 +510,7 @@
       date_format: '%Y-%m-%d',
       // format of visit dates
       chart_margin: {
-        top: 0,
+        top: 100,
         bottom: 100
       }
     };
@@ -688,7 +688,8 @@
       gridlines: 'y',
       padding: 0,
       scale_text: false,
-      resizable: false
+      resizable: false,
+      margin: {}
     };
   }
 
@@ -702,9 +703,7 @@
 
   function syncOrdinalChartSettings() {
     var listingSettings = this.settings.listingSynced;
-    var ordinalChartSettings = this.settings.ordinalChartMerged;
-    ordinalChartSettings.margin = listingSettings.chart_margin;
-    ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; //Update ordinal chart settings.
+    var ordinalChartSettings = this.settings.ordinalChartMerged; //Update ordinal chart settings.
 
     ordinalChartSettings.x.column = listingSettings.visit_col;
     ordinalChartSettings.y.column = listingSettings.id_col;
@@ -714,7 +713,10 @@
     var expectedCircles = ordinalChartSettings.marks[1];
     expectedCircles.per = [listingSettings.id_col, listingSettings.visit_col];
     expectedCircles.tooltip = "[".concat(listingSettings.id_col, "] - [").concat(listingSettings.visit_col, "] ([").concat(listingSettings.visit_date_col, "]: Day [").concat(listingSettings.visit_day_col, "]): [").concat(listingSettings.visit_status_col, "]");
-    ordinalChartSettings.color_by = listingSettings.visit_status_col; //Assign settings to settings object.
+    ordinalChartSettings.color_by = listingSettings.visit_status_col;
+    ordinalChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
+    ordinalChartSettings.margin.top = 0;
+    ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; //Assign settings to settings object.
 
     this.settings.ordinalChartSynced = ordinalChartSettings;
   }
@@ -747,8 +749,7 @@
 
   function syncLinearChartSettings() {
     var listingSettings = this.settings.listingSynced;
-    var linearChartSettings = this.settings.linearChartMerged;
-    linearChartSettings.margin = listingSettings.chart_margin; //Update linear chart settings.
+    var linearChartSettings = this.settings.linearChartMerged; //Update linear chart settings.
 
     linearChartSettings.x.column = listingSettings.visit_day_col;
     linearChartSettings.y.column = listingSettings.id_col;
@@ -761,7 +762,9 @@
     var text = linearChartSettings.marks[2];
     text.per = [listingSettings.id_col, listingSettings.visit_day_col];
     text.tooltip = "[".concat(listingSettings.id_col, "] - [").concat(listingSettings.visit_col, "] ([").concat(listingSettings.visit_date_col, "]: Day [").concat(listingSettings.visit_day_col, "]): [").concat(listingSettings.visit_status_col, "]");
-    linearChartSettings.color_by = listingSettings.visit_status_col; //Assign settings to settings object.
+    linearChartSettings.color_by = listingSettings.visit_status_col;
+    linearChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
+    linearChartSettings.margin.top = 0; //Assign settings to settings object.
 
     this.settings.linearChartSynced = linearChartSettings;
   }
@@ -1610,7 +1613,7 @@
 
   function addTopXAxis() {
     this.topXAxis = {
-      container: this.wrap.insert('div', ':first-child').classed('pvl-floating-axis', true).style('height', '100px')
+      container: this.wrap.insert('div', ':first-child').classed('pvl-floating-axis', true).style('height', "".concat(this.pvl.settings.chart_margin.top, "px"))
     };
     this.topXAxis.svg = this.topXAxis.container.append('svg').append('g').classed('x x--top axis ordinal', true);
     this.topXAxis.label = this.topXAxis.svg.append('text').classed('axis-title axis-title--top', true);
@@ -1682,7 +1685,7 @@
 
   function scrolling() {
     var context = this;
-    var div_top = this.topXAxis.container.node().offsetTop;
+    var div_top = this.topXAxis.container.node().getBoundingClientRect().top;
     console.log(div_top);
     window.addEventListener('scroll', function () {
       var window_top = window.scrollY - 0;
@@ -1730,25 +1733,25 @@
     this.topXAxis.axis = d3$1.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize());
     if (this.config.x.type === 'linear') this.topXAxis.axis.tickFormat(d3$1.format(this.config.x.format));
     this.topXAxis.svg.attr({
-      transform: "translate(".concat(this.margin.left, ",", 100, ")")
+      transform: "translate(".concat(this.margin.left, ",").concat(this.pvl.settings.chart_margin.top, ")")
     }).call(this.topXAxis.axis);
     this.topXAxis.label.attr({
-      transform: 'translate(' + this.plot_width / 2 + ',-75)',
+      transform: "translate(".concat(this.plot_width / 2, ",").concat(this.pvl.settings.chart_margin.top - 25, ")"),
       'text-anchor': 'middle'
     }).text("Schedule of Events by ".concat(this.config.x.label));
   }
 
   function positionButtons() {
     this.topXAxis.minimize.attr({
-      transform: 'translate(' + (this.plot_width - 60) + ',' + -(this.margin.top - 24) + ')',
+      transform: "translate(".concat(this.plot_width - 60, ",-").concat(this.pvl.settings.chart_margin.top - 25, ")"),
       'text-anchor': 'middle'
     });
     this.topXAxis.split.attr({
-      transform: 'translate(' + (this.plot_width - 35) + ',' + -(this.margin.top - 18) + ')',
+      transform: "translate(".concat(this.plot_width - 35, ",-").concat(this.pvl.settings.chart_margin.top - 25 + 6, ")"),
       'text-anchor': 'middle'
     });
     this.topXAxis.maximize.attr({
-      transform: 'translate(' + (this.plot_width - 10) + ',' + -(this.margin.top - 24) + ')',
+      transform: "translate(".concat(this.plot_width - 10, ",-").concat(this.pvl.settings.chart_margin.top - 25, ")"),
       'text-anchor': 'middle'
     });
   }
@@ -1831,19 +1834,16 @@
 
     if (this.pvl.data.sets.unscheduledVisits.length) this.topXAxis.svg.selectAll('.pvl-unscheduled-legend-item').remove();
     this.pvl.data.sets.unscheduledVisits.forEach(function (visit, i) {
-      _this.topXAxis.svg.append('text').datum(visit).classed('pvl-unscheduled-legend-item', true) //.attr({
-      //    transform: `translate(-${this.margin.left - 15},${-this.margin.top +
-      //        16 * (i + 1) +
-      //        3})`
-      //})
-      .text("".concat(visit.substring(0, 1), " - ").concat(visit, " Visit"));
+      _this.topXAxis.svg.append('text').datum(visit).classed('pvl-unscheduled-legend-item', true).attr({
+        transform: "translate(-".concat(_this.margin.left - 15, ",-").concat(_this.pvl.settings.chart_margin.top - 16 * (i + 1) - 3, ")")
+      }).text("".concat(visit.substring(0, 1), " - ").concat(visit, " Visit"));
     });
   }
 
-  function classTextMarks() {
+  function updateTextMarks() {
     this.marks.find(function (mark) {
       return mark.type === 'text';
-    }).texts.classed('pvl-unscheduled-annotation', true);
+    }).texts.classed('pvl-unscheduled-annotation', true).style('clip-path', null);
   }
 
   function onResize$1() {
@@ -1851,7 +1851,7 @@
     drawTopXAxis.call(this);
     positionButtons.call(this);
     addAnnotationLegend.call(this);
-    classTextMarks.call(this);
+    updateTextMarks.call(this);
     if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1) this.pvl.containers.loading.classed('pvl-hidden', true);
   }
 

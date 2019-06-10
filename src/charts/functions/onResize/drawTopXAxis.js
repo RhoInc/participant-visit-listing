@@ -20,12 +20,12 @@ export default function drawTopXAxis() {
         this.topXAxis.axis.tickFormat(format(this.config.x.format));
     this.topXAxis.svg
         .attr({
-            transform: `translate(${this.margin.left},${100})`,
+            transform: `translate(${this.margin.left},${this.pvl.settings.chart_margin.top})`,
         })
         .call(this.topXAxis.axis);
     this.topXAxis.label
         .attr({
-            transform: 'translate(' + this.plot_width / 2 + ',-75)',
+            transform: `translate(${this.plot_width / 2},${this.pvl.settings.chart_margin.top - 25})`,
             'text-anchor': 'middle'
         })
         .text(`Schedule of Events by ${this.config.x.label}`);

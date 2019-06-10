@@ -6,11 +6,11 @@ export default function addAnnotationLegend() {
             .append('text')
             .datum(visit)
             .classed('pvl-unscheduled-legend-item', true)
-            //.attr({
-            //    transform: `translate(-${this.margin.left - 15},${-this.margin.top +
-            //        16 * (i + 1) +
-            //        3})`
-            //})
+            .attr({
+                transform: `translate(-${this.margin.left - 15},-${this.pvl.settings.chart_margin.top -
+                    16 * (i + 1) -
+                    3})`
+            })
             .text(`${visit.substring(0, 1)} - ${visit} Visit`);
     });
 }

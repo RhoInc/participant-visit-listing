@@ -1,10 +1,10 @@
 export default function scrolling() {
     const context = this;
-    var div_top = this.topXAxis.container.node().offsetTop;
+    const div_top = this.topXAxis.container.node().getBoundingClientRect().top;
     console.log(div_top);
 
     window.addEventListener('scroll', function() {
-        var window_top = window.scrollY - 0;
+        const window_top = window.scrollY - 0;
         console.log(window_top);
         if (window_top > div_top) {
             console.log('window greater')

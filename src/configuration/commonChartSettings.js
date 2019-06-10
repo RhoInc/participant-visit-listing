@@ -48,6 +48,7 @@ export default function commonChartSettings() {
         gridlines: 'y',
         padding: 0,
         scale_text: false,
-        resizable: false
+        resizable: false,
+        margin: {}
     };
 }

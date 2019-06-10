@@ -15,7 +15,7 @@ export default function linearChartSettings() {
             'font-weight': 'bold',
             dx: 3,
             dy: -3,
-            cursor: 'default'
+            cursor: 'default',
         },
         values: {
             unscheduled: [true]

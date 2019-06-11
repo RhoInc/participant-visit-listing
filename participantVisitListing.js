@@ -1101,7 +1101,12 @@
         transposeData.call(context);
         update.call(context);
         updateNParticipants.call(context);
-        if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+
+        if (context.listing.initialized) {
+          context.listing.data.initial = context.data.transposed;
+          context.listing.data.raw = context.data.transposed;
+        }
+
         if (context.ordinalChart.initialized) context.ordinalChart.raw_data = context.data.filtered;
         if (context.linearChart.initialized) context.linearChart.raw_data = context.data.filtered; //Redraw displays.
 
@@ -1355,6 +1360,21 @@
     }
   }
 
+  function toggleVisitDates() {
+    var context = this;
+    this.cellVisitDatesToggle = {
+      container: this.wrap.selectAll('.table-top').insert('div', ':first-child').classed('interactivity pvl-cell-text-toggle', true)
+    };
+    this.cellVisitDatesToggle.label = this.cellVisitDatesToggle.container.append('label').classed('pvl-cell-text-toggle__label', true).text('Display visit dates');
+    this.cellVisitDatesToggle.checkbox = this.cellVisitDatesToggle.label.append('input').classed('pvl-cell-text-toggle__checkbox', true).attr('type', 'checkbox').property('checked', false);
+    this.cellVisitDatesToggle.checkbox.on('click', function () {
+      context.config.cols = this.checked ? ['Site', 'ID', 'Status'].concat(context.pvl.data.sets.visit_col.map(function (visit) {
+        return "".concat(visit, "-date");
+      })) : ['Site', 'ID', 'Status'].concat(context.pvl.data.sets.visit_col);
+      context.draw();
+    });
+  }
+
   function addPDFExport() {
     if (window.jsPDF) this.exportable.wrap.insert('a', '#csv').classed('wc-button export', true).attr('id', 'pdf').text('PDF');
   }
@@ -1364,10 +1384,42 @@
     addTopScrollBar.call(this);
     disableDefaultSorting.call(this);
     toggleCellText.call(this);
+    toggleVisitDates.call(this);
     addPDFExport.call(this);
   }
 
-  function onPreprocess() {}
+  function sortData(data) {
+    var _this = this;
+
+    this.data.raw = this.data.raw.sort(function (a, b) {
+      var order = 0;
+
+      _this.sortable.order.forEach(function (item) {
+        var aCell = a["".concat(item.col, "-date")] ? a["".concat(item.col, "-date")] : a[item.col];
+        var bCell = b["".concat(item.col, "-date")] ? b["".concat(item.col, "-date")] : b[item.col];
+
+        if (order === 0) {
+          if (aCell !== null && bCell !== null) {
+            if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) {
+              order = -1;
+            } else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) {
+              order = 1;
+            }
+          } else if (['', null].indexOf(aCell) > -1) {
+            order = 2;
+          } else if (['', null].indexOf(bCell) > -1) {
+            order = -2;
+          }
+        }
+      });
+
+      return order;
+    });
+  }
+
+  function onPreprocess() {
+    sortData.call(this, this.data.raw);
+  }
 
   function syncScrollBars() {
     var context = this;
@@ -1397,12 +1449,12 @@
 
     this.tbody.selectAll('tr').each(function (d) {
       var visitCells = d3$1.select(this).selectAll('td:nth-child(n + 4)').attr('class', function (di) {
-        return d["".concat(di.col, "-status")] ? "pvl-visit-status--".concat(d["".concat(di.col, "-status")].toLowerCase().replace(/[^_a-z-]/g, '-')) : "";
+        return d["".concat(di.col.replace(/-date$/, ''), "-status")] ? "pvl-visit-status--".concat(d["".concat(di.col.replace(/-date$/, ''), "-status")].toLowerCase().replace(/[^_a-z-]/g, '-')) : "";
       }).classed('pvl-visit-status', true).classed('pvl-visit-status--heat-map', !context.config.display_cell_text).classed('pvl-visit-status--cell-text', context.config.display_cell_text);
       visitCells.each(function (di) {
         var visitCell = d3$1.select(this);
-        di.date = d["".concat(di.col, "-date")];
-        if (d[di.col] !== null) visitCell.attr('title', "".concat(d[context.pvl.settings.id_col], " - ").concat(di.col, " (").concat(di.date, "): ").concat(d["".concat(di.col, "-status")]));
+        di.date = d["".concat(di.col.replace(/-date$/, ''), "-date")];
+        if (d[di.col.replace(/-date$/, '')] !== null) visitCell.attr('title', "".concat(d[context.pvl.settings.id_col], " - ").concat(di.col.replace(/-date$/, ''), " (").concat(di.date, "): ").concat(d["".concat(di.col.replace(/-date$/, ''), "-status")]));
       });
     });
   }
@@ -1474,43 +1526,14 @@
     visit.call(this);
   }
 
-  function sortData(data) {
-    var _this = this;
-
-    this.data.raw = this.data.raw.sort(function (a, b) {
-      var order = 0;
-
-      _this.sortable.order.forEach(function (item) {
-        var aCell = a["".concat(item.col, "-date")] ? a["".concat(item.col, "-date")] : a[item.col];
-        var bCell = b["".concat(item.col, "-date")] ? b["".concat(item.col, "-date")] : b[item.col];
-
-        if (order === 0) {
-          if (aCell !== null && bCell !== null) {
-            if (item.direction === 'ascending' && aCell < bCell || item.direction === 'descending' && aCell > bCell) {
-              order = -1;
-            } else if (item.direction === 'ascending' && aCell > bCell || item.direction === 'descending' && aCell < bCell) {
-              order = 1;
-            }
-          } else if (['', null].indexOf(aCell) > -1) {
-            order = 2;
-          } else if (['', null].indexOf(bCell) > -1) {
-            order = -2;
-          }
-        }
-      });
-
-      return order;
-    });
-  }
-
   function onClick(th, header) {
-    var context = this,
-        selection = d3$1.select(th),
-        col = this.config.cols[this.config.headers.indexOf(header)]; //Check if column is already a part of current sort order.
+    var context = this;
+    var selection = d3$1.select(th);
+    var col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, ''); //Check if column is already a part of current sort order.
 
-    var sortItem = this.sortable.order.filter(function (item) {
+    var sortItem = this.sortable.order.find(function (item) {
       return item.col === col;
-    })[0]; //If it isn't, add it to sort order.
+    }); //If it isn't, add it to sort order.
 
     if (!sortItem) {
       sortItem = {
@@ -1557,6 +1580,7 @@
     this.thead_cells.on('click', function (header) {
       onClick.call(context, this, header);
     });
+    console.log(this.sortable.order);
   }
 
   var headerStyle = {
@@ -1693,8 +1717,9 @@
 
     this.data.filtered.forEach(function (d, row) {
       _this.config.cols.forEach(function (variable, col) {
+        var visit = variable.replace(/-date$/, '');
         var cellStyle = clone(bodyStyle);
-        var color = d["".concat(variable, "-color")];
+        var color = d["".concat(visit, "-color")];
         var fontColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FF000000';
         var borderColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FFCCCCCC';
 

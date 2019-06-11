@@ -39,7 +39,10 @@ export default function update() {
             updateLegend.call(context);
             updateNParticipants.call(context);
 
-            if (context.listing.initialized) context.listing.data.raw = context.data.transposed;
+            if (context.listing.initialized) {
+                context.listing.data.initial = context.data.transposed;
+                context.listing.data.raw = context.data.transposed;
+            }
             if (context.ordinalChart.initialized)
                 context.ordinalChart.raw_data = context.data.filtered;
             if (context.linearChart.initialized)

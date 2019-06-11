@@ -8,8 +8,8 @@ export default function addCellFormatting() {
         const visitCells = select(this)
             .selectAll('td:nth-child(n + 4)')
             .attr('class', di =>
-                d[`${di.col}-status`]
-                    ? `pvl-visit-status--${d[`${di.col}-status`]
+                d[`${di.col.replace(/-date$/, '')}-status`]
+                    ? `pvl-visit-status--${d[`${di.col.replace(/-date$/, '')}-status`]
                           .toLowerCase()
                           .replace(/[^_a-z-]/g, '-')}`
                     : ``
@@ -19,12 +19,12 @@ export default function addCellFormatting() {
             .classed('pvl-visit-status--cell-text', context.config.display_cell_text);
         visitCells.each(function(di) {
             const visitCell = select(this);
-            di.date = d[`${di.col}-date`];
-            if (d[di.col] !== null)
+            di.date = d[`${di.col.replace(/-date$/, '')}-date`];
+            if (d[di.col.replace(/-date$/, '')] !== null)
                 visitCell.attr(
                     'title',
-                    `${d[context.pvl.settings.id_col]} - ${di.col} (${di.date}): ${
-                        d[`${di.col}-status`]
+                    `${d[context.pvl.settings.id_col]} - ${di.col.replace(/-date$/, '')} (${di.date}): ${
+                        d[`${di.col.replace(/-date$/, '')}-status`]
                     }`
                 );
         });

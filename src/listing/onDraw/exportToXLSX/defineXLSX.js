@@ -27,8 +27,9 @@ export default function defineXLSX() {
     //Data rows
     this.data.filtered.forEach((d, row) => {
         this.config.cols.forEach((variable, col) => {
+            const visit = variable.replace(/-date$/, '');
             const cellStyle = clone(bodyStyle);
-            const color = d[`${variable}-color`];
+            const color = d[`${visit}-color`];
             const fontColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FF000000';
             const borderColor = /^#[a-z0-9]{6}$/i.test(color)
                 ? color.replace('#', 'FF')

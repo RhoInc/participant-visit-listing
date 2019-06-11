@@ -4,6 +4,7 @@ import addAnnotationLegend from './onResize/addAnnotationLegend';
 import positionButtons from '../functions/onResize/positionButtons';
 import updateTextMarks from './onResize/updateTextMarks';
 import highlightVisit from './onResize/highlightVisit';
+import highlightTickLabels from '../functions/onResize/highlightTickLabels';
 import maintainHighlight from './onResize/maintainHighlight';
 
 export default function onResize() {
@@ -12,6 +13,7 @@ export default function onResize() {
     addAnnotationLegend.call(this);
     positionButtons.call(this);
     updateTextMarks.call(this);
+    highlightTickLabels.call(this);
     highlightVisit.call(this);
     maintainHighlight.call(this);
 

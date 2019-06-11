@@ -2168,7 +2168,7 @@
 
   function attachBottomXAxis() {
     this.bottomXAxis = {
-      container: this.svg.select('.x.axis').classed('x--bottom', true)
+      svg: this.svg.select('.x.axis').classed('x--bottom', true)
     };
   }
 
@@ -2232,9 +2232,9 @@
 
   function rotateXAxisTickLabels() {
     //Rotate top x-axis tick labels.
-    this.topXAxis.container.selectAll('.tick text').attr('transform', 'rotate(-45)').style('text-anchor', 'start'); //Rotate bottom x-axis tick labels.
+    this.topXAxis.svg.selectAll('.tick text').attr('transform', 'rotate(-45)').style('text-anchor', 'start'); //Rotate bottom x-axis tick labels.
 
-    this.bottomXAxis.container.selectAll('.tick text').attr('transform', 'rotate(-45)').style('text-anchor', 'end');
+    this.bottomXAxis.svg.selectAll('.tick text').attr('transform', 'rotate(-45)').style('text-anchor', 'end');
   }
 
   function getItHeated() {
@@ -2254,12 +2254,67 @@
     });
   }
 
+  function highlightTickLabels() {
+    var _this = this;
+
+    var context = this;
+    this.x_coords = this.x_dom.map(function (value) {
+      return {
+        value: value,
+        coord: _this.x(value)
+      };
+    });
+    this.y_coords = this.y_dom.map(function (value) {
+      return {
+        value: value,
+        coord: _this.y(value)
+      };
+    });
+    this.overlay.style('pointer-events', null);
+    this.svg.on('mouseover', function () {
+      var coords = d3.mouse(this); //x
+
+      var x = coords[0];
+
+      if (context.config.x.type === 'ordinal') {
+        var x_coord = context.x_coords.find(function (x_coord) {
+          return x_coord.coord <= x && x < x_coord.coord + context.x.rangeBand();
+        });
+
+        if (x_coord) {
+          context.wrap.selectAll('.x.axis .tick text').attr('font-weight', function (d) {
+            return d === x_coord.value ? 'bold' : 'normal';
+          });
+        }
+      } else {
+        context.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+        context.topXAxis.svg.append('text').classed('pvl-highlight-x-tick-label', true).attr({
+          x: x,
+          y: 0
+        }).text(Math.round(context.x.invert(x)));
+      } //y
+
+
+      var y = coords[1];
+      var y_coord = context.y_coords.find(function (y_coord) {
+        return y_coord.coord <= y && y < y_coord.coord + context.y.rangeBand();
+      });
+
+      if (y_coord) {
+        context.wrap.selectAll('.y.axis .tick text').attr('font-weight', function (d) {
+          return d === y_coord.value ? 'bold' : 'normal';
+        });
+      }
+    });
+  }
+
   function onResize() {
     removeLegend.call(this);
     drawTopXAxis.call(this);
     positionButtons.call(this);
     rotateXAxisTickLabels.call(this);
     getItHeated.call(this);
+    highlightTickLabels.call(this);
     if (this.pvl.settings.active_tab === 'Study Day Chart') this.pvl.containers.loading.classed('pvl-hidden', true);
   }
 
@@ -2475,6 +2530,7 @@
     addAnnotationLegend.call(this);
     positionButtons.call(this);
     updateTextMarks.call(this);
+    highlightTickLabels.call(this);
     highlightVisit.call(this);
     maintainHighlight.call(this);
     if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1) this.pvl.containers.loading.classed('pvl-hidden', true);

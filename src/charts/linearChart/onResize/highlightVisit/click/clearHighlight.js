@@ -5,8 +5,6 @@ export default function clearHighlight(element) {
             'fill-opacity': 1,
             'stroke-opacity': 1,
         });
-    this.highlight.referenceLine.remove();
-    this.highlight.referenceText.remove();
-    this.highlight.points.selectAll('.pvl-highlighted-visit-mark--highlight-line').remove();
+    this.highlight.container.remove();
     delete this.highlight;
 }

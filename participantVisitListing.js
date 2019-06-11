@@ -2292,7 +2292,48 @@
     }).texts.classed('pvl-unscheduled-annotation', true).style('clip-path', null);
   }
 
-  function mouseover() {}
+  function mouseover(element, d) {
+    var mark = d3$1.select(element).selectAll('.wc-data-mark');
+    if (mark.node().tagName !== 'text') mark.attr({
+      'stroke': 'black'
+    });else this.marks[0].circles.filter(function (di) {
+      return di.key === d.key;
+    }).attr({
+      'stroke': 'black'
+    });
+  }
+
+  function deemphasizeMarks() {
+    this.points.selectAll('.point circle').attr({
+      'fill-opacity': .25,
+      'stroke-opacity': .25
+    });
+    this.svg.selectAll('.text text').attr({
+      'fill-opacity': .25,
+      'stroke-opacity': .25
+    });
+  }
+
+  function clearHighlight(element) {
+    this.svg.selectAll('.mark1 .point circle, .text text').attr({
+      'fill-opacity': 1,
+      'stroke-opacity': 1
+    });
+    this.highlight.container.remove();
+    delete this.highlight;
+  }
+
+  function addReferenceText() {
+    this.highlight.referenceText = this.highlight.container.append('text').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--reference-text', true).attr({
+      x: this.x(this.highlight.referenceDay),
+      dx: this.highlight.referenceDay <= (this.x_dom[1] - this.x_dom[0]) / 2 ? 5 : -5,
+      y: 0,
+      dy: 5,
+      'font-size': '12px',
+      'text-anchor': this.highlight.referenceDay <= (this.x_dom[1] - this.x_dom[0]) / 2 ? 'beginning' : 'end'
+    }).style('font-weight', 'bold').text("".concat(this.highlight.visit, " (Day ").concat(this.highlight.referenceDay, ")"));
+    this.highlight.referenceText.append('title').text("Median ".concat(this.highlight.visit, " study day: ").concat(this.highlight.referenceDay, "\nClick to remove highlighting."));
+  }
 
   var lineAttributes = {
     stroke: 'black',
@@ -2302,95 +2343,83 @@
     'stroke-linecap': 'butt'
   };
 
-  function clearHighlight(element) {
-    this.svg.selectAll('.mark1 .point circle, .text text').attr({
-      'fill-opacity': 1,
-      'stroke-opacity': 1
-    });
-    this.highlight.referenceLine.remove();
-    this.highlight.referenceText.remove();
-    this.highlight.points.selectAll('.pvl-highlighted-visit-mark--highlight-line').remove();
-    delete this.highlight;
-  }
-
-  function click(element, d) {
-    var _this = this;
-
-    var context = this; //Remove vertical line highlights.
-
-    this.svg.selectAll('.pvl-highlighted-visit-mark').remove(); //Select all points.
-
-    var points = this.svg.selectAll('.point').filter(function (d) {
-      return d.mark.id === 'mark1';
-    }).classed('pvl-highlighted-visit', false); //Reduce opacity of all circles.
-
-    points.selectAll('.point circle').attr({
-      'fill-opacity': .25,
-      'stroke-opacity': .25
-    });
-    this.svg.selectAll('.text text').attr({
-      'fill-opacity': .25,
-      'stroke-opacity': .25
-    }); //Capture selected visit value.
-
-    this.highlight = {
-      visit: d.values.raw[0][this.pvl.settings.visit_col]
-    }; //Select points representing selected visit value.
-
-    this.highlight.points = points.filter(function (di) {
-      return di.values.raw[0][_this.pvl.settings.visit_col] === _this.highlight.visit;
-    }).classed('pvl-highlighted-visit', true); //Append a reference line of the median study day of the selected visit.
-
-    this.highlight.data = this.highlight.points.data().sort(function (a, b) {
-      return a.values.y < b.values.y ? -1 : b.values.y < a.values.y ? 1 : a.total - b.total;
-    });
-    this.highlight.firstMark = this.highlight.data[0];
-    this.highlight.referenceDay = Math.round(d3$1.median(this.highlight.data, function (d) {
-      return d.total;
-    }));
-    this.highlight.referenceLine = this.svg.insert('line', '.mark1').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--reference-line', true).attr(_objectSpread({
+  function addReferenceLine() {
+    this.highlight.referenceLine = this.highlight.container.append('line').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--reference-line', true).attr(_objectSpread({
       x1: this.x(this.highlight.referenceDay),
       x2: this.x(this.highlight.referenceDay),
       y1: 0,
       y2: this.plot_height
-    }, lineAttributes)).on('click', function () {
-      return clearHighlight.call(_this);
-    });
-    this.highlight.referenceLine.append('title').text("Median ".concat(this.highlight.visit, " study day: ").concat(this.highlight.referenceDay));
-    this.highlight.referenceText = this.svg.insert('text', '.mark1').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--reference-text', true).attr({
-      x: this.x(this.highlight.referenceDay),
-      dx: this.highlight.firstMark.total <= this.highlight.referenceDay ? 5 : -5,
-      y: 0,
-      dy: 5,
-      'font-size': '12px',
-      'text-anchor': this.highlight.firstMark.total <= this.highlight.referenceDay ? 'beginning' : 'end'
-    }).text(this.highlight.visit).on('click', function () {
-      return clearHighlight.call(_this);
-    }); //Highlight points representing selected visit value.
+    }, lineAttributes));
+    this.highlight.referenceLine.append('title').text("Median ".concat(this.highlight.visit, " study day: ").concat(this.highlight.referenceDay, "\nClick to remove highlighting."));
+  }
 
+  function addHighlightLines() {
+    var context = this;
     this.highlight.points.each(function (di) {
       var point = d3$1.select(this); //Add a horizontal line to the reference line.
 
-      var line = point.insert('line', ':first-child').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--highlight-line', true).attr(_objectSpread({
+      var line = context.highlight.container.append('line').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--highlight-line', true).attr(_objectSpread({
         x1: context.x(di.values.x),
         x2: context.x(context.highlight.referenceDay),
         y1: context.y(di.values.y) + context.y.rangeBand() / 2,
         y2: context.y(di.values.y) + context.y.rangeBand() / 2
       }, lineAttributes));
-      line.append('title').text("Number of days from reference study day: ".concat(di.values.x - context.highlight.referenceDay));
-      line.on('click', function () {
-        console.log(this);
-        clearHighlight.call(context, this);
-      }); //Increase opacity.
+      line.append('title').text("Number of days from reference study day: ".concat(di.values.x - context.highlight.referenceDay, "\nClick to clear highlighting.")); //Increase opacity.
 
-      point.select('circle').attr({
+      point.selectAll('circle').attr({
         'fill-opacity': 1,
         'stroke-opacity': 1
       });
     });
   }
 
-  function mouseout() {}
+  function click(element, d) {
+    var _this = this;
+
+    //Remove vertical line highlights.
+    this.svg.selectAll('.pvl-highlighted-visit-mark').remove(); //Select all points.
+
+    this.points = this.svg.selectAll('.point').filter(function (d) {
+      return d.mark.id === 'mark1';
+    }).classed('pvl-highlighted-visit', false); //Reduce opacity of all circles.
+
+    deemphasizeMarks.call(this); //Capture selected visit value.
+
+    this.highlight = {
+      visit: d.values.raw[0][this.pvl.settings.visit_col],
+      container: this.svg.insert('g', '.mark1').classed('pvl-highlighted-visit-container', true).on('click', function () {
+        return clearHighlight.call(_this);
+      })
+    }; //Select points representing selected visit value.
+
+    this.highlight.points = this.points.filter(function (di) {
+      return di.values.raw[0][_this.pvl.settings.visit_col] === _this.highlight.visit;
+    }).classed('pvl-highlighted-visit', true); //Append a reference line of the median study day of the selected visit.
+
+    this.highlight.data = this.highlight.points.data().sort(function (a, b) {
+      return a.values.y < b.values.y ? -1 : b.values.y < a.values.y ? 1 : a.total - b.total;
+    });
+    this.highlight.referenceDay = Math.round(d3$1.median(this.highlight.data, function (d) {
+      return d.total;
+    })); //Add reference line.
+
+    addReferenceLine.call(this); //Add reference text annotation.
+
+    addReferenceText.call(this); //Highlight points representing selected visit value.
+
+    addHighlightLines.call(this);
+  }
+
+  function mouseout(element, d) {
+    var mark = d3$1.select(element).selectAll('.wc-data-mark');
+    if (mark.node().tagName !== 'text') mark.attr({
+      'stroke': this.colorScale(d.values.raw[0][this.pvl.settings.visit_status_col])
+    });else this.marks[0].circles.filter(function (di) {
+      return di.key === d.key;
+    }).attr({
+      'stroke': this.colorScale(d.values.raw[0][this.pvl.settings.visit_status_col])
+    });
+  }
 
   function highlightVisit() {
     var context = this;
@@ -2405,6 +2434,16 @@
     });
   }
 
+  function maintainHighlight() {
+    if (this.highlight) {
+      deemphasizeMarks.call(this);
+      this.highlight.points.selectAll('circle').attr({
+        'fill-opacity': 1,
+        'stroke-opacity': 1
+      });
+    }
+  }
+
   function onResize$1() {
     removeLegend.call(this);
     drawTopXAxis.call(this);
@@ -2412,6 +2451,7 @@
     positionButtons.call(this);
     updateTextMarks.call(this);
     highlightVisit.call(this);
+    maintainHighlight.call(this);
     if (['Charts', 'Study Day Chart'].indexOf(this.pvl.settings.active_tab) > -1) this.pvl.containers.loading.classed('pvl-hidden', true);
   }
 

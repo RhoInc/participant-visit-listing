@@ -246,6 +246,12 @@ export default function styles() {
                 '    font-size: 14px;' +
                 '    font-family: courier;' +
                 '}',
+                '.pvl-chart--linear .wc-data-mark {' +
+                '    cursor: pointer;' +
+                '}',
+                '.pvl-chart--linear .pvl-highlighted-visit-mark {' +
+                '    cursor: pointer;' +
+                '}',
 
             /****---------------------------------------------------------------------------------\
               Listing

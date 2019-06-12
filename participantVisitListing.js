@@ -2102,13 +2102,16 @@
       x: 0,
       width: 100,
       y: 0,
-      height: 10,
-      fill: 'black'
+      height: this.config.y.range_band,
+      fill: 'black',
+      'fill-opacity': .5
     });
     this.visitExpectationLegend.past.append('text').attr({
       x: 104,
-      y: 14
-    }).text('Completed/Missed Visits'); //future visits
+      y: 12
+    }).style({
+      'font-size': '12px'
+    }).text('Completed/Missed'); //future visits
 
     this.visitExpectationLegend.future = this.visitExpectationLegend.g.append('g').classed('pvl-mark-legend__item pvl-mark-legend__item--future', true).attr({
       transform: "translate(0,".concat(24, ")")
@@ -2117,16 +2120,19 @@
       x: 0,
       width: 100,
       y: 0,
-      height: 10,
-      fill: 'black'
+      height: this.config.y.range_band,
+      fill: 'black',
+      'fill-opacity': .5
     });
     this.visitExpectationLegend.future.append('text').attr({
       x: 104,
-      y: 14
-    }).text('Expected/Overdue Visits');
+      y: 12
+    }).style({
+      'font-size': '12px'
+    }).text('Expected/Overdue');
     this.visitExpectationLegend.future.append('circle').attr({
       cx: 50,
-      cy: 5,
+      cy: this.config.y.range_band / 2,
       r: this.config.marks[1].radius,
       fill: 'white'
     });
@@ -2439,6 +2445,7 @@
 
   function onLayout$2() {
     addTopXAxis.call(this);
+    addVisitExpectationLegend.call(this);
     addButtons.call(this);
     scrollTopXAxis.call(this);
     attachBottomXAxis.call(this);

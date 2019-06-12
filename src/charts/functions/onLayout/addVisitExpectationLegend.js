@@ -20,15 +20,19 @@ export default function addVisitExpectationLegend() {
             x: 0,
             width: 100,
             y: 0,
-            height: 10,
+            height: this.config.y.range_band,
             fill: 'black',
+            'fill-opacity': .5,
         });
     this.visitExpectationLegend.past.append('text')
         .attr({
             x: 104,
-            y: 14,
+            y: 12,
         })
-        .text('Completed/Missed Visits');
+        .style({
+            'font-size': '12px',
+        })
+        .text('Completed/Missed');
 
     //future visits
     this.visitExpectationLegend.future = this.visitExpectationLegend.g
@@ -42,19 +46,23 @@ export default function addVisitExpectationLegend() {
             x: 0,
             width: 100,
             y: 0,
-            height: 10,
+            height: this.config.y.range_band,
             fill: 'black',
+            'fill-opacity': .5,
         });
     this.visitExpectationLegend.future.append('text')
         .attr({
             x: 104,
-            y: 14,
+            y: 12,
         })
-        .text('Expected/Overdue Visits');
+        .style({
+            'font-size': '12px',
+        })
+        .text('Expected/Overdue');
     this.visitExpectationLegend.future.append('circle')
         .attr({
             cx: 50,
-            cy: 5,
+            cy: this.config.y.range_band/2,
             r: this.config.marks[1].radius,
             fill: 'white',
         });

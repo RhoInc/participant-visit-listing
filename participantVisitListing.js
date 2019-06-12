@@ -2173,8 +2173,13 @@
   }
 
   function hideCharts() {
-    if (this.property === 'linearChart' && this.pvl.settings.active_tab !== 'Charts' && this.pvl.settings.chart_layout === 'side-by-side') this.pvl.containers.charts.classed('pvl-hidden', true);
-    if (this.pvl.settings.chart_layout === 'tabbed' && (this.property === 'ordinalChart' && this.pvl.settings.active_tab !== 'Visit Chart' || this.property === 'linearChart' && this.pvl.settings.active_tab !== 'Study Day Chart')) this.pvl.containers[this.property].classed('pvl-hidden', true);
+    //Hide Charts container if the Listing tab is active.
+    if (this.pvl.settings.chart_layout === 'side-by-side' && this.pvl.settings.active_tab !== 'Charts' && this.property === 'linearChart') this.pvl.containers.charts.classed('pvl-hidden', true); //Hide the other chart container if its tab is not active.
+
+    if (this.pvl.settings.chart_layout === 'tabbed') {
+      var otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart';
+      this.pvl.containers[otherProperty].classed('pvl-hidden', true);
+    }
   }
 
   function onLayout$1() {
@@ -2279,16 +2284,16 @@
           return d === x_coord.value ? 'bold' : 'normal';
         });
       }
-    } //this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
-    //this.topXAxis.svg
-    //    .append('text')
-    //    .classed('pvl-highlight-x-tick-label', true)
-    //    .attr({
-    //        x: x,
-    //        y: 0,
-    //    })
-    //    .text(Math.round(this.x.invert(x)));
-    //y
+    } else {
+      this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+      if (x > 0) this.topXAxis.svg.append('g').classed('tick', true).append('text').classed('pvl-highlight-x-tick-label', true).attr({
+        x: x,
+        y: -9,
+        'text-anchor': 'middle'
+      }).style({
+        'font-weight': 'bold'
+      }).text(Math.round(this.x.invert(x)));
+    } //y
 
 
     var y = coords[1];
@@ -2314,12 +2319,20 @@
   function mousemove$1(mouse) {
     //x
     if (this.config.x.type === 'ordinal') {
+      this.wrap.selectAll('.x.axis .tick line').style({
+        stroke: '#eee',
+        'stroke-width': 1
+      });
       this.wrap.selectAll('.x.axis .tick text').attr('font-weight', 'normal');
     } else {
       this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
     } //y
 
 
+    this.wrap.selectAll('.y.axis .tick line').style({
+      stroke: '#eee',
+      'stroke-width': 1
+    });
     this.wrap.selectAll('.y.axis .tick text').attr('font-weight', 'normal');
   }
 

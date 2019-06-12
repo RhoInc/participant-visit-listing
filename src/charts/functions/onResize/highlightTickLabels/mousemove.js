@@ -20,15 +20,22 @@ export default function mousemove(mouse) {
                 .attr('font-weight', d => d === x_coord.value ? 'bold' : 'normal');
         }
     } else {
-        //this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
-        //this.topXAxis.svg
-        //    .append('text')
-        //    .classed('pvl-highlight-x-tick-label', true)
-        //    .attr({
-        //        x: x,
-        //        y: 0,
-        //    })
-        //    .text(Math.round(this.x.invert(x)));
+        this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+        if (x > 0)
+            this.topXAxis.svg
+                .append('g')
+                .classed('tick', true)
+                    .append('text')
+                    .classed('pvl-highlight-x-tick-label', true)
+                    .attr({
+                        x: x,
+                        y: -9,
+                        'text-anchor': 'middle',
+                    })
+                    .style({
+                        'font-weight': 'bold'
+                    })
+                    .text(Math.round(this.x.invert(x)));
     }
 
     //y

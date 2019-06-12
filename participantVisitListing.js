@@ -2,7 +2,7 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('d3'), require('webcharts')) :
   typeof define === 'function' && define.amd ? define(['d3', 'webcharts'], factory) :
   (global = global || self, global.participantVisitListing = factory(global.d3, global.webCharts));
-}(this, function (d3$1, webcharts) { 'use strict';
+}(this, function (d3, webcharts) { 'use strict';
 
   function _typeof(obj) {
     if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
@@ -703,7 +703,7 @@
         order: null // set in ../init/defineSets/defineVisitStatusSet.js
 
       },
-      gridlines: 'y',
+      gridlines: 'xy',
       padding: 0,
       scale_text: false,
       resizable: false,
@@ -732,6 +732,7 @@
     expectedCircles.per = [listingSettings.id_col, listingSettings.visit_col];
     expectedCircles.tooltip = "[".concat(listingSettings.id_col, "] - [").concat(listingSettings.visit_col, "] ([").concat(listingSettings.visit_date_col, "]: Day [").concat(listingSettings.visit_day_col, "]): [").concat(listingSettings.visit_status_col, "]");
     ordinalChartSettings.color_by = listingSettings.visit_status_col;
+    ordinalChartSettings.gridlines = 'y';
     ordinalChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
     ordinalChartSettings.margin.top = 0;
     ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; //Assign settings to settings object.
@@ -853,7 +854,7 @@
     var _this = this;
 
     //Derive ID-level variables.
-    this.data.ids = d3$1.nest().key(function (d) {
+    this.data.ids = d3.nest().key(function (d) {
       return d[_this.settings.id_col];
     }).rollup(function (d) {
       var nOverdue = d.filter(function (di) {
@@ -898,7 +899,7 @@
     var filter = this.data.filters.find(function (filter) {
       return filter.col === d.value_col;
     });
-    filter.value = select.multiple ? d3$1.select(select).selectAll('option:checked').data() : select.value; //Apply analysis filters to raw data.
+    filter.value = select.multiple ? d3.select(select).selectAll('option:checked').data() : select.value; //Apply analysis filters to raw data.
 
     this.data.analysis = this.data.raw;
     this.data.filters.filter(function (filter) {
@@ -926,7 +927,7 @@
   function defineDefaultSet(col) {
     var _this = this;
 
-    this.data.sets[col] = d3$1.set(this.data.filtered.map(function (d) {
+    this.data.sets[col] = d3.set(this.data.filtered.map(function (d) {
       return d[_this.settings[col]];
     })).values().sort(); //Sort set numerically if possible.
 
@@ -940,7 +941,7 @@
   function defineVisitSet() {
     var _this = this;
 
-    this.data.sets.visits = d3$1.set(this.data.analysis.map(function (d) {
+    this.data.sets.visits = d3.set(this.data.analysis.map(function (d) {
       return "".concat(d[_this.settings.visit_order_col], ":|:").concat(d[_this.settings.visit_col]);
     })).values();
     this.data.sets.visit_col = this.data.sets.visits.filter(function (visit) {
@@ -951,7 +952,7 @@
       return visit.split(':|:')[1];
     });
     this.data.sets.scheduledVisits = this.data.sets.visit_col;
-    this.data.sets.unscheduledVisits = d3$1.set(this.data.sets.visits.filter(function (visit) {
+    this.data.sets.unscheduledVisits = d3.set(this.data.sets.visits.filter(function (visit) {
       return _this.settings.visit_exclusion_regex ? _this.settings.visit_exclusion_regex.test(visit) : false;
     }).sort(function (a, b) {
       return a.split(':|:')[0] - b.split(':|:')[0];
@@ -1065,7 +1066,7 @@
         return di[_this.settings.visit_status_col] === d[1];
       }).length;
 
-      return "".concat(d[1], " (").concat(denominator > 0 ? d3$1.format('%')(numerator / denominator) : 'N/A', ")");
+      return "".concat(d[1], " (").concat(denominator > 0 ? d3.format('%')(numerator / denominator) : 'N/A', ")");
     });
   }
 
@@ -1132,7 +1133,7 @@
       var filter = context.data.filters.find(function (filter) {
         return filter.col === d.value_col;
       });
-      d3$1.select(this).selectAll('option').property('selected', function (d) {
+      d3.select(this).selectAll('option').property('selected', function (d) {
         return filter.value === d;
       });
     });
@@ -1146,7 +1147,7 @@
       var filter = context.data.filters.find(function (filter) {
         return filter.col === d.value_col;
       });
-      var options = d3$1.select(this).attr('size', 2).selectAll('option');
+      var options = d3.select(this).attr('size', 2).selectAll('option');
       options.property('selected', function (d) {
         return filter.value === 'All' || filter.value.indexOf(d) > -1;
       });
@@ -1160,7 +1161,7 @@
 
       loading.call(context, "this.containers.tabs.".concat(d.property, " click"), function () {
         context.settings.active_tab = d.name;
-        var tab = d3$1.select(_this);
+        var tab = d3.select(_this);
         var active = tab.classed('pvl-tab--active');
 
         if (!active) {
@@ -1220,7 +1221,7 @@
   function layout() {
     var _this = this;
     this.containers = {
-      main: d3$1.select(this.element).append('div').datum(this).classed('participant-visit-listing', true).attr('id', "participant-visit-listing".concat(this.document.querySelectorAll('.participant-visit-listing').length))
+      main: d3.select(this.element).append('div').datum(this).classed('participant-visit-listing', true).attr('id', "participant-visit-listing".concat(this.document.querySelectorAll('.participant-visit-listing').length))
     };
     /**-------------------------------------------------------------------------------------------\
       Upper row
@@ -1314,7 +1315,7 @@
     this.style.type = 'text/css';
     this.style.innerHTML = this.styles.join('\n');
     this.document.getElementsByTagName('head')[0].appendChild(this.style);
-    this.containers.style = d3$1.select(this.style);
+    this.containers.style = d3.select(this.style);
   }
 
   function controls() {
@@ -1436,11 +1437,11 @@
   function addHeaderHover() {
     //Highlight column when hovering over column header.
     this.thead.selectAll('th').on('mouseover', function (d, i) {
-      d3$1.select(this).classed('pvl-header-hover', true);
-      d3$1.selectAll("tr td:nth-child(".concat(i + 1, ")")).classed('pvl-header-hover', true);
+      d3.select(this).classed('pvl-header-hover', true);
+      d3.selectAll("tr td:nth-child(".concat(i + 1, ")")).classed('pvl-header-hover', true);
     }).on('mouseout', function (d, i) {
-      d3$1.select(this).classed('pvl-header-hover', false);
-      d3$1.selectAll("tr td:nth-child(".concat(i + 1, ")")).classed('pvl-header-hover', false);
+      d3.select(this).classed('pvl-header-hover', false);
+      d3.selectAll("tr td:nth-child(".concat(i + 1, ")")).classed('pvl-header-hover', false);
     });
   }
 
@@ -1448,11 +1449,11 @@
     var context = this; //Formatting cells via .css.
 
     this.tbody.selectAll('tr').each(function (d) {
-      var visitCells = d3$1.select(this).selectAll('td:nth-child(n + 4)').attr('class', function (di) {
+      var visitCells = d3.select(this).selectAll('td:nth-child(n + 4)').attr('class', function (di) {
         return d["".concat(di.col.replace(/-date$/, ''), "-status")] ? "pvl-visit-status--".concat(d["".concat(di.col.replace(/-date$/, ''), "-status")].toLowerCase().replace(/[^_a-z-]/g, '-')) : "";
       }).classed('pvl-visit-status', true).classed('pvl-visit-status--heat-map', !context.config.display_cell_text).classed('pvl-visit-status--cell-text', context.config.display_cell_text);
       visitCells.each(function (di) {
-        var visitCell = d3$1.select(this);
+        var visitCell = d3.select(this);
         di.date = d["".concat(di.col.replace(/-date$/, ''), "-date")];
         if (d[di.col.replace(/-date$/, '')] !== null) visitCell.attr('title', "".concat(d[context.pvl.settings.id_col], " - ").concat(di.col.replace(/-date$/, ''), " (").concat(di.date, "): ").concat(d["".concat(di.col.replace(/-date$/, ''), "-status")]));
       });
@@ -1463,7 +1464,7 @@
     var _this = this;
 
     // create dictionary of id columns
-    var idDict = d3$1.nest().key(function (d) {
+    var idDict = d3.nest().key(function (d) {
       return d[_this.pvl.settings.id_col];
     }).rollup(function (d) {
       return d;
@@ -1471,13 +1472,13 @@
 
     var cells = this.table.selectAll('tbody tr').selectAll('td:nth-child(2)'); // create ditionary of table cells
 
-    var cellDict = cells.size() ? d3$1.nest().key(function (d) {
+    var cellDict = cells.size() ? d3.nest().key(function (d) {
       return d[0].__data__.text;
     }).rollup(function (d) {
       return d[0];
     }).map(cells) : []; // get ids
 
-    var id_cols = d3$1.set(this.data.raw.map(function (d) {
+    var id_cols = d3.set(this.data.raw.map(function (d) {
       return d[_this.pvl.settings.id_col];
     })).values();
     id_cols.forEach(function (id) {
@@ -1485,12 +1486,12 @@
       var id_cell = cellDict[id];
 
       if (id_data && id_cell) {
-        var id_summary = d3$1.nest().key(function (d) {
+        var id_summary = d3.nest().key(function (d) {
           return d[_this.pvl.settings.visit_status_col];
         }).rollup(function (d) {
-          return d3$1.format('%')(d.length / id_data.length);
+          return d3.format('%')(d.length / id_data.length);
         }).entries(id_data);
-        d3$1.select(id_cell[0]).attr('title', id_summary.map(function (status) {
+        d3.select(id_cell[0]).attr('title', id_summary.map(function (status) {
           return "".concat(status.key, " (").concat(status.values, ")");
         }).join('\n'));
       }
@@ -1505,10 +1506,10 @@
         return d[_this.pvl.settings.visit_col] === visit;
       });
 
-      var visit_summary = d3$1.nest().key(function (d) {
+      var visit_summary = d3.nest().key(function (d) {
         return d[_this.pvl.settings.visit_status_col];
       }).rollup(function (d) {
-        return d3$1.format('%')(d.length / visit_data.length);
+        return d3.format('%')(d.length / visit_data.length);
       }).entries(visit_data);
 
       var visit_cell = _this.table.selectAll('thead tr').selectAll('th:not(:first-child)').filter(function (d) {
@@ -1528,7 +1529,7 @@
 
   function onClick(th, header) {
     var context = this;
-    var selection = d3$1.select(th);
+    var selection = d3.select(th);
     var col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, ''); //Check if column is already a part of current sort order.
 
     var sortItem = this.sortable.order.find(function (item) {
@@ -1558,7 +1559,7 @@
     this.sortable.order.forEach(function (item, i) {
       item.wrap.on('click', function (d) {
         //Remove column's sort container.
-        d3$1.select(this).remove(); //Remove column from sort.
+        d3.select(this).remove(); //Remove column from sort.
 
         context.sortable.order.splice(context.sortable.order.map(function (d) {
           return d.col;
@@ -1580,7 +1581,6 @@
     this.thead_cells.on('click', function (header) {
       onClick.call(context, this, header);
     });
-    console.log(this.sortable.order);
   }
 
   var headerStyle = {
@@ -1968,7 +1968,7 @@
       try {
         FileSaver(window)(new Blob([s2ab(this.XLSX)], {
           type: 'application/octet-stream'
-        }), "participant-visit-listing-".concat(d3$1.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".xlsx"));
+        }), "participant-visit-listing-".concat(d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".xlsx"));
       } catch (error) {
         if (typeof console !== 'undefined') console.log(error);
       }
@@ -1994,7 +1994,7 @@
 
       var json = doc.autoTableHtmlToJson(tableNode);
       doc.autoTable(json.columns, json.data);
-      doc.save("participant-visit-listing-".concat(d3$1.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".pdf"));
+      doc.save("participant-visit-listing-".concat(d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".pdf"));
     });
   }
 
@@ -2003,7 +2003,7 @@
     var blob = new Blob(data, {
       type: fileType === 'csv' ? 'text/csv;charset=utf-8;' : fileType === 'xlsx' ? 'application/octet-stream' : console.warn("File type not supported: ".concat(fileType))
     });
-    var fileName = "participant-visit-listing-".concat(d3$1.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".").concat(fileType);
+    var fileName = "participant-visit-listing-".concat(d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()), ".").concat(fileType);
     var link = this.wrap.select(".export#".concat(fileType));
     if (navigator.msSaveBlob) //IE
       navigator.msSaveBlob(blob, fileName);else if (link.node().download !== undefined) {
@@ -2204,8 +2204,8 @@
       height: '100px'
     }); //Draw top x-axis.
 
-    this.topXAxis.axis = d3$1.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize());
-    if (this.config.x.type === 'linear') this.topXAxis.axis.tickFormat(d3$1.format(this.config.x.format));
+    this.topXAxis.axis = d3.svg.axis().scale(this.x).orient('top').ticks(this.xAxis.ticks()[0]).innerTickSize(this.xAxis.innerTickSize()).outerTickSize(this.xAxis.outerTickSize());
+    if (this.config.x.type === 'linear') this.topXAxis.axis.tickFormat(d3.format(this.config.x.format));
     this.topXAxis.svg.attr({
       transform: "translate(".concat(this.margin.left, ",").concat(this.pvl.settings.chart_margin.top, ")")
     }).call(this.topXAxis.axis);
@@ -2240,7 +2240,7 @@
   function getItHeated() {
     var context = this;
     this.marks[0].groups.each(function (d) {
-      var group = d3$1.select(this);
+      var group = d3.select(this);
       group.select('rect.pvl-heat-rect').remove();
       d.heat = group.append('rect').classed('pvl-heat-rect', true).attr({
         x: context.x(d.values.x),
@@ -2252,6 +2252,75 @@
         'stroke-width': 0.5
       });
     });
+  }
+
+  function mousemove(mouse) {
+    var _this = this;
+
+    var coords = d3.mouse(mouse); //x
+
+    var x = coords[0];
+
+    if (this.config.x.type === 'ordinal') {
+      var x_coord = this.x_coords.find(function (x_coord) {
+        return x_coord.coord <= x && x < x_coord.coord + _this.x.rangeBand();
+      });
+
+      if (x_coord) {
+        this.wrap.selectAll('.x.axis .tick line').style({
+          stroke: function stroke(d) {
+            return d === x_coord.value ? 'black' : '#eee';
+          },
+          'stroke-width': function strokeWidth(d) {
+            return d === x_coord.value ? 2 : 1;
+          }
+        });
+        this.wrap.selectAll('.x.axis .tick text').attr('font-weight', function (d) {
+          return d === x_coord.value ? 'bold' : 'normal';
+        });
+      }
+    } //this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+    //this.topXAxis.svg
+    //    .append('text')
+    //    .classed('pvl-highlight-x-tick-label', true)
+    //    .attr({
+    //        x: x,
+    //        y: 0,
+    //    })
+    //    .text(Math.round(this.x.invert(x)));
+    //y
+
+
+    var y = coords[1];
+    var y_coord = this.y_coords.find(function (y_coord) {
+      return y_coord.coord <= y && y < y_coord.coord + _this.y.rangeBand();
+    });
+
+    if (y_coord) {
+      this.wrap.selectAll('.y.axis .tick line').style({
+        stroke: function stroke(d) {
+          return d === y_coord.value ? 'black' : '#eee';
+        },
+        'stroke-width': function strokeWidth(d) {
+          return d === y_coord.value ? 2 : 1;
+        }
+      });
+      this.wrap.selectAll('.y.axis .tick text').attr('font-weight', function (d) {
+        return d === y_coord.value ? 'bold' : 'normal';
+      });
+    }
+  }
+
+  function mousemove$1(mouse) {
+    //x
+    if (this.config.x.type === 'ordinal') {
+      this.wrap.selectAll('.x.axis .tick text').attr('font-weight', 'normal');
+    } else {
+      this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+    } //y
+
+
+    this.wrap.selectAll('.y.axis .tick text').attr('font-weight', 'normal');
   }
 
   function highlightTickLabels() {
@@ -2270,41 +2339,12 @@
         coord: _this.y(value)
       };
     });
-    this.overlay.style('pointer-events', null);
     this.svg.on('mouseover', function () {
-      var coords = d3.mouse(this); //x
-
-      var x = coords[0];
-
-      if (context.config.x.type === 'ordinal') {
-        var x_coord = context.x_coords.find(function (x_coord) {
-          return x_coord.coord <= x && x < x_coord.coord + context.x.rangeBand();
-        });
-
-        if (x_coord) {
-          context.wrap.selectAll('.x.axis .tick text').attr('font-weight', function (d) {
-            return d === x_coord.value ? 'bold' : 'normal';
-          });
-        }
-      } else {
-        context.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
-        context.topXAxis.svg.append('text').classed('pvl-highlight-x-tick-label', true).attr({
-          x: x,
-          y: 0
-        }).text(Math.round(context.x.invert(x)));
-      } //y
-
-
-      var y = coords[1];
-      var y_coord = context.y_coords.find(function (y_coord) {
-        return y_coord.coord <= y && y < y_coord.coord + context.y.rangeBand();
-      });
-
-      if (y_coord) {
-        context.wrap.selectAll('.y.axis .tick text').attr('font-weight', function (d) {
-          return d === y_coord.value ? 'bold' : 'normal';
-        });
-      }
+      mousemove.call(context, this);
+    }).on('mousemove', function () {
+      mousemove.call(context, this);
+    }).on('mouseout', function () {
+      mousemove$1.call(context, this);
     });
   }
 
@@ -2373,7 +2413,7 @@
   }
 
   function mouseover(element, d) {
-    var mark = d3$1.select(element).selectAll('.wc-data-mark');
+    var mark = d3.select(element).selectAll('.wc-data-mark');
     if (mark.node().tagName !== 'text') mark.attr({
       'stroke': 'black'
     });else this.marks[0].circles.filter(function (di) {
@@ -2436,7 +2476,7 @@
   function addHighlightLines() {
     var context = this;
     this.highlight.points.each(function (di) {
-      var point = d3$1.select(this); //Add a horizontal line to the reference line.
+      var point = d3.select(this); //Add a horizontal line to the reference line.
 
       var line = context.highlight.container.append('line').classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--highlight-line', true).attr(_objectSpread({
         x1: context.x(di.values.x),
@@ -2479,7 +2519,7 @@
     this.highlight.data = this.highlight.points.data().sort(function (a, b) {
       return a.values.y < b.values.y ? -1 : b.values.y < a.values.y ? 1 : a.total - b.total;
     });
-    this.highlight.referenceDay = Math.round(d3$1.median(this.highlight.data, function (d) {
+    this.highlight.referenceDay = Math.round(d3.median(this.highlight.data, function (d) {
       return d.total;
     })); //Add reference line.
 
@@ -2491,7 +2531,7 @@
   }
 
   function mouseout(element, d) {
-    var mark = d3$1.select(element).selectAll('.wc-data-mark');
+    var mark = d3.select(element).selectAll('.wc-data-mark');
     if (mark.node().tagName !== 'text') mark.attr({
       'stroke': this.colorScale(d.values.raw[0][this.pvl.settings.visit_status_col])
     });else this.marks[0].circles.filter(function (di) {
@@ -2614,7 +2654,7 @@
   function defineVisitStatusSet() {
     var _this = this;
 
-    this.data.sets.visit_status_col = d3$1.set(this.data.raw.map(function (d) {
+    this.data.sets.visit_status_col = d3.set(this.data.raw.map(function (d) {
       return "".concat(d[_this.settings.visit_status_order_col], ":|:").concat(d[_this.settings.visit_status_col], ":|:").concat(d[_this.settings.visit_status_color_col].toLowerCase(), ":|:").concat(d[_this.settings.visit_status_description_col]);
     })).values().sort(function (a, b) {
       return +a.split(':|:')[0] - +b.split(':|:')[0];
@@ -2644,7 +2684,7 @@
   function defineLegendSet() {
     var _this = this;
 
-    this.data.sets.legend = d3$1.set(this.data.raw.filter(function (d) {
+    this.data.sets.legend = d3.set(this.data.raw.filter(function (d) {
       return d[_this.settings.visit_status_exclusion_col] !== _this.settings.visit_status_exclusion_value;
     }).map(function (d) {
       return "".concat(d[_this.settings.visit_status_order_col], ":|:").concat(d[_this.settings.visit_status_col], ":|:").concat(d[_this.settings.visit_status_color_col].toLowerCase(), ":|:").concat(d[_this.settings.visit_status_description_col]);
@@ -2703,7 +2743,7 @@
       }
     });
     this.containers.legendItems.each(function (d) {
-      var legendItem = d3$1.select(this);
+      var legendItem = d3.select(this);
       legendItem.append('span').classed('pvl-legend-item-label', true);
       legendItem.append('span').classed('pvl-legend-item-info-icon', true).html('&#9432').style({
         color: function color(d) {
@@ -2773,7 +2813,7 @@
 
     this.style.remove(); //Clear container, removing one child node at a time.
 
-    var node = d3$1.select(this.element).node();
+    var node = d3.select(this.element).node();
 
     while (node.firstChild) {
       node.removeChild(node.firstChild);

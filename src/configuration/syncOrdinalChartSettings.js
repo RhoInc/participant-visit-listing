@@ -16,6 +16,7 @@ export default function syncOrdinalChartSettings() {
         listingSettings.visit_date_col
     }]: Day [${listingSettings.visit_day_col}]): [${listingSettings.visit_status_col}]`;
     ordinalChartSettings.color_by = listingSettings.visit_status_col;
+    ordinalChartSettings.gridlines = 'y';
     ordinalChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
     ordinalChartSettings.margin.top = 0;
     ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40;

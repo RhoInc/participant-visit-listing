@@ -6,5 +6,4 @@ export default function sortChronologically() {
     this.thead_cells.on('click', function(header) {
         onClick.call(context, this, header);
     });
-    console.log(this.sortable.order);
 }

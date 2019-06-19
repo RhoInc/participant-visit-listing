@@ -6,5 +6,7 @@ export default function split() {
         this.pvl.ordinalChart.draw();
         this.pvl.containers.linearChart.classed('pvl-hidden', false).style('width', '49.5%');
         this.pvl.linearChart.draw();
+        this.pvl.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', false);
+        this.pvl.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', false);
     });
 }

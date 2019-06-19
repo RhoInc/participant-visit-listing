@@ -5,7 +5,7 @@ import defineSets from './init/defineSets';
 import addVisitStatusStyles from './init/addVisitStatusStyles';
 import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
-import addLegend from './init/addLegend';
+import addLegends from './init/addLegends';
 import updateNParticipants from './init/updateNParticipants';
 import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
@@ -30,20 +30,26 @@ export default function init(data) {
         addVisitStatusStyles.call(this);
         defineColumns.call(this);
         transposeData.call(this);
-        addLegend.call(this);
+        addLegends.call(this);
         updateNParticipants.call(this);
 
         //Display initialization
         loading.call(this, 'Display initialization', () => {
             if (this.settings.active_tab === 'Listing') {
                 this.listing.init(this.data.transposed, this.test);
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
             } else if (this.settings.active_tab === 'Charts') {
                 this.ordinalChart.init(this.data.raw, this.test);
                 this.linearChart.init(this.data.raw, this.test);
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
             } else if (this.settings.active_tab === 'Visit Chart') {
                 this.ordinalChart.init(this.data.raw, this.test);
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
             } else if (this.settings.active_tab === 'Study Day Chart') {
                 this.linearChart.init(this.data.raw, this.test);
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
+                this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
             }
             updateMultiSelects.call(this);
             update.call(this);

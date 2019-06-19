@@ -5,21 +5,19 @@ import mouseout from './highlightTickLabels/mouseout';
 export default function highlightTickLabels() {
     const context = this;
 
-    this.x_coords = this.x_dom
-        .map(value => {
-            return {
-                value,
-                coord: this.x(value),
-            };
-        });
+    this.x_coords = this.x_dom.map(value => {
+        return {
+            value,
+            coord: this.x(value)
+        };
+    });
 
-    this.y_coords = this.y_dom
-        .map(value => {
-            return {
-                value,
-                coord: this.y(value),
-            };
-        });
+    this.y_coords = this.y_dom.map(value => {
+        return {
+            value,
+            coord: this.y(value)
+        };
+    });
 
     this.svg
         .on('mouseover', function() {

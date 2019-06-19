@@ -311,7 +311,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
         "label": "Visit Status",
         "order": null
     },
-    "gridlines": "y",
+    "gridlines": "xy",
     "padding": 0,
     "scale_text": false,
     "resizable": false,
@@ -388,7 +388,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
         "label": "Visit Status",
         "order": null
     },
-    "gridlines": "y",
+    "gridlines": "xy",
     "padding": 0,
     "scale_text": false,
     "resizable": false,

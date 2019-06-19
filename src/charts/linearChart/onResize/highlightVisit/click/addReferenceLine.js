@@ -13,5 +13,9 @@ export default function addReferenceLine() {
         });
     this.highlight.referenceLine
         .append('title')
-        .text(`Median ${this.highlight.visit} study day: ${this.highlight.referenceDay}\nClick to remove highlighting.`);
+        .text(
+            `Median ${this.highlight.visit} study day: ${
+                this.highlight.referenceDay
+            }\nClick to remove highlighting.`
+        );
 }

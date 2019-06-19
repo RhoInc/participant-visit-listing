@@ -32,6 +32,7 @@ export default function addTabFunctionality() {
                         updateSelects.call(context);
                         updateMultiSelects.call(context);
                     }
+                    context.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
                 } else if (d.name === 'Visit Chart') {
                     //Initialize or draw ordinal chart.
                     if (context.ordinalChart.initialized)
@@ -42,6 +43,15 @@ export default function addTabFunctionality() {
                         updateSelects.call(context);
                         updateMultiSelects.call(context);
                     }
+                    context.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                    context.containers.visitExpectationLegend.past.rect.classed(
+                        'pvl-hidden',
+                        false
+                    );
+                    context.containers.visitExpectationLegend.future.rect.classed(
+                        'pvl-hidden',
+                        false
+                    );
                 } else if (d.name === 'Study Day Chart') {
                     //Initialize or draw linear chart.
                     if (context.linearChart.initialized)
@@ -52,6 +62,12 @@ export default function addTabFunctionality() {
                         updateSelects.call(context);
                         updateMultiSelects.call(context);
                     }
+                    context.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                    context.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
+                    context.containers.visitExpectationLegend.future.rect.classed(
+                        'pvl-hidden',
+                        true
+                    );
                 } else if (d.name === 'Charts') {
                     //Initialize or draw ordinal chart.
                     if (context.ordinalChart.initialized)
@@ -69,6 +85,15 @@ export default function addTabFunctionality() {
                         updateSelects.call(context);
                         updateMultiSelects.call(context);
                     }
+                    context.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                    context.containers.visitExpectationLegend.past.rect.classed(
+                        'pvl-hidden',
+                        context.containers.ordinalChart.classed('pvl-hidden')
+                    );
+                    context.containers.visitExpectationLegend.future.rect.classed(
+                        'pvl-hidden',
+                        context.containers.ordinalChart.classed('pvl-hidden')
+                    );
                 }
             }
         });

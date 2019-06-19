@@ -7,5 +7,13 @@ export default function maximize() {
         this.pvl.containers[thatChart].classed('pvl-hidden', true);
         this.pvl.containers[thisChart].classed('pvl-hidden', false).style('width', '100%');
         this.pvl[thisChart].draw();
+        this.pvl.containers.visitExpectationLegend.past.rect.classed(
+            'pvl-hidden',
+            thisChart === 'linearChart'
+        );
+        this.pvl.containers.visitExpectationLegend.future.rect.classed(
+            'pvl-hidden',
+            thisChart === 'linearChart'
+        );
     });
 }

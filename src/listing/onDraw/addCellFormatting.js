@@ -23,9 +23,9 @@ export default function addCellFormatting() {
             if (d[di.col.replace(/-date$/, '')] !== null)
                 visitCell.attr(
                     'title',
-                    `${d[context.pvl.settings.id_col]} - ${di.col.replace(/-date$/, '')} (${di.date}): ${
-                        d[`${di.col.replace(/-date$/, '')}-status`]
-                    }`
+                    `${d[context.pvl.settings.id_col]} - ${di.col.replace(/-date$/, '')} (${
+                        di.date
+                    }): ${d[`${di.col.replace(/-date$/, '')}-status`]}`
                 );
         });
     });

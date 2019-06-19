@@ -4,7 +4,7 @@ import defineIDSet from './defineSets/defineDefaultSet';
 import defineVisitSet from './defineSets/defineVisitSet';
 import defineColumns from './defineColumns';
 import transposeData from './transposeData';
-import updateLegend from './addLegend/update';
+import updateLegend from './addLegends/addVisitStatusLegend/update';
 import updateNParticipants from './updateNParticipants';
 
 export default function update() {

@@ -9,7 +9,7 @@ export default function hideCharts() {
 
     //Hide the other chart container if its tab is not active.
     if (this.pvl.settings.chart_layout === 'tabbed') {
-        const otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart'
+        const otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart';
         this.pvl.containers[otherProperty].classed('pvl-hidden', true);
     }
 }

@@ -49,6 +49,9 @@ export default function layout() {
             this.containers.tabContainer = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-tabs', true);
+                this.containers.visitExpectationLegendContainer = this.containers.tabContainer
+                    .append('div')
+                    .classed('pvl-visit-expectation-legend pvl-hidden', true);
                 this.containers.nParticipants = this.containers.tabContainer
                     .append('div')
                     .classed('pvl-viewing-n-participants', true)

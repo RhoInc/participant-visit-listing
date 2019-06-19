@@ -18,7 +18,9 @@ export default function toggleVisitDates() {
         .property('checked', false);
     this.cellVisitDatesToggle.checkbox.on('click', function() {
         context.config.cols = this.checked
-            ? ['Site', 'ID', 'Status'].concat(context.pvl.data.sets.visit_col.map(visit => `${visit}-date`))
+            ? ['Site', 'ID', 'Status'].concat(
+                  context.pvl.data.sets.visit_col.map(visit => `${visit}-date`)
+              )
             : ['Site', 'ID', 'Status'].concat(context.pvl.data.sets.visit_col);
         context.draw();
     });

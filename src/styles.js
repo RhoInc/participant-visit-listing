@@ -114,11 +114,17 @@ export default function styles() {
                 '    padding: 6px 0;' +
                 '    position: relative;' +
                 '}',
+                '.pvl-visit-expectation-legend {' +
+                '    display: inline-block;' +
+                '    position: absolute;' +
+                '    top: 0;' +
+                '    left: 0;' +
+                '}',
                 '.pvl-viewing-n-participants {' +
                 '    display: inline-block;' +
-                '    right: 0;' +
-                '    bottom: 0;' +
                 '    position: absolute;' +
+                '    bottom: 0;' +
+                '    right: 0;' +
                 '}',
                 '.pvl-n-participants {' +
                 '    font-weight: bold;' +

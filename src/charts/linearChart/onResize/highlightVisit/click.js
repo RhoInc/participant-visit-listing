@@ -1,35 +1,33 @@
-import { median } from 'd3';
-import deemphasizeMarks from './click/deemphasizeMarks';
 import clearHighlight from './click/clearHighlight';
-import addReferenceText from './click/addReferenceText';
+import deemphasizeMarks from './click/deemphasizeMarks';
+import { median } from 'd3';
 import addReferenceLine from './click/addReferenceLine';
+import addReferenceText from './click/addReferenceText';
 import addHighlightLines from './click/addHighlightLines';
 
 export default function click(element, d) {
-    clearHighlight.call(this);
+    clearHighlight.call(this, !!d);
 
-    //Select all points.
-    this.points = this.svg
-        .selectAll('.point')
-        .filter(d => d.mark.id === 'mark1')
-        .classed('pvl-highlighted-visit', false);
+    //Capture selected visit value.
+    if (d) {
+        this.highlight = {
+            visit: d.values.raw[0][this.pvl.settings.visit_col],
+            container: this.svg
+                .insert('g', '.mark1')
+                .classed('pvl-highlighted-visit-container', true)
+                .on('click', () => clearHighlight.call(this))
+        };
+    }
 
     //Reduce opacity of all circles.
     deemphasizeMarks.call(this);
 
-    //Capture selected visit value.
-    this.highlight = {
-        visit: d.values.raw[0][this.pvl.settings.visit_col],
-        container: this.svg
-            .insert('g', '.mark1')
-            .classed('pvl-highlighted-visit-container', true)
-            .on('click', () => clearHighlight.call(this))
-    };
-
     //Select points representing selected visit value.
-    this.highlight.points = this.points
+    this.highlight.points = this.svg.selectAll('.point')
         .filter(di => di.values.raw[0][this.pvl.settings.visit_col] === this.highlight.visit)
         .classed('pvl-highlighted-visit', true);
+    console.log(this.highlight.points);
+    console.log(this.highlight.points.size());
 
     //Append a reference line of the median study day of the selected visit.
     this.highlight.data = this.highlight.points

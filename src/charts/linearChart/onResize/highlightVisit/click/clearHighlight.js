@@ -1,7 +1,12 @@
-export default function clearHighlight() {
+export default function clearHighlight(deleteHighlight = true) {
     if (this.highlight) {
         //Remove highlight lines and visit annotation.
-        this.highlight.container.remove();
+        if (deleteHighlight) {
+            this.highlight.container.remove();
+            delete this.highlight;
+        } else {
+            this.highlight.container.selectAll('*').remove();
+        }
 
         //De-class highlighted circles and reset their opacity.
         this.points
@@ -17,7 +22,5 @@ export default function clearHighlight() {
             'fill-opacity': 1,
             'stroke-opacity': 1
         });
-
-        delete this.highlight;
     }
 }

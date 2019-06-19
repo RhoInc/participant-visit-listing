@@ -2,6 +2,7 @@ import removeLegend from '../functions/onResize/removeLegend';
 import drawTopXAxis from '../functions/onResize/drawTopXAxis';
 import addAnnotationLegend from './onResize/addAnnotationLegend';
 import positionButtons from '../functions/onResize/positionButtons';
+import attachMarks from './onResize/attachMarks';
 import updateTextMarks from './onResize/updateTextMarks';
 import highlightVisit from './onResize/highlightVisit';
 import highlightTickLabels from '../functions/onResize/highlightTickLabels';
@@ -12,6 +13,7 @@ export default function onResize() {
     drawTopXAxis.call(this);
     addAnnotationLegend.call(this);
     positionButtons.call(this);
+    attachMarks.call(this);
     updateTextMarks.call(this);
     highlightTickLabels.call(this);
     highlightVisit.call(this);

@@ -6,8 +6,7 @@ import addReferenceLine from './click/addReferenceLine';
 import addHighlightLines from './click/addHighlightLines';
 
 export default function click(element, d) {
-    //Remove vertical line highlights.
-    this.svg.selectAll('.pvl-highlighted-visit-mark').remove();
+    clearHighlight.call(this);
 
     //Select all points.
     this.points = this.svg

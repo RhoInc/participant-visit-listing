@@ -267,7 +267,7 @@ export default function styles() {
                 '}',
                 '.pvl-listing .pvl-scroll-bar--outer {' +
                 '    width: 100%;' +
-                '    overflow-x: scroll;' +
+                '    overflow-x: auto;' +
                 '    overflow-y: hidden;' +
                 '}',
                 '.pvl-listing .pvl-scroll-bar--upper {' +

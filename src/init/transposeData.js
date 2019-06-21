@@ -15,13 +15,13 @@ export default function transposeData() {
         };
 
         for (const visit of this.data.sets.visit_col) {
-            const visit_datum = id_data.find(d => d[this.settings.visit_col] === visit);
-            datum[visit] = visit_datum ? visit_datum[this.settings.visit_text_col] : '';
-            datum[`${visit}-date`] = visit_datum ? visit_datum[this.settings.visit_date_col] : '';
-            datum[`${visit}-status`] = visit_datum
+            const visit_datum = id_data.find(d => d[this.settings.visit_col] === visit.name);
+            datum[visit.name] = visit_datum ? visit_datum[this.settings.visit_text_col] : '';
+            datum[`${visit.name}-date`] = visit_datum ? visit_datum[this.settings.visit_date_col] : '';
+            datum[`${visit.name}-status`] = visit_datum
                 ? visit_datum[this.settings.visit_status_col]
                 : '';
-            datum[`${visit}-color`] = visit_datum
+            datum[`${visit.name}-color`] = visit_datum
                 ? visit_datum[this.settings.visit_status_color_col]
                 : '';
 

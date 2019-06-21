@@ -7,6 +7,7 @@ export default function rendererSettings() {
 
         //Visit-level variables
         visit_col: 'visit_name',
+        visit_abbreviation_col: 'visit_abbreviation',
         visit_order_col: 'visit_number',
         visit_date_col: 'visit_date',
         visit_day_col: 'visit_day',

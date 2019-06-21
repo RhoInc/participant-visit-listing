@@ -1,30 +1,43 @@
 import { set } from 'd3';
 
 export default function defineVisitSet() {
-    this.data.sets.visits = set(
+    //visit order/name/abbreviation set
+    this.data.sets.visit_col = set(
         this.data.analysis.map(
-            d => `${d[this.settings.visit_order_col]}:|:${d[this.settings.visit_col]}`
+            d => `${d[this.settings.visit_order_col]}:|:${d[this.settings.visit_col]}:|:${d[this.settings.visit_abbreviation_col]}`
         )
-    ).values();
-    this.data.sets.visit_col = this.data.sets.visits
+    )
+    .values()
+    .map(value => {
+        const [order,name,abbreviation] = value.split(':|:');
+        return {
+            order,
+            name,
+            abbreviation,
+        };
+    })
+    .sort((a,b) => a.order - b.order ? a.order - b.order : a.name < b.name ? -1 : 1);
+
+    //scheduled visit set
+    this.data.sets.scheduledVisits = this.data.sets.visit_col
         .filter(visit =>
             this.settings.visit_exclusion_regex
-                ? !this.settings.visit_exclusion_regex.test(visit)
+                ? !this.settings.visit_exclusion_regex.test(visit.name)
                 : true
         )
-        .sort((a, b) => a.split(':|:')[0] - b.split(':|:')[0])
-        .map(visit => visit.split(':|:')[1]);
-    this.data.sets.scheduledVisits = this.data.sets.visit_col;
+        .map(visit => visit.name);
+
+    //unscheduled visit set
     this.data.sets.unscheduledVisits = set(
-        this.data.sets.visits
+        this.data.sets.visit_col
             .filter(visit =>
                 this.settings.visit_exclusion_regex
-                    ? this.settings.visit_exclusion_regex.test(visit)
+                    ? this.settings.visit_exclusion_regex.test(visit.name)
                     : false
             )
-            .sort((a, b) => a.split(':|:')[0] - b.split(':|:')[0])
+            .sort((a, b) => a.order - b.order)
             .map(order_visit => {
-                const visit = order_visit.split(':|:')[1];
+                const visit = order_visit.name;
                 const extra = visit.replace(this.settings.visit_exclusion_regex, '');
                 const yesPlease = visit.replace(extra, '');
 
@@ -33,9 +46,4 @@ export default function defineVisitSet() {
     )
         .values()
         .sort();
-
-    //Update ordinal chart settings.
-    this.ordinalChart.config.x.domain = this.data.sets.visit_col;
-    this.ordinalChart.config.marks[0].values[this.settings.visit_col] = this.data.sets.visit_col;
-    this.ordinalChart.config.marks[1].values[this.settings.visit_col] = this.data.sets.visit_col;
 }

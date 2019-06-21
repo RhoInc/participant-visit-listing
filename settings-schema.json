@@ -36,8 +36,17 @@
         },
         "visit_col": {
             "title": "Visit",
-            "description": "name of variable that captures visit",
+            "description": "name of variable that captures visit name",
             "default": "visit_name",
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
+        },
+        "visit_abbreviation_col": {
+            "title": "Visit Abbreviation",
+            "description": "name of variable that captures abbreviated visit name",
+            "default": "visit_abbreviation",
             "type": "string",
             "data-mapping": true,
             "data-type": "string",

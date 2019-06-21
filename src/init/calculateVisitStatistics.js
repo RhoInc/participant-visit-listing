@@ -1,8 +1,8 @@
 import * as d3 from 'd3';
 
 export default function calculateVisitStatistics() {
-    this.data.statistics.visits = this.data.sets.visits
-        .map(visit => visit.split(':|:')[1])
+    this.data.statistics.visits = this.data.sets.visit_col
+        .map(visit => visit.name)
         .reduce((visits, visit) => {
             visits[visit] = { name: visit };
             return visits;

@@ -4,7 +4,6 @@ import addVariables from './init/addVariables';
 import defineSets from './init/defineSets';
 import calculateVisitStatistics from './init/calculateVisitStatistics';
 import addVisitStatusStyles from './init/addVisitStatusStyles';
-import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
 import addLegends from './init/addLegends';
 import updateNParticipants from './init/updateNParticipants';
@@ -31,7 +30,6 @@ export default function init(data) {
         defineSets.call(this);
         calculateVisitStatistics.call(this);
         addVisitStatusStyles.call(this);
-        defineColumns.call(this);
         transposeData.call(this);
         addLegends.call(this);
         updateNParticipants.call(this);

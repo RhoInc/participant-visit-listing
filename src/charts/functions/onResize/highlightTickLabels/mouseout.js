@@ -7,7 +7,7 @@ export default function mousemove(mouse) {
         });
         this.wrap.selectAll('.x.axis .tick text').attr('font-weight', 'normal');
     } else {
-        this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+        this.topXAxis.svg.select('.tick--highlight').remove();
     }
 
     //y

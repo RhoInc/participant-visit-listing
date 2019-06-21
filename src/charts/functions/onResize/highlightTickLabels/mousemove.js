@@ -19,11 +19,11 @@ export default function mousemove(mouse) {
                 .attr('font-weight', d => (d === x_coord.value ? 'bold' : 'normal'));
         }
     } else {
-        this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+        this.topXAxis.svg.select('.tick--highlight').remove();
         if (x > 0)
             this.topXAxis.svg
                 .append('g')
-                .classed('tick', true)
+                .classed('tick tick--highlight', true)
                 .append('text')
                 .classed('pvl-highlight-x-tick-label', true)
                 .attr({

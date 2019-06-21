@@ -3225,11 +3225,11 @@
                 });
             }
         } else {
-            this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+            this.topXAxis.svg.select('.tick--highlight').remove();
             if (x > 0)
                 this.topXAxis.svg
                     .append('g')
-                    .classed('tick', true)
+                    .classed('tick tick--highlight', true)
                     .append('text')
                     .classed('pvl-highlight-x-tick-label', true)
                     .attr({
@@ -3272,7 +3272,7 @@
             });
             this.wrap.selectAll('.x.axis .tick text').attr('font-weight', 'normal');
         } else {
-            this.topXAxis.svg.select('.pvl-highlight-x-tick-label').remove();
+            this.topXAxis.svg.select('.tick--highlight').remove();
         } //y
 
         this.wrap.selectAll('.y.axis .tick line').style({

@@ -11,11 +11,5 @@ export default function addReferenceLine() {
             y2: this.plot_height,
             ...lineAttributes
         });
-    this.highlight.referenceLine
-        .append('title')
-        .text(
-            `Median ${this.highlight.visit} study day: ${
-                this.highlight.referenceDay
-            }\nClick to remove highlighting.`
-        );
+    this.highlight.referenceLine.append('title').text(this.highlight.tooltip);
 }

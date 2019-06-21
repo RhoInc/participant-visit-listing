@@ -3481,13 +3481,7 @@
                     lineAttributes
                 )
             );
-        this.highlight.referenceLine
-            .append('title')
-            .text(
-                'Median '
-                    .concat(this.highlight.visit, ' study day: ')
-                    .concat(this.highlight.referenceDay, '\nClick to remove highlighting.')
-            );
+        this.highlight.referenceLine.append('title').text(this.highlight.tooltip);
     }
 
     function addReferenceText() {
@@ -3509,13 +3503,7 @@
             .text(
                 ''.concat(this.highlight.visit, ' (Day ').concat(this.highlight.referenceDay, ')')
             );
-        this.highlight.referenceText
-            .append('title')
-            .text(
-                'Median '
-                    .concat(this.highlight.visit, ' study day: ')
-                    .concat(this.highlight.referenceDay, '\nClick to remove highlighting.')
-            );
+        this.highlight.referenceText.append('title').text(this.highlight.tooltip);
     }
 
     function addHighlightLines() {
@@ -3569,6 +3557,29 @@
                         return clearHighlight.call(_this);
                     })
             };
+            this.highlight.statistics = this.pvl.data.statistics.visits[this.highlight.visit];
+            this.highlight.referenceDay = Math.round(this.highlight.statistics.median);
+            var statistics = ['n', 'min', 'median', 'max', 'mean', 'deviation'];
+            this.highlight.tooltip = [
+                this.highlight.visit,
+                'Reference day: '.concat(this.highlight.referenceDay, ' (median)'),
+                'Statistics:'
+            ]
+                .concat(
+                    _toConsumableArray(
+                        statistics.map(function(statistic) {
+                            return ' - '
+                                .concat(statistic, ': ')
+                                .concat(
+                                    ['mean', 'deviation'].includes(statistic)
+                                        ? d3.format('.1f')(_this.highlight.statistics[statistic])
+                                        : Math.round(_this.highlight.statistics[statistic])
+                                );
+                        })
+                    ),
+                    ['Click to remove highlighting.']
+                )
+                .join('\n');
         } //Reduce opacity of all circles.
 
         deemphasizeMarks.call(this); //Select points representing selected visit value.
@@ -3578,16 +3589,7 @@
             .filter(function(di) {
                 return di.values.raw[0][_this.pvl.settings.visit_col] === _this.highlight.visit;
             })
-            .classed('pvl-highlighted-visit', true); //Append a reference line of the median study day of the selected visit.
-
-        this.highlight.data = this.pvl.data.raw.filter(function(d) {
-            return d[_this.pvl.settings.visit_col] === _this.highlight.visit;
-        });
-        this.highlight.referenceDay = Math.round(
-            d3.median(this.highlight.data, function(d) {
-                return +d[_this.pvl.settings.visit_day_col];
-            })
-        ); //Add reference line.
+            .classed('pvl-highlighted-visit', true); //Add a reference line of the median study day of the selected visit.
 
         addReferenceLine.call(this); //Add reference text annotation.
 
@@ -3864,6 +3866,42 @@
         });
     }
 
+    function calculateVisitStatistics() {
+        var _this = this;
+
+        this.data.statistics.visits = this.data.sets.visits
+            .map(function(visit) {
+                return visit.split(':|:')[1];
+            })
+            .reduce(function(visits, visit) {
+                visits[visit] = {
+                    name: visit
+                };
+                return visits;
+            }, {});
+        Object.keys(this.data.statistics.visits)
+            .map(function(visit) {
+                return _this.data.statistics.visits[visit];
+            })
+            .forEach(function(visit) {
+                visit.data = _this.data.raw.filter(function(d) {
+                    return d[_this.settings.visit_col] === visit.name;
+                });
+                visit.days = visit.data
+                    .map(function(d) {
+                        return +d[_this.settings.visit_day_col];
+                    })
+                    .sort(function(a, b) {
+                        return a - b;
+                    });
+                visit.n = visit.days.length;
+                ['min', 'median', 'max', 'mean', 'deviation'].forEach(function(statistic) {
+                    visit[statistic] = d3[statistic](visit.days);
+                }); //visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
+                //visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
+            });
+    }
+
     function addVisitStatusStyles() {
         var visitStatusStyles = this.data.sets.visit_status_col
             .map(function(visit_status) {
@@ -4133,11 +4171,13 @@
                 variables: [],
                 missingVariables: [],
                 filters: [],
-                sets: {}
+                sets: {},
+                statistics: {}
             };
             addVariables.call(_this);
             checkRequiredVariables.call(_this);
             defineSets.call(_this);
+            calculateVisitStatistics.call(_this);
             addVisitStatusStyles.call(_this);
             defineColumns.call(_this);
             transposeData.call(_this);

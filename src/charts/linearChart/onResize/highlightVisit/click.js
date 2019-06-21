@@ -1,6 +1,6 @@
 import clearHighlight from './click/clearHighlight';
+import { format } from 'd3';
 import deemphasizeMarks from './click/deemphasizeMarks';
-import { median } from 'd3';
 import addReferenceLine from './click/addReferenceLine';
 import addReferenceText from './click/addReferenceText';
 import addHighlightLines from './click/addHighlightLines';
@@ -17,6 +17,23 @@ export default function click(element, d) {
                 .classed('pvl-highlighted-visit-container', true)
                 .on('click', () => clearHighlight.call(this))
         };
+        this.highlight.statistics = this.pvl.data.statistics.visits[this.highlight.visit];
+        this.highlight.referenceDay = Math.round(this.highlight.statistics.median);
+        const statistics = ['n', 'min', 'median', 'max', 'mean', 'deviation'];
+        this.highlight.tooltip = [
+            this.highlight.visit,
+            `Reference day: ${this.highlight.referenceDay} (median)`,
+            `Statistics:`,
+            ...statistics.map(
+                statistic =>
+                    ` - ${statistic}: ${
+                        ['mean', 'deviation'].includes(statistic)
+                            ? format('.1f')(this.highlight.statistics[statistic])
+                            : Math.round(this.highlight.statistics[statistic])
+                    }`
+            ),
+            'Click to remove highlighting.'
+        ].join('\n');
     }
 
     //Reduce opacity of all circles.
@@ -28,15 +45,7 @@ export default function click(element, d) {
         .filter(di => di.values.raw[0][this.pvl.settings.visit_col] === this.highlight.visit)
         .classed('pvl-highlighted-visit', true);
 
-    //Append a reference line of the median study day of the selected visit.
-    this.highlight.data = this.pvl.data.raw.filter(
-        d => d[this.pvl.settings.visit_col] === this.highlight.visit
-    );
-    this.highlight.referenceDay = Math.round(
-        median(this.highlight.data, d => +d[this.pvl.settings.visit_day_col])
-    );
-
-    //Add reference line.
+    //Add a reference line of the median study day of the selected visit.
     addReferenceLine.call(this);
 
     //Add reference text annotation.

@@ -2,6 +2,7 @@ import loading from './util/loading';
 import checkRequiredVariables from './init/checkRequiredVariables';
 import addVariables from './init/addVariables';
 import defineSets from './init/defineSets';
+import calculateVisitStatistics from './init/calculateVisitStatistics';
 import addVisitStatusStyles from './init/addVisitStatusStyles';
 import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
@@ -21,12 +22,14 @@ export default function init(data) {
             variables: [],
             missingVariables: [],
             filters: [],
-            sets: {}
+            sets: {},
+            statistics: {}
         };
 
         addVariables.call(this);
         checkRequiredVariables.call(this);
         defineSets.call(this);
+        calculateVisitStatistics.call(this);
         addVisitStatusStyles.call(this);
         defineColumns.call(this);
         transposeData.call(this);

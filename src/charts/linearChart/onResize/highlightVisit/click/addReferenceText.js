@@ -15,11 +15,5 @@ export default function addReferenceText() {
         })
         .style('font-weight', 'bold')
         .text(`${this.highlight.visit} (Day ${this.highlight.referenceDay})`);
-    this.highlight.referenceText
-        .append('title')
-        .text(
-            `Median ${this.highlight.visit} study day: ${
-                this.highlight.referenceDay
-            }\nClick to remove highlighting.`
-        );
+    this.highlight.referenceText.append('title').text(this.highlight.tooltip);
 }

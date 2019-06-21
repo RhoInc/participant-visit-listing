@@ -247,6 +247,9 @@ export default function styles() {
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
+                '.pvl-chart--ordinal .x.axis .tick {' +
+                '    cursor: help;' +
+                '}',
                 '.pvl-unscheduled-legend-item,' +
                 '.pvl-unscheduled-annotation {' +
                 '    font-size: 14px;' +

@@ -1,5 +1,4 @@
 import clearHighlight from './click/clearHighlight';
-import { format } from 'd3';
 import deemphasizeMarks from './click/deemphasizeMarks';
 import addReferenceLine from './click/addReferenceLine';
 import addReferenceText from './click/addReferenceText';
@@ -19,21 +18,9 @@ export default function click(element, d) {
         };
         this.highlight.statistics = this.pvl.data.statistics.visits[this.highlight.visit];
         this.highlight.referenceDay = Math.round(this.highlight.statistics.median);
-        const statistics = ['n', 'min', 'median', 'max', 'mean', 'deviation'];
-        this.highlight.tooltip = [
-            this.highlight.visit,
-            `Reference day: ${this.highlight.referenceDay} (median)`,
-            `Statistics:`,
-            ...statistics.map(
-                statistic =>
-                    ` - ${statistic}: ${
-                        ['mean', 'deviation'].includes(statistic)
-                            ? format('.1f')(this.highlight.statistics[statistic])
-                            : Math.round(this.highlight.statistics[statistic])
-                    }`
-            ),
-            'Click to remove highlighting.'
-        ].join('\n');
+        this.highlight.tooltip = `${
+            this.highlight.statistics.tooltip
+        }\nClick to remove highlighting.`;
     }
 
     //Reduce opacity of all circles.

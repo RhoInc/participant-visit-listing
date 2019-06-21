@@ -1909,7 +1909,10 @@
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
-                '.pvl-unscheduled-legend-item,' +
+                '.pvl-chart--ordinal .x.axis .tick {' +
+                '    cursor: help;' +
+                '}',
+            '.pvl-unscheduled-legend-item,' +
                 '.pvl-unscheduled-annotation {' +
                 '    font-size: 14px;' +
                 '    font-family: courier;' +
@@ -3179,6 +3182,17 @@
             .style('text-anchor', 'end');
     }
 
+    function addTooltipsToXAxisTicks() {
+        var _this = this;
+
+        this.wrap
+            .selectAll('.x.axis .tick')
+            .append('title')
+            .text(function(d) {
+                return _this.pvl.data.statistics.visits[d].tooltip;
+            });
+    }
+
     function getItHeated() {
         var context = this;
         this.marks[0].groups.each(function(d) {
@@ -3315,6 +3329,7 @@
         drawTopXAxis.call(this);
         positionButtons.call(this);
         rotateXAxisTickLabels.call(this);
+        addTooltipsToXAxisTicks.call(this);
         getItHeated.call(this);
         highlightTickLabels.call(this);
         if (this.pvl.settings.active_tab === 'Study Day Chart')
@@ -3559,27 +3574,10 @@
             };
             this.highlight.statistics = this.pvl.data.statistics.visits[this.highlight.visit];
             this.highlight.referenceDay = Math.round(this.highlight.statistics.median);
-            var statistics = ['n', 'min', 'median', 'max', 'mean', 'deviation'];
-            this.highlight.tooltip = [
-                this.highlight.visit,
-                'Reference day: '.concat(this.highlight.referenceDay, ' (median)'),
-                'Statistics:'
-            ]
-                .concat(
-                    _toConsumableArray(
-                        statistics.map(function(statistic) {
-                            return ' - '
-                                .concat(statistic, ': ')
-                                .concat(
-                                    ['mean', 'deviation'].includes(statistic)
-                                        ? d3.format('.1f')(_this.highlight.statistics[statistic])
-                                        : Math.round(_this.highlight.statistics[statistic])
-                                );
-                        })
-                    ),
-                    ['Click to remove highlighting.']
-                )
-                .join('\n');
+            this.highlight.tooltip = ''.concat(
+                this.highlight.statistics.tooltip,
+                '\nClick to remove highlighting.'
+            );
         } //Reduce opacity of all circles.
 
         deemphasizeMarks.call(this); //Select points representing selected visit value.
@@ -3879,6 +3877,7 @@
                 };
                 return visits;
             }, {});
+        var statistics = ['n', 'min', 'median', 'max', 'mean', 'deviation'];
         Object.keys(this.data.statistics.visits)
             .map(function(visit) {
                 return _this.data.statistics.visits[visit];
@@ -3895,9 +3894,32 @@
                         return a - b;
                     });
                 visit.n = visit.days.length;
-                ['min', 'median', 'max', 'mean', 'deviation'].forEach(function(statistic) {
-                    visit[statistic] = d3[statistic](visit.days);
-                }); //visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
+                statistics
+                    .filter(function(statistic) {
+                        return statistic !== 'n';
+                    })
+                    .forEach(function(statistic) {
+                        visit[statistic] = d3[statistic](visit.days);
+                    });
+                visit.tooltip = [
+                    visit.name,
+                    'Reference day: '.concat(visit.median, ' (median)'),
+                    'Statistics:'
+                ]
+                    .concat(
+                        _toConsumableArray(
+                            statistics.map(function(statistic) {
+                                return ' - '
+                                    .concat(statistic, ': ')
+                                    .concat(
+                                        ['mean', 'deviation'].includes(statistic)
+                                            ? d3.format('.1f')(visit[statistic])
+                                            : Math.round(visit[statistic])
+                                    );
+                            })
+                        )
+                    )
+                    .join('\n'); //visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
                 //visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
             });
     }

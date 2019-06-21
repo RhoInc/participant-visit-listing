@@ -7,7 +7,6 @@ d3.csv(
         const instance = participantVisitListing(
             '#container', // element
             {
-                active_tab: 'Study Day Chart',
             } // settings
         );
         instance.init(data);

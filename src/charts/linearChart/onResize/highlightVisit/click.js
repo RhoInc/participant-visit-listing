@@ -23,19 +23,18 @@ export default function click(element, d) {
     deemphasizeMarks.call(this);
 
     //Select points representing selected visit value.
-    this.highlight.points = this.svg.selectAll('.point')
+    this.highlight.points = this.svg
+        .selectAll('.point')
         .filter(di => di.values.raw[0][this.pvl.settings.visit_col] === this.highlight.visit)
         .classed('pvl-highlighted-visit', true);
-    console.log(this.highlight.points);
-    console.log(this.highlight.points.size());
 
     //Append a reference line of the median study day of the selected visit.
-    this.highlight.data = this.highlight.points
-        .data()
-        .sort((a, b) =>
-            a.values.y < b.values.y ? -1 : b.values.y < a.values.y ? 1 : a.total - b.total
-        );
-    this.highlight.referenceDay = Math.round(median(this.highlight.data, d => d.total));
+    this.highlight.data = this.pvl.data.raw.filter(
+        d => d[this.pvl.settings.visit_col] === this.highlight.visit
+    );
+    this.highlight.referenceDay = Math.round(
+        median(this.highlight.data, d => +d[this.pvl.settings.visit_day_col])
+    );
 
     //Add reference line.
     addReferenceLine.call(this);

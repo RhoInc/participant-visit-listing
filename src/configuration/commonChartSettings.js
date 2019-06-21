@@ -49,6 +49,7 @@ export default function commonChartSettings() {
         padding: 0,
         scale_text: false,
         resizable: false,
-        margin: {}
+        margin: {},
+        transitions: false
     };
 }

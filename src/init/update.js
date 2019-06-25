@@ -2,7 +2,6 @@ import loading from '../util/loading';
 import filterData from './update/filterData';
 import defineIDSet from './defineSets/defineDefaultSet';
 import defineVisitSet from './defineSets/defineVisitSet';
-import defineColumns from './defineColumns';
 import transposeData from './transposeData';
 import updateLegend from './addLegends/addVisitStatusLegend/update';
 import updateNParticipants from './updateNParticipants';
@@ -32,7 +31,6 @@ export default function update() {
             //Update visit set and listing columns if the changed filter controls an analysis subset.
             if (/^Analysis Subset \d$/.test(d.label)) {
                 defineVisitSet.call(context);
-                defineColumns.call(context);
             }
 
             transposeData.call(context);

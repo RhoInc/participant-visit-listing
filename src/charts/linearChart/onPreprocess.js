@@ -1,3 +1,5 @@
+import setYDomain from '../functions/onPreprocess/setYDomain';
+
 export default function onPreprocess() {
-    this.config.y.domain = this.pvl.data.sets.id_col.slice().reverse();
+    setYDomain.call(this);
 }

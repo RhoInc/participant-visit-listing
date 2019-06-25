@@ -1018,8 +1018,6 @@
     })).values().sort();
   }
 
-  function defineColumns() {}
-
   function transposeData() {
     var _this = this;
 
@@ -1143,7 +1141,6 @@
 
         if (/^Analysis Subset \d$/.test(d.label)) {
           defineVisitSet.call(context);
-          defineColumns.call(context);
         }
 
         transposeData.call(context);
@@ -1381,7 +1378,7 @@
     this.controls = new webcharts.createControls(this.containers.controls.node(), this.settings.controlsSynced);
   }
 
-  function defineColumns$1() {
+  function defineColumns() {
     this.config.cols = ['Site', 'ID', 'Status'].concat(this.pvl.data.sets.scheduledVisits);
     this.config.headers = this.config.cols.slice();
   }
@@ -1391,7 +1388,7 @@
     this.data.initial = this.data.raw.slice();
     this.controls.init(this.pvl.data.raw); // gotta pass the raw data to the controls
 
-    defineColumns$1.call(this);
+    defineColumns.call(this);
   }
 
   function hideListing() {
@@ -1484,6 +1481,7 @@
   }
 
   function onPreprocess() {
+    defineColumns.call(this);
     sortData.call(this, this.data.raw);
   }
 
@@ -2277,8 +2275,17 @@
     hideCharts.call(this);
   }
 
-  function onPreprocess$1() {
+  function setXDomain$1() {
+    this.config.x.domain = this.pvl.data.sets.scheduledVisits;
+  }
+
+  function setYDomain() {
     this.config.y.domain = this.pvl.data.sets.id_col.slice().reverse();
+  }
+
+  function onPreprocess$1() {
+    setXDomain$1.call(this);
+    setYDomain.call(this);
   }
 
   function onDataTransform() {}
@@ -2497,7 +2504,7 @@
   }
 
   function onPreprocess$2() {
-    this.config.y.domain = this.pvl.data.sets.id_col.slice().reverse();
+    setYDomain.call(this);
   }
 
   function onDataTransform$1() {}
@@ -3051,7 +3058,6 @@
       defineSets.call(_this);
       calculateVisitStatistics.call(_this);
       addVisitStatusStyles.call(_this);
-      defineColumns.call(_this);
       transposeData.call(_this);
       addLegends.call(_this);
       updateNParticipants.call(_this); //Display initialization

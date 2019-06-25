@@ -718,18 +718,18 @@
             //Miscellaneous
             filter_cols: ['subset1', 'subset2', 'subset3'],
             // default filter variables
-            display_cell_text: true,
-            toggle_cell_text: false,
             chart_layout: 'tabbed',
             // ['tabbed', 'side-by-side']
             active_tab: 'Visit Chart',
             // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
-            date_format: '%Y-%m-%d',
-            // format of visit dates
+            abbreviate_visits: true,
             chart_margin: {
                 top: 100,
                 bottom: 100
-            }
+            },
+            display_cell_text: true,
+            toggle_cell_text: false,
+            date_format: '%Y-%m-%d' // format of visit dates
         };
     }
 
@@ -2062,8 +2062,16 @@
     }
 
     function defineColumns() {
-        this.config.cols = ['Site', 'ID', 'Status'].concat(this.pvl.data.sets.scheduledVisits);
-        this.config.headers = this.config.cols.slice();
+        this.config.cols = this.display_dates
+            ? ['Site', 'ID', 'Status'].concat(
+                  this.pvl.data.sets.scheduledVisits.map(function(visit) {
+                      return ''.concat(visit, '-date');
+                  })
+              )
+            : ['Site', 'ID', 'Status'].concat(this.pvl.data.sets.scheduledVisits);
+        this.config.headers = this.config.cols.slice().map(function(col) {
+            return col.replace('-date', '');
+        });
     }
 
     function onInit() {
@@ -2128,6 +2136,7 @@
 
     function toggleVisitDates() {
         var context = this;
+        this.display_dates = false;
         this.cellVisitDatesToggle = {
             container: this.wrap
                 .selectAll('.table-top')
@@ -2144,13 +2153,7 @@
             .attr('type', 'checkbox')
             .property('checked', false);
         this.cellVisitDatesToggle.checkbox.on('click', function() {
-            context.config.cols = this.checked
-                ? ['Site', 'ID', 'Status'].concat(
-                      context.pvl.data.sets.visit_col.map(function(visit) {
-                          return ''.concat(visit, '-date');
-                      })
-                  )
-                : ['Site', 'ID', 'Status'].concat(context.pvl.data.sets.visit_col);
+            context.display_dates = this.checked;
             context.draw();
         });
     }
@@ -2171,6 +2174,29 @@
         toggleCellText.call(this);
         toggleVisitDates.call(this);
         addPDFExport.call(this);
+    }
+
+    function clearSort() {
+        var _this = this;
+
+        //Clear sort if visit is not in analysis subset.
+        if (
+            this.sortable.order.some(function(item) {
+                return (
+                    _this.config.cols
+                        .map(function(col) {
+                            return col.replace('-date', '');
+                        })
+                        .includes(item.col) === false
+                );
+            })
+        ) {
+            this.sortable.order = []; //Remove sort buttons.
+
+            this.sortable.wrap.selectAll('.wc-button.sort-box').remove(); //Display sorting instruction.
+
+            this.sortable.wrap.select('.instruction').classed('hidden', false);
+        }
     }
 
     function sortData(data) {
@@ -2214,6 +2240,7 @@
 
     function onPreprocess() {
         defineColumns.call(this);
+        clearSort.call(this);
         sortData.call(this, this.data.raw);
     }
 
@@ -2349,8 +2376,8 @@
         var _this = this;
 
         this.pvl.data.sets.visit_col.forEach(function(visit) {
-            var visit_data = _this.pvl.data.raw.filter(function(d) {
-                return d[_this.pvl.settings.visit_col] === visit;
+            var visit_data = _this.pvl.data.filtered.filter(function(d) {
+                return d[_this.pvl.settings.visit_col] === visit.name;
             });
 
             var visit_summary = d3
@@ -2367,17 +2394,31 @@
                 .selectAll('thead tr')
                 .selectAll('th:not(:first-child)')
                 .filter(function(d) {
-                    return d === visit;
+                    return d === visit.name;
                 });
 
             visit_cell.attr(
                 'title',
-                visit_summary
-                    .map(function(status) {
-                        return ''.concat(status.key, ' (').concat(status.values, ')');
-                    })
-                    .join('\n')
+                ''.concat(visit.name, '\n - ').concat(
+                    visit_summary
+                        .map(function(status) {
+                            return ''.concat(status.key, ' (').concat(status.values, ')');
+                        })
+                        .join('\n - ')
+                )
             );
+            if (_this.pvl.settings.abbreviate_visits)
+                visit_cell.text(function(d) {
+                    var abbreviation = _this.pvl.data.sets.visit_col.find(function(visit) {
+                        return visit.name === d;
+                    }).abbreviation;
+
+                    return abbreviation !== 'undefined'
+                        ? _this.pvl.data.sets.visit_col.find(function(visit) {
+                              return visit.name === d;
+                          }).abbreviation
+                        : d;
+                });
         });
     }
 
@@ -3260,11 +3301,32 @@
     function addTooltipsToXAxisTicks() {
         var _this = this;
 
+        this.wrap.selectAll('.pvl-x-tooltip').remove();
         this.wrap
             .selectAll('.x.axis .tick')
             .append('title')
+            .classed('pvl-x-tooltip', true)
             .text(function(d) {
-                return _this.pvl.data.statistics.visits[d].tooltip;
+                var visit_data = _this.pvl.data.filtered.filter(function(di) {
+                    return di[_this.pvl.settings.visit_col] === d;
+                });
+
+                var visit_summary = d3
+                    .nest()
+                    .key(function(d) {
+                        return d[_this.pvl.settings.visit_status_col];
+                    })
+                    .rollup(function(d) {
+                        return d3.format('%')(d.length / visit_data.length);
+                    })
+                    .entries(visit_data);
+                return ''.concat(d, '\n - ').concat(
+                    visit_summary
+                        .map(function(status) {
+                            return ''.concat(status.key, ' (').concat(status.values, ')');
+                        })
+                        .join('\n - ')
+                );
             });
     }
 
@@ -3399,6 +3461,23 @@
             });
     }
 
+    function abbreviatXAxisTickLabels() {
+        var _this = this;
+
+        if (this.pvl.settings.abbreviate_visits)
+            this.wrap.selectAll('.x.axis .tick text').text(function(d) {
+                var abbreviation = _this.pvl.data.sets.visit_col.find(function(visit) {
+                    return visit.name === d;
+                }).abbreviation;
+
+                return abbreviation !== 'undefined'
+                    ? _this.pvl.data.sets.visit_col.find(function(visit) {
+                          return visit.name === d;
+                      }).abbreviation
+                    : d;
+            });
+    }
+
     function onResize() {
         removeLegend.call(this);
         drawTopXAxis.call(this);
@@ -3407,6 +3486,7 @@
         addTooltipsToXAxisTicks.call(this);
         getItHeated.call(this);
         highlightTickLabels.call(this);
+        abbreviatXAxisTickLabels.call(this);
         if (this.pvl.settings.active_tab === 'Study Day Chart')
             this.pvl.containers.loading.classed('pvl-hidden', true);
     }
@@ -4282,34 +4362,36 @@
 
             loading.call(_this, 'Display initialization', function() {
                 if (_this.settings.active_tab === 'Listing') {
-                    _this.listing.init(_this.data.transposed, _this.test);
-
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
 
                     _this.containers.ordinalChart.classed('pvl-hidden', true);
 
                     _this.containers.linearChart.classed('pvl-hidden', true);
 
-                    _this.containers.listing.classed('pvl-hidden', true);
+                    _this.containers.listing.classed('pvl-hidden', false); //initialize listing
+
+                    _this.listing.init(_this.data.transposed, _this.test);
                 } else if (_this.settings.active_tab === 'Charts') {
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+
+                    _this.containers.charts.classed('pvl-hidden', false);
+
+                    _this.containers.listing.classed('pvl-hidden', true); //initialize charts
+
                     _this.ordinalChart.init(_this.data.raw, _this.test);
 
                     _this.linearChart.init(_this.data.raw, _this.test);
-
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-
-                    _this.containers.listing.classed('pvl-hidden', true);
                 } else if (_this.settings.active_tab === 'Visit Chart') {
-                    _this.ordinalChart.init(_this.data.raw, _this.test);
-
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+
+                    _this.containers.ordinalChart.classed('pvl-hidden', false);
 
                     _this.containers.linearChart.classed('pvl-hidden', true);
 
-                    _this.containers.listing.classed('pvl-hidden', true);
-                } else if (_this.settings.active_tab === 'Study Day Chart') {
-                    _this.linearChart.init(_this.data.raw, _this.test);
+                    _this.containers.listing.classed('pvl-hidden', true); //initialize ordinal chart
 
+                    _this.ordinalChart.init(_this.data.raw, _this.test);
+                } else if (_this.settings.active_tab === 'Study Day Chart') {
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
 
                     _this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
@@ -4318,11 +4400,16 @@
 
                     _this.containers.ordinalChart.classed('pvl-hidden', true);
 
-                    _this.containers.listing.classed('pvl-hidden', true);
+                    _this.containers.linearChart.classed('pvl-hidden', false);
+
+                    _this.containers.listing.classed('pvl-hidden', true); //initialize linear chart
+
+                    _this.linearChart.init(_this.data.raw, _this.test);
                 }
 
                 updateMultiSelects$1.call(_this);
-                update$1.call(_this);
+                update$1.call(_this); //indicate that loading has completed
+
                 if (_this.test) _this.loaded = true;
             });
         });

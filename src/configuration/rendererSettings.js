@@ -24,14 +24,15 @@ export default function rendererSettings() {
 
         //Miscellaneous
         filter_cols: ['subset1', 'subset2', 'subset3'], // default filter variables
-        display_cell_text: true,
-        toggle_cell_text: false,
         chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
         active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']
-        date_format: '%Y-%m-%d', // format of visit dates
+        abbreviate_visits: true,
         chart_margin: {
             top: 100,
             bottom: 100
-        }
+        },
+        display_cell_text: true,
+        toggle_cell_text: false,
+        date_format: '%Y-%m-%d' // format of visit dates
     };
 }

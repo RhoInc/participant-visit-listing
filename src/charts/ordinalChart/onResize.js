@@ -5,6 +5,7 @@ import rotateXAxisTickLabels from './onResize/rotateXAxisTickLabels';
 import addTooltipsToXAxisTicks from './onResize/addTooltipsToXAxisTicks';
 import getItHeated from './onResize/getItHeated';
 import highlightTickLabels from '../functions/onResize/highlightTickLabels';
+import abbreviateXAxisTickLabels from './onResize/abbreviateXAxisTickLabels';
 
 export default function onResize() {
     removeLegend.call(this);
@@ -14,6 +15,7 @@ export default function onResize() {
     addTooltipsToXAxisTicks.call(this);
     getItHeated.call(this);
     highlightTickLabels.call(this);
+    abbreviateXAxisTickLabels.call(this);
 
     if (this.pvl.settings.active_tab === 'Study Day Chart')
         this.pvl.containers.loading.classed('pvl-hidden', true);

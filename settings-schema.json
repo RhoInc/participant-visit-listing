@@ -186,6 +186,12 @@
             "default": "%Y-%m-%d",
             "type": "string"
         },
+        "abbreviate_visits": {
+            "title": "Abbreviate Visits?",
+            "description": "controls whether full or abbreviated visit names display in x-axis of visit chart and column headers of listing",
+            "default": true,
+            "type": "boolean"
+        },
         "display_cell_text": {
             "title": "Display Listing Cell Text?",
             "description": "controls the display of the listing, either as a heat map or as a listing",

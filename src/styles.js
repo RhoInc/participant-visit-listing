@@ -375,7 +375,6 @@ export default function styles() {
                     //'.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
                     //'    border-bottom: 1px solid #aaa !important;' +
                     //'}',
-
     ];
 
     //Attach styles to DOM.

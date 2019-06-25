@@ -35,9 +35,18 @@ name of variable that captures participant status
 ## settings.visit_col
 `string`
 
-name of variable that captures visit
+name of variable that captures visit name
 
 **default:** `"visit_name"`
+
+
+
+## settings.visit_abbreviation_col
+`string`
+
+name of variable that captures abbreviated visit name
+
+**default:** `"visit_abbreviation"`
 
 
 
@@ -185,6 +194,15 @@ a strptime specification of time format directives, used to parse visit date
 
 
 
+## settings.abbreviat_visits
+`boolean`
+
+controls whether full or abbreviated visit names display in x-axis of visit chart and column headers of listing
+
+**default:** `true`
+
+
+
 ## settings.display_cell_text
 `boolean`
 
@@ -315,7 +333,8 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     "padding": 0,
     "scale_text": false,
     "resizable": false,
-    "margin": {}
+    "margin": {},
+    "transitions": false
 }
 ```
 
@@ -392,6 +411,7 @@ The objects below contain Webcharts settings for each display as of version 1.2.
     "padding": 0,
     "scale_text": false,
     "resizable": false,
-    "margin": {}
+    "margin": {},
+    "transitions": false
 }
 ```

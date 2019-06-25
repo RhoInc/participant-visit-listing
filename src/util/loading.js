@@ -26,7 +26,7 @@ export default function loading(event, callback) {
 
             //end performance test
             let t1 = this.performance.now();
-            console.log(`${event} took ${t1 - t0} milliseconds.`);
+            if (!this.test) console.log(`${event} took ${t1 - t0} milliseconds.`);
         }
     });
 }

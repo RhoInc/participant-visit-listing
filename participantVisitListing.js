@@ -1092,7 +1092,8 @@
 
                 var t1 = _this.performance.now();
 
-                console.log(''.concat(event, ' took ').concat(t1 - t0, ' milliseconds.'));
+                if (!_this.test)
+                    console.log(''.concat(event, ' took ').concat(t1 - t0, ' milliseconds.'));
             }
         });
     }
@@ -1162,15 +1163,18 @@
     function filterData(d, select) {
         var _this = this;
 
-        var filter = this.data.filters.find(function(filter) {
-            return filter.col === d.value_col;
-        });
-        filter.value = select.multiple
-            ? d3
-                  .select(select)
-                  .selectAll('option:checked')
-                  .data()
-            : select.value; //Apply analysis filters to raw data.
+        if (d) {
+            var filter = this.data.filters.find(function(filter) {
+                return filter.col === d.value_col;
+            });
+            if (select)
+                filter.value = select.multiple
+                    ? d3
+                          .select(select)
+                          .selectAll('option:checked')
+                          .data()
+                    : select.value;
+        } //Apply analysis filters to raw data.
 
         this.data.analysis = this.data.raw;
         this.data.filters
@@ -1728,25 +1732,25 @@
         if (this.settings.chart_layout === 'tabbed') {
             this.containers.ordinalChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full', true);
             this.containers.linearChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-chart pvl-chart--linear pvl-chart--full', true);
+                .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--full', true);
         } else {
             this.containers.charts = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-charts', true);
             this.containers.ordinalChart = this.containers.charts
                 .append('div')
-                .classed('pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
+                .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
             this.containers.linearChart = this.containers.charts
                 .append('div')
-                .classed('pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
+                .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
         }
 
         this.containers.listing = this.containers.lowerRow
             .append('div')
-            .classed('pvl-listing', true);
+            .classed('pvl-display pvl-listing', true);
         /**-------------------------------------------------------------------------------------------\
       Functionality
     \-------------------------------------------------------------------------------------------**/
@@ -3151,7 +3155,10 @@
         if (this.pvl.settings.chart_layout === 'tabbed') {
             var otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart';
             this.pvl.containers[otherProperty].classed('pvl-hidden', true);
-        }
+        } //Hide listing.
+
+        if (this.pvl.settings.active_tab !== 'Listing')
+            this.pvl.containers.listing.classed('pvl-hidden', true);
     }
 
     function onLayout$1() {
@@ -4278,16 +4285,28 @@
                     _this.listing.init(_this.data.transposed, _this.test);
 
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
+
+                    _this.containers.ordinalChart.classed('pvl-hidden', true);
+
+                    _this.containers.linearChart.classed('pvl-hidden', true);
+
+                    _this.containers.listing.classed('pvl-hidden', true);
                 } else if (_this.settings.active_tab === 'Charts') {
                     _this.ordinalChart.init(_this.data.raw, _this.test);
 
                     _this.linearChart.init(_this.data.raw, _this.test);
 
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+
+                    _this.containers.listing.classed('pvl-hidden', true);
                 } else if (_this.settings.active_tab === 'Visit Chart') {
                     _this.ordinalChart.init(_this.data.raw, _this.test);
 
                     _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+
+                    _this.containers.linearChart.classed('pvl-hidden', true);
+
+                    _this.containers.listing.classed('pvl-hidden', true);
                 } else if (_this.settings.active_tab === 'Study Day Chart') {
                     _this.linearChart.init(_this.data.raw, _this.test);
 
@@ -4296,10 +4315,15 @@
                     _this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
 
                     _this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
+
+                    _this.containers.ordinalChart.classed('pvl-hidden', true);
+
+                    _this.containers.listing.classed('pvl-hidden', true);
                 }
 
                 updateMultiSelects$1.call(_this);
                 update$1.call(_this);
+                if (_this.test) _this.loaded = true;
             });
         });
     }

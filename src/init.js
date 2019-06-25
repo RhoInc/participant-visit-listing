@@ -39,21 +39,30 @@ export default function init(data) {
             if (this.settings.active_tab === 'Listing') {
                 this.listing.init(this.data.transposed, this.test);
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
+                this.containers.ordinalChart.classed('pvl-hidden', true);
+                this.containers.linearChart.classed('pvl-hidden', true);
+                this.containers.listing.classed('pvl-hidden', true);
             } else if (this.settings.active_tab === 'Charts') {
                 this.ordinalChart.init(this.data.raw, this.test);
                 this.linearChart.init(this.data.raw, this.test);
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.listing.classed('pvl-hidden', true);
             } else if (this.settings.active_tab === 'Visit Chart') {
                 this.ordinalChart.init(this.data.raw, this.test);
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.linearChart.classed('pvl-hidden', true);
+                this.containers.listing.classed('pvl-hidden', true);
             } else if (this.settings.active_tab === 'Study Day Chart') {
                 this.linearChart.init(this.data.raw, this.test);
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
                 this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
                 this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
+                this.containers.ordinalChart.classed('pvl-hidden', true);
+                this.containers.listing.classed('pvl-hidden', true);
             }
             updateMultiSelects.call(this);
             update.call(this);
+            if (this.test) this.loaded = true;
         });
     });
 }

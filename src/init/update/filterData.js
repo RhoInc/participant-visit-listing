@@ -3,12 +3,16 @@ import idLevel from '../addVariables/idLevel';
 import updateNOverdueOptions from './filterData/updateNOverdueOptions';
 
 export default function filterData(d, select) {
-    const filter = this.data.filters.find(filter => filter.col === d.value_col);
-    filter.value = select.multiple
-        ? d3select(select)
-              .selectAll('option:checked')
-              .data()
-        : select.value;
+    if (d) {
+        const filter = this.data.filters.find(filter => filter.col === d.value_col);
+
+        if (select)
+            filter.value = select.multiple
+                ? d3select(select)
+                      .selectAll('option:checked')
+                      .data()
+                : select.value;
+    }
 
     //Apply analysis filters to raw data.
     this.data.analysis = this.data.raw;

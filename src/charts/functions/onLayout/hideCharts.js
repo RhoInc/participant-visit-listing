@@ -12,4 +12,8 @@ export default function hideCharts() {
         const otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart';
         this.pvl.containers[otherProperty].classed('pvl-hidden', true);
     }
+
+    //Hide listing.
+    if (this.pvl.settings.active_tab !== 'Listing')
+        this.pvl.containers.listing.classed('pvl-hidden', true);
 }

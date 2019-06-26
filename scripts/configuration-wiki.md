@@ -194,7 +194,7 @@ a strptime specification of time format directives, used to parse visit date
 
 
 
-## settings.abbreviat_visits
+## settings.abbreviate_visits
 `boolean`
 
 controls whether full or abbreviated visit names display in x-axis of visit chart and column headers of listing

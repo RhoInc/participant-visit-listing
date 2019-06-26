@@ -3461,7 +3461,7 @@
             });
     }
 
-    function abbreviatXAxisTickLabels() {
+    function abbreviateXAxisTickLabels() {
         var _this = this;
 
         if (this.pvl.settings.abbreviate_visits)
@@ -3486,7 +3486,7 @@
         addTooltipsToXAxisTicks.call(this);
         getItHeated.call(this);
         highlightTickLabels.call(this);
-        abbreviatXAxisTickLabels.call(this);
+        abbreviateXAxisTickLabels.call(this);
         if (this.pvl.settings.active_tab === 'Study Day Chart')
             this.pvl.containers.loading.classed('pvl-hidden', true);
     }

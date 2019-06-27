@@ -1,9 +1,21 @@
 # participant-visit-listing
 The Participant Visit Listing is a JavaScript library that visualizes the schedule of events in a clinical trial for each participant.
 Each participant's schedule of events displays horizontally in a matrix with one row per participant and one column per visit.
-The visualization makes the detection of participant and site compliance evident via color-coded visit cells:
+The visualization offers three views to aid in the detection of participant and site compliance issues:
+## Visit Chart
+Compact view that provides a quick overview of visit status, even when the number of visits is large.
 
-![alt tag](https://user-images.githubusercontent.com/5428548/47172028-5247b480-d2d8-11e8-8e40-47e8ce4cf848.png)
+![visit_chart](https://user-images.githubusercontent.com/26064686/60273476-344d3d80-98c4-11e9-9324-4efdaf63a971.gif)
+
+## Study Day Chart
+Displays the exact study day for each visit and allows for the inclusion of unscheduled visits. Makes identifying out of window visit trends easy.
+
+![study_day_chart](https://user-images.githubusercontent.com/26064686/60273527-53e46600-98c4-11e9-87a1-c105a3d0f5ee.gif)
+
+## Listing
+In-depth and highly interactive, provides sorting, searching, and subsetting functionality.
+
+![listing](https://user-images.githubusercontent.com/26064686/60273556-61015500-98c4-11e9-8b83-ded02bbc38c8.gif)
 
 [Click here](https://rhoinc.github.io/participant-visit-listing/test-page/) to view an interactive demo.
 

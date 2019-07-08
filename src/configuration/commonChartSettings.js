@@ -45,9 +45,11 @@ export default function commonChartSettings() {
             label: 'Visit Status',
             order: null // set in ../init/defineSets/defineVisitStatusSet.js
         },
-        gridlines: 'y',
+        gridlines: 'xy',
         padding: 0,
         scale_text: false,
-        resizable: false
+        resizable: false,
+        margin: {},
+        transitions: false
     };
 }

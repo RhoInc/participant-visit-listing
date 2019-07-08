@@ -19,4 +19,10 @@ export default function defineLegendSet() {
     )
         .values()
         .sort((a, b) => +a.split(':|:')[0] - +b.split(':|:')[0]);
+    this.data.sets.past_visits = this.data.sets.legend
+        .map(visit_status => visit_status.split(':|:')[1])
+        .filter(visit_status => !this.settings.visit_expectation_regex.test(visit_status));
+    this.data.sets.future_visits = this.data.sets.legend
+        .map(visit_status => visit_status.split(':|:')[1])
+        .filter(visit_status => this.settings.visit_expectation_regex.test(visit_status));
 }

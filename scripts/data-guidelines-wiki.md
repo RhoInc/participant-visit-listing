@@ -11,7 +11,8 @@ required and optional variables:
 |**site_col**|site_name|string|site|**Y**|
 |**id_col**|subjectnameoridentifier|string|participant ID|**Y**|
 |**id_status_col**|subject_status|string|participant status|**Y**|
-|**visit_col**|visit_name|string|visit|**Y**|
+|**visit_col**|visit_name|string|visit name|**Y**|
+|**visit_abbreviation_col**|visit_abbreviation|string|abbreviated visit name|**Y**|
 |**visit_order_col**|visit_number|string|sort order of visit||
 |**visit_date_col**|visit_date|string|date of visit|**Y**|
 |**visit_day_col**|visit_day|string|study day of visit|**Y**|

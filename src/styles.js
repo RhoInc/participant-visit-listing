@@ -2,7 +2,11 @@ import { select } from 'd3';
 
 export default function styles() {
     this.styles = [
-        'body {' +
+        'html.pvl-wait, html.pvl-wait * {' +
+        '    cursor: wait !important;' +
+        '}',
+        'body.pvl-wait, body.pvl-wait * {' +
+        '    cursor: wait !important;' +
         '}',
         '.participant-visit-listing {' +
         '    font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;' +
@@ -110,11 +114,17 @@ export default function styles() {
                 '    padding: 6px 0;' +
                 '    position: relative;' +
                 '}',
+                '.pvl-visit-expectation-legend {' +
+                '    display: inline-block;' +
+                '    position: absolute;' +
+                '    top: 0;' +
+                '    left: 0;' +
+                '}',
                 '.pvl-viewing-n-participants {' +
                 '    display: inline-block;' +
-                '    right: 0;' +
-                '    bottom: 0;' +
                 '    position: absolute;' +
+                '    bottom: 0;' +
+                '    right: 0;' +
                 '}',
                 '.pvl-n-participants {' +
                 '    font-weight: bold;' +
@@ -201,6 +211,17 @@ export default function styles() {
                 '    width: 49.5%;' +
                 '    float: right;' +
                 '}',
+                '.pvl-floating-axis {' +
+                '    width: 100%;' +
+                '    z-index: 99;' +
+                '    position: static;' +
+                '}',
+                '.pvl-floating-axis.pvl-sticky {' +
+                '    position: fixed;' +
+                '    top: 0;' +
+                '    background-color: #F6F6F6;' +
+                '    opacity: 0.8;' +
+                '}',
                 '.pvl-chart .axis-title--top {' +
                 '    font-size: 16px;' +
                 '    font-weight: bold;' +
@@ -226,10 +247,19 @@ export default function styles() {
                 '}' +
                 '.pvl-chart .pvl-chart-button--maximize {' +
                 '}' +
+                '.pvl-chart--ordinal .x.axis .tick {' +
+                '    cursor: help;' +
+                '}',
                 '.pvl-unscheduled-legend-item,' +
                 '.pvl-unscheduled-annotation {' +
                 '    font-size: 14px;' +
                 '    font-family: courier;' +
+                '}',
+                '.pvl-chart--linear .wc-data-mark {' +
+                '    cursor: pointer;' +
+                '}',
+                '.pvl-chart--linear .pvl-highlighted-visit-mark {' +
+                '    cursor: pointer;' +
                 '}',
 
             /****---------------------------------------------------------------------------------\
@@ -238,9 +268,16 @@ export default function styles() {
 
                 '.pvl-listing {' +
                 '}',
-                '.pvl-listing .wc-table {' +
+                '.pvl-listing .pvl-scroll-bar--outer {' +
                 '    width: 100%;' +
-                '    overflow-x: scroll;' +
+                '    overflow-x: auto;' +
+                '    overflow-y: hidden;' +
+                '}',
+                '.pvl-listing .pvl-scroll-bar--upper {' +
+                '    height: 20px;' +
+                '}',
+                '.pvl-listing .wc-table {' +
+                '    overflow: none;' +
                 '}',
                 '.interactivity.pvl-cell-text-toggle {' +
                 '    margin-right: 10px;' +
@@ -287,7 +324,7 @@ export default function styles() {
                     '    display: block;' +
                     '    width: 100%;' +
                     '    overflow-y: auto;' +
-                    '    height: 66vh;' +
+                    '    height: 50vh;' +
                     '}',
                     '.pvl-listing .wc-table table tbody tr {' +
                     '    background: white !important;' +
@@ -338,7 +375,6 @@ export default function styles() {
                     //'.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
                     //'    border-bottom: 1px solid #aaa !important;' +
                     //'}',
-
     ];
 
     //Attach styles to DOM.

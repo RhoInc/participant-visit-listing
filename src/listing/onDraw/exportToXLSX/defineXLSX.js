@@ -4,7 +4,7 @@ import workBook from './defineXLSX/workBook';
 import addCell from './defineXLSX/addCell';
 import clone from '../../../util/clone';
 
-export default function defineXLSX(listing) {
+export default function defineXLSX() {
     const name = 'Participant Visit Listing';
     const wb = new workBook();
     const ws = {};
@@ -17,20 +17,19 @@ export default function defineXLSX(listing) {
     };
 
     const filterRange =
-        'A1:' +
-        String.fromCharCode(64 + listing.config.cols.length) +
-        (listing.data.filtered.length + 1);
+        'A1:' + String.fromCharCode(64 + this.config.cols.length) + (this.data.filtered.length + 1);
 
     //Header row
-    listing.config.headers.forEach((header, col) => {
+    this.config.headers.forEach((header, col) => {
         addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
     });
 
     //Data rows
-    listing.data.filtered.forEach((d, row) => {
-        listing.config.cols.forEach((variable, col) => {
+    this.data.filtered.forEach((d, row) => {
+        this.config.cols.forEach((variable, col) => {
+            const visit = variable.replace(/-date$/, '');
             const cellStyle = clone(bodyStyle);
-            const color = d[`${variable}-color`];
+            const color = d[`${visit}-color`];
             const fontColor = /^#[a-z0-9]{6}$/i.test(color) ? color.replace('#', 'FF') : 'FF000000';
             const borderColor = /^#[a-z0-9]{6}$/i.test(color)
                 ? color.replace('#', 'FF')
@@ -47,7 +46,7 @@ export default function defineXLSX(listing) {
     });
 
     //Define column widths.
-    const tr = listing.tbody.selectAll('tr').filter((d, i) => i === 0);
+    const tr = this.tbody.selectAll('tr').filter((d, i) => i === 0);
     tr.selectAll('td').each(function(d, i) {
         cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
     });
@@ -60,5 +59,5 @@ export default function defineXLSX(listing) {
     wb.SheetNames.push(name);
     wb.Sheets[name] = ws;
 
-    listing.XLSX = XLSX.write(wb, wbOptions);
+    this.XLSX = XLSX.write(wb, wbOptions);
 }

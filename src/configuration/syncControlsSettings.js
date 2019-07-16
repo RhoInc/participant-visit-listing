@@ -30,5 +30,4 @@ export default function syncControlsSettings() {
     }
 
     this.settings.controlsSynced = controlsSettings;
-    Object.assign(this.settings, controlsSettings);
 }

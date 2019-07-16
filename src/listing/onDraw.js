@@ -1,3 +1,4 @@
+import syncScrollBars from './onDraw/syncScrollBars';
 import addHeaderHover from './onDraw/addHeaderHover';
 import addCellFormatting from './onDraw/addCellFormatting';
 import addSummaries from './onDraw/addSummaries';
@@ -7,6 +8,9 @@ import exportToPDF from './onDraw/exportToPDF';
 import exportToCSV from './onDraw/exportToCSV';
 
 export default function onDraw() {
+    //Sync top and bottom scroll bars.
+    syncScrollBars.call(this);
+
     //Highlight column when hovering over column header.
     addHeaderHover.call(this);
 

@@ -1,7 +1,6 @@
 export default function syncLinearChartSettings() {
     const listingSettings = this.settings.listingSynced;
     const linearChartSettings = this.settings.linearChartMerged;
-    linearChartSettings.margin = listingSettings.chart_margin;
 
     //Update linear chart settings.
     linearChartSettings.x.column = listingSettings.visit_day_col;
@@ -22,6 +21,8 @@ export default function syncLinearChartSettings() {
         listingSettings.visit_date_col
     }]: Day [${listingSettings.visit_day_col}]): [${listingSettings.visit_status_col}]`;
     linearChartSettings.color_by = listingSettings.visit_status_col;
+    linearChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
+    linearChartSettings.margin.top = 0;
 
     //Assign settings to settings object.
     this.settings.linearChartSynced = linearChartSettings;

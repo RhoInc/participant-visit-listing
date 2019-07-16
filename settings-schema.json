@@ -36,8 +36,17 @@
         },
         "visit_col": {
             "title": "Visit",
-            "description": "name of variable that captures visit",
+            "description": "name of variable that captures visit name",
             "default": "visit_name",
+            "type": "string",
+            "data-mapping": true,
+            "data-type": "string",
+            "required": true
+        },
+        "visit_abbreviation_col": {
+            "title": "Visit Abbreviation",
+            "description": "name of variable that captures abbreviated visit name",
+            "default": "visit_abbreviation",
             "type": "string",
             "data-mapping": true,
             "data-type": "string",
@@ -176,6 +185,12 @@
             "description": "a strptime specification of time format directives, used to parse visit date",
             "default": "%Y-%m-%d",
             "type": "string"
+        },
+        "abbreviate_visits": {
+            "title": "Abbreviate Visits?",
+            "description": "controls whether full or abbreviated visit names display in x-axis of visit chart and column headers of listing",
+            "default": true,
+            "type": "boolean"
         },
         "display_cell_text": {
             "title": "Display Listing Cell Text?",

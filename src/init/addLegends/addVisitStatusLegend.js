@@ -1,7 +1,7 @@
 import { select } from 'd3';
-import update from './addLegend/update';
+import update from './addVisitStatusLegend/update';
 
-export default function addLegend() {
+export default function addVisitStatusLegend() {
     const context = this;
 
     this.containers.legendLabel = this.containers.legend

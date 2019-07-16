@@ -1,81 +1,82 @@
+import loading from './util/loading';
 import checkRequiredVariables from './init/checkRequiredVariables';
 import addVariables from './init/addVariables';
 import defineSets from './init/defineSets';
+import calculateVisitStatistics from './init/calculateVisitStatistics';
 import addVisitStatusStyles from './init/addVisitStatusStyles';
-import defineColumns from './init/defineColumns';
 import transposeData from './init/transposeData';
-import addLegend from './init/addLegend';
+import addLegends from './init/addLegends';
 import updateNParticipants from './init/updateNParticipants';
 import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
 
 export default function init(data) {
-    //indicate loading
-    this.containers.loading.classed('pvl-hidden', false);
+    //Data manipulation
+    loading.call(this, 'Data manipulation', () => {
+        this.data = {
+            raw: data,
+            analysis: data,
+            filtered: data,
+            transposed: [],
+            variables: [],
+            missingVariables: [],
+            filters: [],
+            sets: {},
+            statistics: {}
+        };
 
-    const loading = setInterval(() => {
-        const loadingIndicated = this.containers.loading.style('display') !== 'none';
+        addVariables.call(this);
+        checkRequiredVariables.call(this);
+        defineSets.call(this);
+        calculateVisitStatistics.call(this);
+        addVisitStatusStyles.call(this);
+        transposeData.call(this);
+        addLegends.call(this);
+        updateNParticipants.call(this);
 
-        if (loadingIndicated) {
-            //Handle loading indicator.
-            clearInterval(loading);
-            this.containers.loading.classed('pvl-hidden', true);
-
-            /****---------------------------------------------------------------------------------\
-              Data manipulation
-            \---------------------------------------------------------------------------------****/
-
-            let t0 = this.performance.now();
-            //begin performance test
-
-            //Attach data.
-            this.data = {
-                raw: data,
-                analysis: data,
-                filtered: data,
-                transposed: [],
-                variables: [],
-                missingVariables: [],
-                filters: [],
-                sets: {}
-            };
-
-            addVariables.call(this);
-            checkRequiredVariables.call(this);
-            defineSets.call(this);
-            addVisitStatusStyles.call(this);
-            defineColumns.call(this);
-            transposeData.call(this);
-            addLegend.call(this);
-            updateNParticipants.call(this);
-
-            //end performance test
-            let t1 = this.performance.now();
-            console.log(`data manipulation took ${t1 - t0} milliseconds.`);
-
-            /****---------------------------------------------------------------------------------\
-              Display initialization
-            \---------------------------------------------------------------------------------****/
-
-            t0 = this.performance.now();
-            //begin performance test
-
+        //Display initialization
+        loading.call(this, 'Display initialization', () => {
             if (this.settings.active_tab === 'Listing') {
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
+                this.containers.ordinalChart.classed('pvl-hidden', true);
+                this.containers.linearChart.classed('pvl-hidden', true);
+                this.containers.listing.classed('pvl-hidden', false);
+
+                //initialize listing
                 this.listing.init(this.data.transposed, this.test);
             } else if (this.settings.active_tab === 'Charts') {
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.charts.classed('pvl-hidden', false);
+                this.containers.listing.classed('pvl-hidden', true);
+
+                //initialize charts
                 this.ordinalChart.init(this.data.raw, this.test);
                 this.linearChart.init(this.data.raw, this.test);
             } else if (this.settings.active_tab === 'Visit Chart') {
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.ordinalChart.classed('pvl-hidden', false);
+                this.containers.linearChart.classed('pvl-hidden', true);
+                this.containers.listing.classed('pvl-hidden', true);
+
+                //initialize ordinal chart
                 this.ordinalChart.init(this.data.raw, this.test);
             } else if (this.settings.active_tab === 'Study Day Chart') {
+                this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
+                this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
+                this.containers.ordinalChart.classed('pvl-hidden', true);
+                this.containers.linearChart.classed('pvl-hidden', false);
+                this.containers.listing.classed('pvl-hidden', true);
+
+                //initialize linear chart
                 this.linearChart.init(this.data.raw, this.test);
             }
+
             updateMultiSelects.call(this);
             update.call(this);
 
-            //end performance test
-            t1 = this.performance.now();
-            console.log(`display initialization took ${t1 - t0} milliseconds.`);
-        }
+            //indicate that loading has completed
+            if (this.test) this.loaded = true;
+        });
     });
 }

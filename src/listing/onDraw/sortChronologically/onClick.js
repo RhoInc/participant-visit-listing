@@ -2,12 +2,12 @@ import { select } from 'd3';
 import sortData from './sortData';
 
 export default function onClick(th, header) {
-    const context = this,
-        selection = select(th),
-        col = this.config.cols[this.config.headers.indexOf(header)];
+    const context = this;
+    const selection = select(th);
+    const col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, '');
 
     //Check if column is already a part of current sort order.
-    let sortItem = this.sortable.order.filter(item => item.col === col)[0];
+    let sortItem = this.sortable.order.find(item => item.col === col);
 
     //If it isn't, add it to sort order.
     if (!sortItem) {

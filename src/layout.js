@@ -49,6 +49,9 @@ export default function layout() {
             this.containers.tabContainer = this.containers.lowerRow
                 .append('div')
                 .classed('pvl-tabs', true);
+                this.containers.visitExpectationLegendContainer = this.containers.tabContainer
+                    .append('div')
+                    .classed('pvl-visit-expectation-legend pvl-hidden', true);
                 this.containers.nParticipants = this.containers.tabContainer
                     .append('div')
                     .classed('pvl-viewing-n-participants', true)
@@ -74,24 +77,24 @@ export default function layout() {
             if (this.settings.chart_layout === 'tabbed') {
                 this.containers.ordinalChart = this.containers.lowerRow
                     .append('div')
-                    .classed('pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                    .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full', true);
                 this.containers.linearChart = this.containers.lowerRow
                     .append('div')
-                    .classed('pvl-chart pvl-chart--linear pvl-chart--full', true);
+                    .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--full', true);
             } else {
                 this.containers.charts = this.containers.lowerRow
                     .append('div')
                     .classed('pvl-charts', true);
                     this.containers.ordinalChart = this.containers.charts
                         .append('div')
-                        .classed('pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
+                        .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
                     this.containers.linearChart = this.containers.charts
                         .append('div')
-                        .classed('pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
+                        .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
             }
             this.containers.listing = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-listing', true);
+                .classed('pvl-display pvl-listing', true);
 
     /**-------------------------------------------------------------------------------------------\
       Functionality

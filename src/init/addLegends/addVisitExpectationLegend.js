@@ -50,7 +50,7 @@ export default function addVisitExpectationLegend() {
     this.containers.visitExpectationLegend.past.text.html(
         this.containers.visitExpectationLegend.past.text
             .html()
-            .replace('</tspan><tspan', '</tspan>/<tspan')
+            .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
     );
 
     //future visits
@@ -91,6 +91,6 @@ export default function addVisitExpectationLegend() {
     this.containers.visitExpectationLegend.future.text.html(
         this.containers.visitExpectationLegend.future.text
             .html()
-            .replace('</tspan><tspan', '</tspan>/<tspan')
+            .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
     );
 }

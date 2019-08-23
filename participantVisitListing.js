@@ -4269,7 +4269,7 @@
         this.containers.visitExpectationLegend.past.text.html(
             this.containers.visitExpectationLegend.past.text
                 .html()
-                .replace('</tspan><tspan', '</tspan>/<tspan')
+                .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
         ); //future visits
 
         this.containers.visitExpectationLegend.future = {
@@ -4314,7 +4314,7 @@
         this.containers.visitExpectationLegend.future.text.html(
             this.containers.visitExpectationLegend.future.text
                 .html()
-                .replace('</tspan><tspan', '</tspan>/<tspan')
+                .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
         );
     }
 

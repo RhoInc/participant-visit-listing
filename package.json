@@ -37,7 +37,7 @@
         "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./participantVisitListing.js",
         "save-data": "node ./scripts/save-data.js",
         "test": "mocha --require @babel/register ./test/*.js",
-        "test-one": "mocha --require @babel/register ./test/layout.js",
+        "test-one": "mocha --require @babel/register ./test/reset.js",
         "test-page": "start chrome ./test-page/index.html && start firefox ./test-page/index.html && start iexplore file://%CD%/test-page/index.html",
         "watch": "rollup -c -w"
     },

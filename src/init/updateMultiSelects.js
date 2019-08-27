@@ -5,7 +5,6 @@ export default function updateMultiSelects() {
         .selectAll('.control-group')
         .filter(d => d.multiple)
         .selectAll('select')
-        .attr('size', 2)
-        .selectAll('option')
-        .property('selected', true);
+            .selectAll('option')
+            .property('selected', true);
 }

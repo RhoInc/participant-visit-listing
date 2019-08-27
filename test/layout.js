@@ -45,13 +45,9 @@ describe('The init method is called.', () => {
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    const unhiddenDisplays = instance.containers.main.selectAll('.pvl-display:not(.pvl-hidden)')[0];
-                    expect(
-                        Array.from(unhiddenDisplays)
-                            .map(node => node.className)
-                            .filter(className => /pvl-chart--ordinal/.test(className))
-                            .length
-                    ).toEqual(1);
+                    const unhiddenDisplays = instance.containers.main.selectAll('.pvl-display:not(.pvl-hidden)');
+                    const nUnhiddenDisplays = unhiddenDisplays.size();
+                    expect(nUnhiddenDisplays).toBe(1);
                 }
             });
         });
@@ -63,13 +59,9 @@ describe('The init method is called.', () => {
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden')[0];
-                    expect(
-                        Array.from(hiddenDisplays)
-                            .map(node => node.className)
-                            .filter(className => /pvl-chart--linear|pvl-listing/.test(className))
-                            .length
-                    ).toEqual(2);
+                    const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden');
+                    const nHiddenDisplays = hiddenDisplays.size();
+                    expect(nHiddenDisplays).toBe(2);
                 }
             });
         });
@@ -98,13 +90,9 @@ describe('The init method is called.', () => {
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    const unhiddenDisplays = instance.containers.main.selectAll('.pvl-charts:not(.pvl-hidden)')[0];
-                    expect(
-                        Array.from(unhiddenDisplays)
-                            .map(node => node.className)
-                            .filter(className => /pvl-charts/.test(className))
-                            .length
-                    ).toEqual(1);
+                    const unhiddenDisplays = instance.containers.main.selectAll('.pvl-charts:not(.pvl-hidden)');
+                    const nUnhiddenDisplays = unhiddenDisplays.size();
+                    expect(nUnhiddenDisplays).toBe(1);
                 }
             });
         });
@@ -118,7 +106,7 @@ describe('The init method is called.', () => {
                     clearInterval(loading);
                     const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden');
                     const nHiddenDisplays = hiddenDisplays.size();
-                    expect(nHiddenDisplays).toEqual(1);
+                    expect(nHiddenDisplays).toBe(1);
                 }
             });
         });

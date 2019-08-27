@@ -15,7 +15,7 @@ export default function addVisitExpectationLegend() {
             .classed('pvl-mark-legend', true)
     };
 
-    //past visits
+    // past visits
     this.containers.visitExpectationLegend.past = {
         g: this.containers.visitExpectationLegend.g
             .append('g')
@@ -47,13 +47,8 @@ export default function addVisitExpectationLegend() {
                     .split(':|:')[2]
         )
         .text((d, i) => d);
-    this.containers.visitExpectationLegend.past.text.html(
-        this.containers.visitExpectationLegend.past.text
-            .html()
-            .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
-    );
 
-    //future visits
+    // future visits
     this.containers.visitExpectationLegend.future = {
         g: this.containers.visitExpectationLegend.g
             .append('g')
@@ -88,9 +83,10 @@ export default function addVisitExpectationLegend() {
                     .split(':|:')[2]
         )
         .text((d, i) => d);
-    this.containers.visitExpectationLegend.future.text.html(
-        this.containers.visitExpectationLegend.future.text
-            .html()
-            .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
-    );
+
+    // Insert forward slashes (/) between each tspan.
+    // We edit the inner HTML of a div because IE doesn't allow editing the inner HTML of an SVG element.
+    const innerHTML = this.containers.visitExpectationLegendContainer.html();
+    this.containers.visitExpectationLegendContainer.text('');
+    this.containers.visitExpectationLegendContainer.html(innerHTML.replace(/<\/tspan><tspan/g, '</tspan>/<tspan'));
 }

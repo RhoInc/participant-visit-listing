@@ -20,12 +20,12 @@ export default function layout() {
         this.containers.upperRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--upper', true);
-            this.containers.controls = this.containers.upperRow
-                .append('div')
-                .classed('pvl-controls', true);
             this.containers.legend = this.containers.upperRow
                 .append('div')
                 .classed('pvl-legend', true);
+            this.containers.controls = this.containers.upperRow
+                .append('div')
+                .classed('pvl-controls', true);
 
     /**-------------------------------------------------------------------------------------------\
       Lower row

@@ -1,3 +1,5 @@
+import defineDefaultSet from '../defineSets/defineDefaultSet';
+
 export default function checkFilterCol(input) {
     const filterCol = input.value_col;
     this.data.missingVariables[filterCol] = this.data.variables.indexOf(filterCol) > -1;
@@ -17,7 +19,8 @@ export default function checkFilterCol(input) {
     } else {
         this.data.filters.push({
             col: filterCol,
-            value: 'All'
+            value: 'All',
+            set: defineDefaultSet.call(this, filterCol),
         });
     }
 }

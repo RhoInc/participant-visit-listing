@@ -9,6 +9,7 @@ import addLegends from './init/addLegends';
 import updateNParticipants from './init/updateNParticipants';
 import updateMultiSelects from './init/updateMultiSelects';
 import update from './init/update';
+import addResetButton from './init/addResetButton';
 
 export default function init(data) {
     //Data manipulation
@@ -74,6 +75,8 @@ export default function init(data) {
 
             updateMultiSelects.call(this);
             update.call(this);
+            this.controls.ready = true;
+            addResetButton.call(this);
 
             //indicate that loading has completed
             if (this.test) this.loaded = true;

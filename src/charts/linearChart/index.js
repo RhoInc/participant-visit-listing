@@ -26,13 +26,11 @@ export default function linearChart() {
     this.linearChart.on('destroy', onDestroy);
 
     // Attach display to central object ([ pvl ]).
-    this.displays.push(
-        {
-            name: 'linearChart',
-            title: 'Study Day Chart',
-            module: this.linearChart,
-            tabs: ['Study Day Chart', 'Charts'],
-            active: ['Study Day Chart', 'Charts'].includes(this.settings.active_tab),
-        }
-    );
+    this.displays.push({
+        name: 'linearChart',
+        title: 'Study Day Chart',
+        module: this.linearChart,
+        tabs: ['Study Day Chart', 'Charts'],
+        active: ['Study Day Chart', 'Charts'].includes(this.settings.active_tab)
+    });
 }

@@ -15,10 +15,9 @@ export default function addTabFunctionality() {
             const active = tab.classed('pvl-tab--active');
 
             // Update active display(s).
-            context.displays
-                .forEach(display => {
-                    display.active = display.tabs.includes(d.name);
-                });
+            context.displays.forEach(display => {
+                display.active = display.tabs.includes(d.name);
+            });
 
             if (!active) {
                 context.containers.tabs.classed('pvl-tab--active', false);
@@ -73,6 +72,7 @@ export default function addTabFunctionality() {
                         addResetButton.call(context);
                     }
                     context.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
+                    console.log(context.containers.visitExpectationLegend.past.rect);
                     context.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
                     context.containers.visitExpectationLegend.future.rect.classed(
                         'pvl-hidden',

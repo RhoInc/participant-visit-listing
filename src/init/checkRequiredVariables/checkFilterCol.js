@@ -20,7 +20,7 @@ export default function checkFilterCol(input) {
         this.data.filters.push({
             col: filterCol,
             value: 'All',
-            set: defineDefaultSet.call(this, filterCol),
+            set: defineDefaultSet.call(this, filterCol)
         });
     }
 }

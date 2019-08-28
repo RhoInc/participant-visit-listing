@@ -3,6 +3,7 @@ import textAttributes from './addVisitExpectationLegend/textAttributes';
 import innerCircleAttributes from './addVisitExpectationLegend/innerCircleAttributes';
 import outerCircleAttributes from './addVisitExpectationLegend/outerCircleAttributes';
 
+// FIXME: modularize/figure out a better way to attach the SVG elements to the visitExpectationLegend object.
 export default function addVisitExpectationLegend() {
     this.containers.visitExpectationLegend = {
         g: this.containers.visitExpectationLegendContainer
@@ -26,12 +27,15 @@ export default function addVisitExpectationLegend() {
     };
     this.containers.visitExpectationLegend.past.rect = this.containers.visitExpectationLegend.past.g
         .append('rect')
+        .classed('pvl-legend-rect pvl-legend-rect--past', true)
         .attr(rectAttributes.call(this));
     this.containers.visitExpectationLegend.past.outerCircle = this.containers.visitExpectationLegend.past.g
         .append('circle')
+        .classed('pvl-legend-circle pvl-legend-circle--outer pvl-legend-circle--past', true)
         .attr(outerCircleAttributes.call(this));
     this.containers.visitExpectationLegend.past.text = this.containers.visitExpectationLegend.past.g
         .append('text')
+        .classed('pvl-legend-text pvl-legend-text--past', true)
         .attr(textAttributes.call(this).attr)
         .style(textAttributes.call(this).style);
     this.containers.visitExpectationLegend.past.text
@@ -39,6 +43,7 @@ export default function addVisitExpectationLegend() {
         .data(this.data.sets.past_visits)
         .enter()
         .append('tspan')
+        .classed('pvl-legend-tspan pvl-legend-tspan--past', true)
         .attr(
             'fill',
             d =>
@@ -59,15 +64,19 @@ export default function addVisitExpectationLegend() {
     };
     this.containers.visitExpectationLegend.future.rect = this.containers.visitExpectationLegend.future.g
         .append('rect')
+        .classed('pvl-legend-rect pvl-legend-rect--future', true)
         .attr(rectAttributes.call(this));
     this.containers.visitExpectationLegend.future.outerCircle = this.containers.visitExpectationLegend.future.g
         .append('circle')
+        .classed('pvl-legend-circle pvl-legend-circle--outer pvl-legend-circle--future', true)
         .attr(outerCircleAttributes.call(this));
     this.containers.visitExpectationLegend.future.innerCircle = this.containers.visitExpectationLegend.future.g
         .append('circle')
+        .classed('pvl-legend-circle pvl-legend-circle--inner pvl-legend-circle--future', true)
         .attr(innerCircleAttributes.call(this));
     this.containers.visitExpectationLegend.future.text = this.containers.visitExpectationLegend.future.g
         .append('text')
+        .classed('pvl-legend-text pvl-legend-text--future', true)
         .attr(textAttributes.call(this).attr)
         .style(textAttributes.call(this).style);
     this.containers.visitExpectationLegend.future.text
@@ -75,6 +84,7 @@ export default function addVisitExpectationLegend() {
         .data(this.data.sets.future_visits)
         .enter()
         .append('tspan')
+        .classed('pvl-legend-tspan pvl-legend-tspan--future', true)
         .attr(
             'fill',
             d =>
@@ -88,5 +98,13 @@ export default function addVisitExpectationLegend() {
     // We edit the inner HTML of a div because IE doesn't allow editing the inner HTML of an SVG element.
     const innerHTML = this.containers.visitExpectationLegendContainer.html();
     this.containers.visitExpectationLegendContainer.text('');
-    this.containers.visitExpectationLegendContainer.html(innerHTML.replace(/<\/tspan><tspan/g, '</tspan>/<tspan'));
+    this.containers.visitExpectationLegendContainer.html(
+        innerHTML.replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
+    );
+    this.containers.visitExpectationLegend.past.rect = this.containers.visitExpectationLegendContainer.select(
+        'rect.pvl-legend-rect--past'
+    );
+    this.containers.visitExpectationLegend.future.rect = this.containers.visitExpectationLegendContainer.select(
+        'rect.pvl-legend-rect--future'
+    );
 }

@@ -26,13 +26,11 @@ export default function ordinalChart() {
     this.ordinalChart.on('destroy', onDestroy);
 
     // Attach display to central object ([ pvl ]).
-    this.displays.push(
-        {
-            name: 'ordinalChart',
-            title: 'Visit Chart',
-            module: this.ordinalChart,
-            tabs: ['Visit Chart', 'Charts'],
-            active: ['Visit Chart', 'Charts'].includes(this.settings.active_tab),
-        }
-    );
+    this.displays.push({
+        name: 'ordinalChart',
+        title: 'Visit Chart',
+        module: this.ordinalChart,
+        tabs: ['Visit Chart', 'Charts'],
+        active: ['Visit Chart', 'Charts'].includes(this.settings.active_tab)
+    });
 }

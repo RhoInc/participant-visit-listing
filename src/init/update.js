@@ -29,18 +29,15 @@ export default function update() {
             filterData.call(context, d, this);
 
             // Enable/disable reset button given state of filters.
-            context.controls.reset.button
-                .property(
-                    'disabled',
-                    context.data.filters
-                        .every(filter => (
-                            filter.value === 'All'
-                            || (
-                                    Array.isArray(filter.value)
-                                    && filter.value.join('') === filter.set.join('')
-                                )
-                        ))
-                );
+            context.controls.reset.button.property(
+                'disabled',
+                context.data.filters.every(
+                    filter =>
+                        filter.value === 'All' ||
+                        (Array.isArray(filter.value) &&
+                            filter.value.join('') === filter.set.join(''))
+                )
+            );
 
             // Define updated set of participant IDs.
             defineIDSet.call(context, 'id_col');

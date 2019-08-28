@@ -22,13 +22,11 @@ export default function listing() {
     this.listing.on('destroy', onDestroy);
 
     // Attach display to central object ([ pvl ]).
-    this.displays.push(
-        {
-            name: 'listing',
-            title: 'Listing',
-            module: this.listing,
-            tabs: ['Listing'],
-            active: ['Listing'].includes(this.settings.active_tab),
-        }
-    );
+    this.displays.push({
+        name: 'listing',
+        title: 'Listing',
+        module: this.listing,
+        tabs: ['Listing'],
+        active: ['Listing'].includes(this.settings.active_tab)
+    });
 }

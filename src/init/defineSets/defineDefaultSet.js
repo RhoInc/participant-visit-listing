@@ -9,9 +9,14 @@ export default function defineDefaultSet(dataMapping) {
             .sort();
 
         //Sort set numerically if possible.
-        if (this.data.sets[dataMapping].every(value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))))
+        if (
+            this.data.sets[dataMapping].every(
+                value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))
+            )
+        )
             this.data.sets[dataMapping].sort(
-                (a, b) => parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
+                (a, b) =>
+                    parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
             );
     } else {
         variable = dataMapping;
@@ -20,9 +25,14 @@ export default function defineDefaultSet(dataMapping) {
             .sort();
 
         //Sort set numerically if possible.
-        if (this.data.sets[dataMapping].every(value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))))
+        if (
+            this.data.sets[dataMapping].every(
+                value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))
+            )
+        )
             this.data.sets[dataMapping].sort(
-                (a, b) => parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
+                (a, b) =>
+                    parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
             );
     }
 

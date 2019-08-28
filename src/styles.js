@@ -61,6 +61,7 @@ export default function styles() {
                 '    overflow: hidden;' +
                 '    display: inline-block;' +
                 '    vertical-align: bottom;' +
+                '    width: 100%;' +
                 '}',
                 '.pvl-legend__li {' +
                 '    float: left;' +

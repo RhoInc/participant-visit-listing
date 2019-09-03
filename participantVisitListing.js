@@ -3097,7 +3097,6 @@
                 d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()),
                 '.xlsx'
             );
-            console.log(fileName);
 
             try {
                 var blob = new Blob([s2ab(this.XLSX)], {

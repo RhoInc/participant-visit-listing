@@ -7,7 +7,6 @@ export default function exportXLSX() {
         const fileName = `participant-visit-listing-${time.format('%Y-%m-%dT%H-%M-%S')(
             new Date()
         )}.xlsx`;
-        console.log(fileName);
         try {
             const blob = new Blob([s2ab(this.XLSX)], {
                 type: 'application/octet-stream'

@@ -1905,14 +1905,27 @@
         if (this.settings.chart_layout === 'tabbed') {
             this.containers.ordinalChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                .classed(
+                    'pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full'.concat(
+                        this.settings.active_tab === 'Visit Chart' ? '' : ' pvl-hidden'
+                    ),
+                    true
+                );
             this.containers.linearChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--full', true);
+                .classed(
+                    'pvl-display pvl-chart pvl-chart--linear pvl-chart--full'.concat(
+                        this.settings.active_tab === 'Study Day Chart' ? '' : ' pvl-hidden'
+                    ),
+                    true
+                );
         } else {
             this.containers.charts = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-charts', true);
+                .classed(
+                    'pvl-charts'.concat(this.settings.active_tab === 'Charts' ? '' : ' pvl-hidden'),
+                    true
+                );
             this.containers.ordinalChart = this.containers.charts
                 .append('div')
                 .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
@@ -1923,7 +1936,12 @@
 
         this.containers.listing = this.containers.lowerRow
             .append('div')
-            .classed('pvl-display pvl-listing', true);
+            .classed(
+                'pvl-display pvl-listing'.concat(
+                    this.settings.active_tab === 'Listing' ? '' : ' pvl-hidden'
+                ),
+                true
+            );
         /**-------------------------------------------------------------------------------------------\
       Functionality
     \-------------------------------------------------------------------------------------------**/
@@ -4596,33 +4614,17 @@
 
             loading.call(_this, 'Display initialization', function() {
                 if (_this.settings.active_tab === 'Listing') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', true);
-
-                    _this.containers.linearChart.classed('pvl-hidden', true);
-
-                    _this.containers.listing.classed('pvl-hidden', false); //  initialize listing
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true); //  initialize listing
 
                     _this.listing.init(_this.data.transposed, _this.test);
                 } else if (_this.settings.active_tab === 'Charts') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-
-                    _this.containers.charts.classed('pvl-hidden', false);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //  initialize charts
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false); //  initialize charts
 
                     _this.ordinalChart.init(_this.data.raw, _this.test);
 
                     _this.linearChart.init(_this.data.raw, _this.test);
                 } else if (_this.settings.active_tab === 'Visit Chart') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', false);
-
-                    _this.containers.linearChart.classed('pvl-hidden', true);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //  initialize ordinal chart
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false); //  initialize ordinal chart
 
                     _this.ordinalChart.init(_this.data.raw, _this.test);
                 } else if (_this.settings.active_tab === 'Study Day Chart') {
@@ -4630,13 +4632,7 @@
 
                     _this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
 
-                    _this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', true);
-
-                    _this.containers.linearChart.classed('pvl-hidden', false);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //  initialize linear chart
+                    _this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true); //  initialize linear chart
 
                     _this.linearChart.init(_this.data.raw, _this.test);
                 }

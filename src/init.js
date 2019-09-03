@@ -39,25 +39,17 @@ export default function init(data) {
         loading.call(this, 'Display initialization', () => {
             if (this.settings.active_tab === 'Listing') {
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
-                this.containers.ordinalChart.classed('pvl-hidden', true);
-                this.containers.linearChart.classed('pvl-hidden', true);
-                this.containers.listing.classed('pvl-hidden', false);
 
                 // initialize listing
                 this.listing.init(this.data.transposed, this.test);
             } else if (this.settings.active_tab === 'Charts') {
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-                this.containers.charts.classed('pvl-hidden', false);
-                this.containers.listing.classed('pvl-hidden', true);
 
                 // initialize charts
                 this.ordinalChart.init(this.data.raw, this.test);
                 this.linearChart.init(this.data.raw, this.test);
             } else if (this.settings.active_tab === 'Visit Chart') {
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-                this.containers.ordinalChart.classed('pvl-hidden', false);
-                this.containers.linearChart.classed('pvl-hidden', true);
-                this.containers.listing.classed('pvl-hidden', true);
 
                 // initialize ordinal chart
                 this.ordinalChart.init(this.data.raw, this.test);
@@ -65,9 +57,6 @@ export default function init(data) {
                 this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
                 this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
                 this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
-                this.containers.ordinalChart.classed('pvl-hidden', true);
-                this.containers.linearChart.classed('pvl-hidden', false);
-                this.containers.listing.classed('pvl-hidden', true);
 
                 // initialize linear chart
                 this.linearChart.init(this.data.raw, this.test);

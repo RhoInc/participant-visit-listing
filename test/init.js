@@ -7,24 +7,21 @@ const data = require('./visits.json');
 
 describe('The init method is called.', () => {
     const { JSDOM } = jsdom;
-    global.window = (new JSDOM(``, { runScripts: "dangerously" })).window;
+    global.window = new JSDOM(``, { runScripts: 'dangerously' }).window;
     let dom, container, instance;
 
     before(() => {
         dom = new JSDOM('<!doctype html>');
         container = dom.window.document.createElement('div');
-        instance = participantVisitListing(container, {exportable: false}, {dom,performance});
+        instance = participantVisitListing(container, { exportable: false }, { dom, performance });
         instance.init(data, true);
     });
 
-    after(() => {
-    });
+    after(() => {});
 
-    beforeEach(() => {
-    });
+    beforeEach(() => {});
 
-    afterEach(() => {
-    });
+    afterEach(() => {});
 
     it('should attach data to the participantVisitListing object', () => {
         const loading = setInterval(() => {

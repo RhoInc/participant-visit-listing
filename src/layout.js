@@ -77,14 +77,14 @@ export default function layout() {
             if (this.settings.chart_layout === 'tabbed') {
                 this.containers.ordinalChart = this.containers.lowerRow
                     .append('div')
-                    .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                    .classed(`pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full${this.settings.active_tab === 'Visit Chart' ? '' : ' pvl-hidden'}`, true);
                 this.containers.linearChart = this.containers.lowerRow
                     .append('div')
-                    .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--full', true);
+                    .classed(`pvl-display pvl-chart pvl-chart--linear pvl-chart--full${this.settings.active_tab === 'Study Day Chart' ? '' : ' pvl-hidden'}`, true);
             } else {
                 this.containers.charts = this.containers.lowerRow
                     .append('div')
-                    .classed('pvl-charts', true);
+                    .classed(`pvl-charts${this.settings.active_tab === 'Charts' ? '' : ' pvl-hidden'}`, true);
                     this.containers.ordinalChart = this.containers.charts
                         .append('div')
                         .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
@@ -92,9 +92,10 @@ export default function layout() {
                         .append('div')
                         .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--side-by-side', true);
             }
+
             this.containers.listing = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-display pvl-listing', true);
+                .classed(`pvl-display pvl-listing${this.settings.active_tab === 'Listing' ? '' : ' pvl-hidden'}`, true);
 
     /**-------------------------------------------------------------------------------------------\
       Functionality

@@ -3,7 +3,7 @@ const fs = require('fs');
 const d3 = require('d3');
 
 https
-    .get('https://raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/data-cleaning/visits.csv', (resp) => {
+    .get('https:// raw.githubusercontent.com/RhoInc/data-library/master/data/clinical-trials/data-cleaning/visits.csv', (resp) => {
         let csv = '';
 
         // A chunk of data has been recieved.

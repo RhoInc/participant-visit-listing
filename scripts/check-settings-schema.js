@@ -2,16 +2,16 @@ require('@babel/register');
 const fs = require('fs');
 const pkg = require('../package');
 
-//settings schema
+// settings schema
 const schema = require('../settings-schema');
 const properties = schema.properties;
 const expectedSettings = Object.keys(properties);
 
-//renderer settings
+// renderer settings
 const settings = require('../src/configuration/rendererSettings.js').default();
 const actualSettings = Object.keys(settings);
 
-//differences
+// differences
 const missingExpectedSettings = actualSettings
     .filter(setting => expectedSettings.indexOf(setting) < 0);
 if (missingExpectedSettings.length > 0) {

@@ -43,7 +43,7 @@ describe('The init method is called.', () => {
                 const loadingIndicated = instance.loaded;
 
                 if (loadingIndicated) {
-                    //Handle loading indicator.
+                    // Handle loading indicator.
                     clearInterval(loading);
                     const unhiddenDisplays = instance.containers.main.selectAll('.pvl-display:not(.pvl-hidden)');
                     const nUnhiddenDisplays = unhiddenDisplays.size();
@@ -57,7 +57,7 @@ describe('The init method is called.', () => {
                 const loadingIndicated = instance.loaded;
 
                 if (loadingIndicated) {
-                    //Handle loading indicator.
+                    // Handle loading indicator.
                     clearInterval(loading);
                     const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden');
                     const nHiddenDisplays = hiddenDisplays.size();
@@ -88,7 +88,7 @@ describe('The init method is called.', () => {
                 const loadingIndicated = instance.loaded;
 
                 if (loadingIndicated) {
-                    //Handle loading indicator.
+                    // Handle loading indicator.
                     clearInterval(loading);
                     const unhiddenDisplays = instance.containers.main.selectAll('.pvl-charts:not(.pvl-hidden)');
                     const nUnhiddenDisplays = unhiddenDisplays.size();
@@ -102,7 +102,7 @@ describe('The init method is called.', () => {
                 const loadingIndicated = instance.loaded;
 
                 if (loadingIndicated) {
-                    //Handle loading indicator.
+                    // Handle loading indicator.
                     clearInterval(loading);
                     const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden');
                     const nHiddenDisplays = hiddenDisplays.size();

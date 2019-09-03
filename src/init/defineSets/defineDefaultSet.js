@@ -8,7 +8,7 @@ export default function defineDefaultSet(dataMapping) {
             .values()
             .sort();
 
-        //Sort set numerically if possible.
+        // Sort set numerically if possible.
         if (
             this.data.sets[dataMapping].every(
                 value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))
@@ -24,7 +24,7 @@ export default function defineDefaultSet(dataMapping) {
             .values()
             .sort();
 
-        //Sort set numerically if possible.
+        // Sort set numerically if possible.
         if (
             this.data.sets[dataMapping].every(
                 value => !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')))

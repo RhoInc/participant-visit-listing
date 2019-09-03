@@ -2,7 +2,7 @@ export default function syncLinearChartSettings() {
     const listingSettings = this.settings.listingSynced;
     const linearChartSettings = this.settings.linearChartMerged;
 
-    //Update linear chart settings.
+    // Update linear chart settings.
     linearChartSettings.x.column = listingSettings.visit_day_col;
     linearChartSettings.y.column = listingSettings.id_col;
     const circles = linearChartSettings.marks[0];
@@ -24,6 +24,6 @@ export default function syncLinearChartSettings() {
     linearChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
     linearChartSettings.margin.top = 0;
 
-    //Assign settings to settings object.
+    // Assign settings to settings object.
     this.settings.linearChartSynced = linearChartSettings;
 }

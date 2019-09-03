@@ -63,9 +63,9 @@ describe('the changing of the filters', function() {
                     // FIXME: figure out a better way to wait for the renderer to update than waiting an arbitrary amount of time.
                     setTimeout(
                         () => {
-                            //console.log(
+                            // console.log(
                             //    instance.data.filters.find(filter => filter.value !== 'All')
-                            //);
+                            // );
                             const filtersChanged = instance.data.filters
                                 .every(filter => (
                                     filter.value === 'All'
@@ -74,7 +74,7 @@ describe('the changing of the filters', function() {
                                         && filter.value.join('') === filter.set.join('')
                                     )
                                 ));
-                            //console.log(filtersChanged);
+                            // console.log(filtersChanged);
                             expect(filtersChanged).toBe(false);
                         },
                         1000

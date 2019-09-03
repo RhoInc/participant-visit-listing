@@ -3,7 +3,7 @@ const fs = require('fs');
 const pkg = require('../package');
 const schema = require('../settings-schema');
 
-//Create markdown array, one item per line.
+// Create markdown array, one item per line.
 const markdown = [
     schema['data-guidelines'],
     '',
@@ -17,7 +17,7 @@ const markdown = [
     '|:--------|:--------|:----------|:------------|:---------:|',
 ];
 
-//Add variable table to markdown array.
+// Add variable table to markdown array.
 const properties = schema.properties;
 const settings = Object.keys(properties);
 const variables = settings

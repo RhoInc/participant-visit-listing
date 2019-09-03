@@ -383,20 +383,20 @@ export default function styles() {
                     '    flex: 1 auto;' +
                     '    width: 100px;' +
                     '}',
-                    //'.pvl-listing .wc-table table tr th.pvl-header-hover,' +
-                    //'.pvl-listing .wc-table table tr td.pvl-header-hover {' +
-                    //'    border-right: 1px solid black;' +
-                    //'    border-left: 1px solid black;' +
-                    //'}',
-                    //'.pvl-listing .wc-table table tr th.pvl-header-hover {' +
-                    //'    border-top: 1px solid #aaa;' +
-                    //'}',
-                    //'.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
-                    //'    border-bottom: 1px solid #aaa !important;' +
-                    //'}',
+                    // '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                    // '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                    // '    border-right: 1px solid black;' +
+                    // '    border-left: 1px solid black;' +
+                    // '}',
+                    // '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                    // '    border-top: 1px solid #aaa;' +
+                    // '}',
+                    // '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                    // '    border-bottom: 1px solid #aaa !important;' +
+                    // '}',
     ];
 
-    //Attach styles to DOM.
+    // Attach styles to DOM.
     this.style = this.document.createElement('style');
     this.style.type = 'text/css';
     this.style.innerHTML = this.styles.join('\n');

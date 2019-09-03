@@ -3,7 +3,7 @@ export default function addVisitStatusStyles() {
         .map(visit_status => {
             const split = visit_status.split(':|:');
             const order = split[0];
-            const status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); //.replace(/ /g, '.');
+            const status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); // .replace(/ /g, '.');
             const color = split[2];
             const styles = [
                 `.pvl-visit-status--${status} {`,

@@ -36,7 +36,7 @@ describe('An analysis subset is in place.', () => {
             const loadingIndicated = instance.loaded;
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
                 const scheduledVisits = d3.set(data.map(d => d[instance.settings.visit_col]).filter(visit => !instance.settings.visit_exclusion_regex.test(visit))).values();
                 instance.data.filters.find(filter => filter.col === 'subset2').value = 'On Treatment';
@@ -53,7 +53,7 @@ describe('An analysis subset is in place.', () => {
             const loadingIndicated = instance.loaded;
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
                 const scheduledVisits = d3.set(data.map(d => d[instance.settings.visit_col]).filter(visit => !instance.settings.visit_exclusion_regex.test(visit))).values();
                 instance.data.filters.find(filter => filter.col === 'subset2').value = 'On Treatment';

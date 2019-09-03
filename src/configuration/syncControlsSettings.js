@@ -2,17 +2,17 @@ export default function syncControlsSettings() {
     const listingSettings = this.settings.listingSynced;
     const controlsSettings = this.settings.controlsMerged;
 
-    //Sync site filter.
+    // Sync site filter.
     const siteFilter = controlsSettings.inputs.find(control => control.label === 'Site');
     siteFilter.value_col = listingSettings.site_col;
 
-    //Sync ID status filter.
+    // Sync ID status filter.
     const idStatusFilter = controlsSettings.inputs.find(
         control => control.label === 'Participant Status'
     );
     idStatusFilter.value_col = listingSettings.id_status_col;
 
-    //Add user-specified filters.
+    // Add user-specified filters.
     if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols.length) {
         const labels = {
             subset1: 'Analysis Subset 1',

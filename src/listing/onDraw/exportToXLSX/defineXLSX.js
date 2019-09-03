@@ -19,12 +19,12 @@ export default function defineXLSX() {
     const filterRange =
         'A1:' + String.fromCharCode(64 + this.config.cols.length) + (this.data.filtered.length + 1);
 
-    //Header row
+    // Header row
     this.config.headers.forEach((header, col) => {
         addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
     });
 
-    //Data rows
+    // Data rows
     this.data.filtered.forEach((d, row) => {
         this.config.cols.forEach((variable, col) => {
             const visit = variable.replace(/-date$/, '');
@@ -45,7 +45,7 @@ export default function defineXLSX() {
         });
     });
 
-    //Define column widths.
+    // Define column widths.
     const tr = this.tbody.selectAll('tr').filter((d, i) => i === 0);
     tr.selectAll('td').each(function(d, i) {
         cols.push({ wpx: i > 0 ? this.offsetWidth - 20 : 175 });
@@ -54,7 +54,7 @@ export default function defineXLSX() {
     ws['!ref'] = XLSX.utils.encode_range(range);
     ws['!cols'] = cols;
     ws['!autofilter'] = { ref: filterRange };
-    //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
+    // ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
 
     wb.SheetNames.push(name);
     wb.Sheets[name] = ws;

@@ -35,7 +35,7 @@ export default function layout() {
             .append('div')
             .classed('pvl-row pvl-row--lower', true);
 
-            //tabs
+            // tabs
             const selectedTabs = tabs
                 .filter(tab => {
                     return (
@@ -73,7 +73,7 @@ export default function layout() {
                     .attr('class', d => `pvl-tab pvl-tab--${d.class} ${d.name === this.settings.active_tab ? 'pvl-tab--active' : ''}`)
                     .text(d => d.name);
 
-            //display containers
+            // display containers
             if (this.settings.chart_layout === 'tabbed') {
                 this.containers.ordinalChart = this.containers.lowerRow
                     .append('div')

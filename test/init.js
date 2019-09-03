@@ -31,7 +31,7 @@ describe('The init method is called.', () => {
             const loadingIndicated = instance.hasOwnProperty('data');
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
                 expect(instance.data.raw.length).toEqual(data.length);
             }

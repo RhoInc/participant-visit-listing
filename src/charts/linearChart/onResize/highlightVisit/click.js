@@ -7,7 +7,7 @@ import addHighlightLines from './click/addHighlightLines';
 export default function click(element, d) {
     clearHighlight.call(this, !!d);
 
-    //Capture selected visit value.
+    // Capture selected visit value.
     if (d) {
         this.highlight = {
             visit: d.values.raw[0][this.pvl.settings.visit_col],
@@ -23,21 +23,21 @@ export default function click(element, d) {
         }\nClick to remove highlighting.`;
     }
 
-    //Reduce opacity of all circles.
+    // Reduce opacity of all circles.
     deemphasizeMarks.call(this);
 
-    //Select points representing selected visit value.
+    // Select points representing selected visit value.
     this.highlight.points = this.svg
         .selectAll('.point')
         .filter(di => di.values.raw[0][this.pvl.settings.visit_col] === this.highlight.visit)
         .classed('pvl-highlighted-visit', true);
 
-    //Add a reference line of the median study day of the selected visit.
+    // Add a reference line of the median study day of the selected visit.
     addReferenceLine.call(this);
 
-    //Add reference text annotation.
+    // Add reference text annotation.
     addReferenceText.call(this);
 
-    //Highlight points representing selected visit value.
+    // Highlight points representing selected visit value.
     addHighlightLines.call(this);
 }

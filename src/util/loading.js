@@ -2,9 +2,9 @@ import { select } from 'd3';
 
 export default function loading(event, callback) {
     let t0 = this.performance.now();
-    //begin performance test
+    // begin performance test
 
-    //indicate loading
+    // indicate loading
     const html = this.document.getElementsByTagName('html')[0];
     if (!html.classList.contains('pvl-wait')) html.className += ' pvl-wait';
     const body = this.document.body;
@@ -15,16 +15,16 @@ export default function loading(event, callback) {
         const loadingIndicated = this.containers.loading.style('display') !== 'none';
 
         if (loadingIndicated) {
-            //Handle loading indicator.
+            // Handle loading indicator.
             clearInterval(loading);
             this.containers.loading.classed('pvl-hidden', true);
             html.className = html.className.replace(' pvl-wait', '');
             body.className = body.className.replace(' pvl-wait', '');
 
-            //Run callback.
+            // Run callback.
             callback();
 
-            //end performance test
+            // end performance test
             let t1 = this.performance.now();
             if (!this.test) console.log(`${event} took ${t1 - t0} milliseconds.`);
         }

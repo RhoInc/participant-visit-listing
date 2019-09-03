@@ -1,7 +1,7 @@
 import { nest } from 'd3';
 
 export default function idLevel() {
-    //Derive ID-level variables.
+    // Derive ID-level variables.
     this.data.ids = nest()
         .key(d => d[this.settings.id_col])
         .rollup(d => {

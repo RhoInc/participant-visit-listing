@@ -13,18 +13,18 @@ export default function syncControlsSettings() {
     idStatusFilter.value_col = listingSettings.id_status_col;
 
     //Add user-specified filters.
-    if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols) {
+    if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols.length) {
         const labels = {
             subset1: 'Analysis Subset 1',
             subset2: 'Analysis Subset 2',
-            subset3: 'Analysis Subset 3',
-            overdue2: '>1 Overdue Visits'
+            subset3: 'Analysis Subset 3'
         };
         listingSettings.filter_cols.forEach(filter_col => {
             controlsSettings.inputs.push({
                 type: 'subsetter',
-                label: labels[filter_col] || filter_col,
-                value_col: filter_col
+                label: labels[filter_col] || filter_col.label || filter_col,
+                value_col: filter_col.value_col || filter_col,
+                multiple: filter_col.multiple !== undefined ? !!filter_col.multiple : false
             });
         });
     }

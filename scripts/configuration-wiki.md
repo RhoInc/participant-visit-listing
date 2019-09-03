@@ -3,7 +3,7 @@ The most straightforward way to customize the Participant Visit Listing is by us
 In addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.
 
 # Renderer-specific settings
-The sections below describe each participant-visit-listing setting as of version 1.2.0.
+The sections below describe each participant-visit-listing setting as of version 1.5.0.
 
 ## settings.site_col
 `string`
@@ -259,12 +259,52 @@ space to the left of the chart canvas; if unspecified, imputed to fit y-axis
 ## settings.filter_cols
 `array`
 
-custom filter variables, in addition to site and participant status
+custom filter variables in addition to site, participant status, and number of overdue visits
+
+**default:** 
+```
+[
+  {
+    "value_col": "subset1",
+    "label": "Analysis Subset 1"
+  },
+  {
+    "value_col": "subset2",
+    "label": "Analysis Subset 2"
+  },
+  {
+    "value_col": "subset3",
+    "label": "Analysis Subset 3"
+  }
+]
+```
+
+### settings.filter_cols[].value_col
+`string`
+
+Name of Variable
 
 **default:** none
 
+### settings.filter_cols[].label
+`string`
+
+Description of Variable
+
+**default:** none
+
+### settings.filter_cols[].multiple
+`boolean`
+
+Multiselect?
+
+**default:** `false`
+
+
+
+
 # Webcharts settings
-The objects below contain Webcharts settings for each display as of version 1.2.0 of the Participant Visit Listing.
+The objects below contain Webcharts settings for each display as of version 1.5.0 of the Participant Visit Listing.
 
 ## Listing
 ```

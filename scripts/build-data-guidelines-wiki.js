@@ -40,13 +40,13 @@ variables.forEach(variable => {
             }|`
         );
     else if (variable.type === 'array') {
-        variable.defaults.forEach((item,i) => {
+        variable.default.forEach((item,i) => {
             markdown.push(
                 `|**${
                     variable.setting}[${i}]**|${
-                    item}|${
+                    item.value_col}|${
                     variable.type}|${
-                    variable.descriptions[item]}|${
+                    item.label}|${
                     variable.required ? '**Y**' : ''
                 }|`
             )

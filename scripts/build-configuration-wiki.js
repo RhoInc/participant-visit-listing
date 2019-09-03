@@ -20,7 +20,7 @@ function setDefault(setting) {
     } else {
         settingDefault = settingDefault +
             '\n\`\`\`\n' +
-            JSON.stringify(setting.defaultObject, null, 2) +
+            JSON.stringify(setting.default, null, 2) +
             `\n\`\`\``;
     }
 
@@ -88,11 +88,9 @@ function setDefault(setting) {
                         });
                 }
 
-                if (i < keys.length - 1) {
-                    markdown.push(``);
-                    markdown.push(``);
-                    markdown.push(``);
-                }
+                markdown.push(``);
+                markdown.push(``);
+                markdown.push(``);
             });
 
 /*------------------------------------------------------------------------------------------------\

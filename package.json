@@ -39,7 +39,7 @@
         "format-test": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./test/**/*.js\"",
         "save-data": "node ./scripts/save-data.js",
         "test": "mocha --timeout 5000 --require @babel/register ./test/*.js",
-        "test-one": "mocha --timeout 5000 --require @babel/register ./test/layout/sideBySide.js",
+        "test-one": "mocha --timeout 5000 --require @babel/register ./test/reset.js",
         "test-page": "start chrome ./test-page/index.html && start firefox ./test-page/index.html && start iexplore file://%CD%/test-page/index.html",
         "watch": "rollup -c -w"
     },

@@ -18,13 +18,13 @@ describe('the clicking of the reset button', function() {
         instance.init(data, true);
     });
 
-    after(() => {});
-
     beforeEach(() => {
         const loading = setInterval(() => {
-            const loadingIndicated = instance.hasOwnProperty('data');
+            const loaded =
+                instance.containers.main.selectAll('select').size() &&
+                instance.containers.main.selectAll('option').size(); //instance.controls && instance.controls.reset && instance.controls.reset.button;
 
-            if (loadingIndicated) {
+            if (loaded) {
                 // Handle loading indicator.
                 clearInterval(loading);
 
@@ -53,9 +53,12 @@ describe('the clicking of the reset button', function() {
 
     afterEach(() => {});
 
+    after(() => {});
+
     it('the filters are reset when the reset button is clicked', () => {
         const resetting = setInterval(() => {
-            const resetDisabled = instance.controls.reset.button.property('disabled');
+            const resetButton = instance.containers.main.select('.pvl-reset-button');
+            const resetDisabled = resetButton.size() ? resetButton.property('disabled') : true;
 
             if (!resetDisabled) {
                 // Handle loading indicator.

@@ -8,6 +8,11 @@ import updateLegend from './addLegends/addVisitStatusLegend/update';
 import updateNParticipants from './updateNParticipants';
 
 export default function addResetButton() {
+    this.containers.controlsLabel = this.containers.legend
+        .append('span')
+        .classed('pvl-controls__label', true)
+        .text('Filters:');
+
     // Add reset button to DOM.
     this.controls.reset = {
         button: this.controls.wrap

@@ -37,7 +37,6 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-legend {' +
-                '    width: 35%;' +
                 '    float: left;' +
                 '    position: relative;' +
                 '}',
@@ -48,10 +47,12 @@ export default function styles() {
                 '    vertical-align: bottom;' +
                 '}' +
                 '.pvl-legend__label {' +
+                '    width: 99%;' +
                 '    font-size: 24px;' +
                 '    font-weight: lighter;' +
                 '    position: absolute;' +
-                '    top: 0;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    top: 11px;' +
                 '    left: 0;' +
                 '}',
                 '.pvl-legend__ul {' +
@@ -79,9 +80,15 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-controls {' +
-                '    width: 64%;' +
                 '    float: right;' +
                 '    position: relative;' +
+                '}',
+                '.pvl-controls__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 11px;' +
+                '    right: 1%;' +
                 '}',
                 '.pvl-controls .pvl-reset-button {' +
                 '    position: absolute;' +
@@ -110,6 +117,14 @@ export default function styles() {
                 '    margin-right: 5px;' +
                 '    text-align: right;' +
                 '    font-size: 14px;' +
+                '}',
+                '.pvl-controls .wc-controls .control-group .span-description {' +
+                '    display: none;' +
+                '}',
+                '.pvl-controls .wc-controls .control-group .changer {' +
+                '}',
+                '.pvl-controls .wc-controls .control-group select.changer {' +
+                '    overflow-y: auto;' +
                 '}',
 
         /***--------------------------------------------------------------------------------------\

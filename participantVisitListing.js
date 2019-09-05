@@ -1625,7 +1625,11 @@
     function addResetButton() {
         var _this2 = this;
 
-        // Add reset button to DOM.
+        this.containers.controlsLabel = this.containers.legend
+            .append('span')
+            .classed('pvl-controls__label', true)
+            .text('Filters:'); // Add reset button to DOM.
+
         this.controls.reset = {
             button: this.controls.wrap
                 .insert('button', ':first-child')
@@ -1968,11 +1972,7 @@
             /****---------------------------------------------------------------------------------\
       Legend
     \---------------------------------------------------------------------------------****/
-            '.pvl-legend {' +
-                '    width: 35%;' +
-                '    float: left;' +
-                '    position: relative;' +
-                '}',
+            '.pvl-legend {' + '    float: left;' + '    position: relative;' + '}',
             '.pvl-legend:after {' +
                 '    content: "";' +
                 '    display: inline-block;' +
@@ -1980,10 +1980,12 @@
                 '    vertical-align: bottom;' +
                 '}' +
                 '.pvl-legend__label {' +
+                '    width: 99%;' +
                 '    font-size: 24px;' +
                 '    font-weight: lighter;' +
                 '    position: absolute;' +
-                '    top: 0;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    top: 11px;' +
                 '    left: 0;' +
                 '}',
             '.pvl-legend__ul {' +
@@ -2008,10 +2010,13 @@
             /****---------------------------------------------------------------------------------\
       Controls
     \---------------------------------------------------------------------------------****/
-            '.pvl-controls {' +
-                '    width: 64%;' +
-                '    float: right;' +
-                '    position: relative;' +
+            '.pvl-controls {' + '    float: right;' + '    position: relative;' + '}',
+            '.pvl-controls__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 11px;' +
+                '    right: 1%;' +
                 '}',
             '.pvl-controls .pvl-reset-button {' +
                 '    position: absolute;' +
@@ -2034,6 +2039,13 @@
                 '    margin-right: 5px;' +
                 '    text-align: right;' +
                 '    font-size: 14px;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group .span-description {' +
+                '    display: none;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group .changer {' + '}',
+            '.pvl-controls .wc-controls .control-group select.changer {' +
+                '    overflow-y: auto;' +
                 '}',
             /***--------------------------------------------------------------------------------------\
       Lower row

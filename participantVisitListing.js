@@ -2001,6 +2001,7 @@
                 '    float: left;' +
                 '    margin-right: 1%;' +
                 '    text-align: center;' +
+                '    line-height: 1.4;' +
                 '}',
             '.pvl-legend-item-info-icon {' +
                 '    margin-left: 4px;' +
@@ -2036,9 +2037,8 @@
             '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
             '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
             '.pvl-controls .wc-controls .control-group .wc-control-label {' +
-                '    margin-right: 5px;' +
                 '    text-align: right;' +
-                '    font-size: 14px;' +
+                '    font-size: 12px;' +
                 '}',
             '.pvl-controls .wc-controls .control-group .span-description {' +
                 '    display: none;' +

@@ -116,13 +116,9 @@ describe('The init method is called.', () => {
                 if (loadingIndicated) {
                     //Handle loading indicator.
                     clearInterval(loading);
-                    const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden')[0];
-                    expect(
-                        Array.from(hiddenDisplays)
-                            .map(node => node.className)
-                            .filter(className => /pvl-listing/.test(className))
-                            .length
-                    ).toEqual(1);
+                    const hiddenDisplays = instance.containers.main.selectAll('.pvl-display.pvl-hidden');
+                    const nHiddenDisplays = hiddenDisplays.size();
+                    expect(nHiddenDisplays).toEqual(1);
                 }
             });
         });

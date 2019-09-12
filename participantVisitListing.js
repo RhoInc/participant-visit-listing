@@ -1962,7 +1962,10 @@
                 '    font-size: 14px;' +
                 '    font-family: courier;' +
                 '}',
-            '.pvl-chart--linear .wc-data-mark {' + '    cursor: pointer;' + '}',
+            '.pvl-chart--linear .wc-data-mark {' +
+                '    cursor: pointer;' +
+                '    clip-path: none !important;' +
+                '}',
             '.pvl-chart--linear .pvl-highlighted-visit-mark {' + '    cursor: pointer;' + '}',
             /****---------------------------------------------------------------------------------\
       Listing

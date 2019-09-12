@@ -1,7 +1,7 @@
 import { set } from 'd3';
 
 export default function defineVisitSet() {
-    //visit order/name/abbreviation set
+    // visit order/name/abbreviation set
     this.data.sets.visit_col = set(
         this.data.analysis.map(
             d =>
@@ -21,7 +21,7 @@ export default function defineVisitSet() {
         })
         .sort((a, b) => (a.order - b.order ? a.order - b.order : a.name < b.name ? -1 : 1));
 
-    //scheduled visit set
+    // scheduled visit set
     this.data.sets.scheduledVisits = this.data.sets.visit_col
         .filter(visit =>
             this.settings.visit_exclusion_regex
@@ -30,7 +30,7 @@ export default function defineVisitSet() {
         )
         .map(visit => visit.name);
 
-    //unscheduled visit set
+    // unscheduled visit set
     this.data.sets.unscheduledVisits = set(
         this.data.sets.visit_col
             .filter(visit =>

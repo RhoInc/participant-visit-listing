@@ -278,7 +278,7 @@
                 return -1;
             }
         });
-    } //Symbol polyfill because babel does weird things with for-of loops
+    } // Symbol polyfill because babel does weird things with for-of loops
 
     !(function(global, factory) {
         'object' == (typeof module === 'undefined' ? 'undefined' : _typeof(module)) &&
@@ -740,11 +740,11 @@
 
     function rendererSettings() {
         return {
-            //ID-level variables
+            // ID-level variables
             site_col: 'site_name',
             id_col: 'subjectnameoridentifier',
             id_status_col: 'subject_status',
-            //Visit-level variables
+            // Visit-level variables
             visit_col: 'visit_name',
             visit_abbreviation_col: 'visit_abbreviation',
             visit_order_col: 'visit_number',
@@ -761,7 +761,7 @@
             visit_overdue_pattern: '/overdue/i',
             visit_status_exclusion_col: 'plot_exclude',
             visit_status_exclusion_value: 'Yes',
-            //Miscellaneous
+            // Miscellaneous
             filter_cols: ['subset1', 'subset2', 'subset3'],
             // default filter variables
             chart_layout: 'tabbed',
@@ -804,30 +804,30 @@
 
     function syncControlsSettings() {
         var listingSettings = this.settings.listingSynced;
-        var controlsSettings = this.settings.controlsMerged; //Sync site filter.
+        var controlsSettings = this.settings.controlsMerged; // Sync site filter.
 
         var siteFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Site';
         });
-        siteFilter.value_col = listingSettings.site_col; //Sync ID status filter.
+        siteFilter.value_col = listingSettings.site_col; // Sync ID status filter.
 
         var idStatusFilter = controlsSettings.inputs.find(function(control) {
             return control.label === 'Participant Status';
         });
-        idStatusFilter.value_col = listingSettings.id_status_col; //Add user-specified filters.
+        idStatusFilter.value_col = listingSettings.id_status_col; // Add user-specified filters.
 
-        if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols) {
+        if (Array.isArray(listingSettings.filter_cols) && listingSettings.filter_cols.length) {
             var labels = {
                 subset1: 'Analysis Subset 1',
                 subset2: 'Analysis Subset 2',
-                subset3: 'Analysis Subset 3',
-                overdue2: '>1 Overdue Visits'
+                subset3: 'Analysis Subset 3'
             };
             listingSettings.filter_cols.forEach(function(filter_col) {
                 controlsSettings.inputs.push({
                     type: 'subsetter',
-                    label: labels[filter_col] || filter_col,
-                    value_col: filter_col
+                    label: labels[filter_col] || filter_col.label || filter_col,
+                    value_col: filter_col.value_col || filter_col,
+                    multiple: filter_col.multiple !== undefined ? !!filter_col.multiple : false
                 });
             });
         }
@@ -865,13 +865,13 @@
     }
 
     function syncListingSettings() {
-        var settings = this.settings.listingMerged; //Define regular expressions.
+        var settings = this.settings.listingMerged; // Define regular expressions.
 
         settings.visit_expectation_regex = stringToRegExp(settings.visit_expectation_pattern);
         settings.visit_exclusion_regex = stringToRegExp(settings.visit_exclusion_pattern);
-        settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern); //Check filter_cols.
+        settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern); // Check filter_cols.
 
-        settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : []; //Check active_tab and chart_layout settings.
+        settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : []; // Check active_tab and chart_layout settings.
 
         if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
             console.warn(
@@ -903,7 +903,7 @@
                 );
                 settings.active_tab = 'Charts';
             }
-        } //Assign settings to settings object.
+        } // Assign settings to settings object.
 
         this.settings.listingSynced = settings;
         Object.assign(this.settings, settings);
@@ -984,7 +984,7 @@
 
     function syncOrdinalChartSettings() {
         var listingSettings = this.settings.listingSynced;
-        var ordinalChartSettings = this.settings.ordinalChartMerged; //Update ordinal chart settings.
+        var ordinalChartSettings = this.settings.ordinalChartMerged; // Update ordinal chart settings.
 
         ordinalChartSettings.x.column = listingSettings.visit_col;
         ordinalChartSettings.y.column = listingSettings.id_col;
@@ -1008,7 +1008,7 @@
         ordinalChartSettings.gridlines = 'y';
         ordinalChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
         ordinalChartSettings.margin.top = 0;
-        ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; //Assign settings to settings object.
+        ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40; // Assign settings to settings object.
 
         this.settings.ordinalChartSynced = ordinalChartSettings;
     }
@@ -1041,7 +1041,7 @@
 
     function syncLinearChartSettings() {
         var listingSettings = this.settings.listingSynced;
-        var linearChartSettings = this.settings.linearChartMerged; //Update linear chart settings.
+        var linearChartSettings = this.settings.linearChartMerged; // Update linear chart settings.
 
         linearChartSettings.x.column = listingSettings.visit_day_col;
         linearChartSettings.y.column = listingSettings.id_col;
@@ -1071,7 +1071,7 @@
             .concat(listingSettings.visit_status_col, ']');
         linearChartSettings.color_by = listingSettings.visit_status_col;
         linearChartSettings.margin = Object.assign({}, listingSettings.chart_margin);
-        linearChartSettings.margin.top = 0; //Assign settings to settings object.
+        linearChartSettings.margin.top = 0; // Assign settings to settings object.
 
         this.settings.linearChartSynced = linearChartSettings;
     }
@@ -1114,8 +1114,8 @@
     function loading(event, callback) {
         var _this = this;
 
-        var t0 = this.performance.now(); //begin performance test
-        //indicate loading
+        var t0 = this.performance.now(); // begin performance test
+        // indicate loading
 
         var html = this.document.getElementsByTagName('html')[0];
         if (!html.classList.contains('pvl-wait')) html.className += ' pvl-wait';
@@ -1126,15 +1126,15 @@
             var loadingIndicated = _this.containers.loading.style('display') !== 'none';
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
 
                 _this.containers.loading.classed('pvl-hidden', true);
 
                 html.className = html.className.replace(' pvl-wait', '');
-                body.className = body.className.replace(' pvl-wait', ''); //Run callback.
+                body.className = body.className.replace(' pvl-wait', ''); // Run callback.
 
-                callback(); //end performance test
+                callback(); // end performance test
 
                 var t1 = _this.performance.now();
 
@@ -1147,7 +1147,7 @@
     function idLevel() {
         var _this = this;
 
-        //Derive ID-level variables.
+        // Derive ID-level variables.
         this.data.ids = d3
             .nest()
             .key(function(d) {
@@ -1166,7 +1166,7 @@
     }
 
     function updateNOverdueOptions() {
-        //Define new set of nOverdue options with analysis data.
+        // Define new set of nOverdue options with analysis data.
         var nOverdue = ['All'].concat(
             _toConsumableArray(
                 d3
@@ -1177,7 +1177,7 @@
                     )
                     .values()
             )
-        ); //Upate options in # of Overdue Visits dropdown.
+        ); // Upate options in # of Overdue Visits dropdown.
 
         var nOverdueOptions = this.controls.wrap
             .selectAll('.control-group select')
@@ -1192,7 +1192,7 @@
             .text(function(d) {
                 return d;
             });
-        nOverdueOptions.exit().remove(); //Update nOverdue filter if the currently selected option doesn't exist in the new set of nOverdue options.
+        nOverdueOptions.exit().remove(); // Update nOverdue filter if the currently selected option doesn't exist in the new set of nOverdue options.
 
         var nOverdueFilter = this.data.filters.find(function(filter) {
             return filter.col === 'nOverdue';
@@ -1220,7 +1220,7 @@
                           .selectAll('option:checked')
                           .data()
                     : select.value;
-        } //Apply analysis filters to raw data.
+        } // Apply analysis filters to raw data.
 
         this.data.analysis = this.data.raw;
         this.data.filters
@@ -1233,11 +1233,11 @@
                         ? filter.value.indexOf(di[filter.col]) > -1
                         : filter.value === 'All' || di[filter.col] === filter.value;
                 });
-            }); //Derive ID-level variables on analysis data.
+            }); // Derive ID-level variables on analysis data.
 
-        idLevel.call(this); //Update options in # of Overdue Visits dropdown.
+        idLevel.call(this); // Update options in # of Overdue Visits dropdown.
 
-        updateNOverdueOptions.call(this); //Apply other filters to analysis data.
+        updateNOverdueOptions.call(this); // Apply other filters to analysis data.
 
         this.data.filtered = this.data.analysis;
         this.data.filters
@@ -1264,7 +1264,7 @@
                     })
                 )
                 .values()
-                .sort(); //Sort set numerically if possible.
+                .sort(); // Sort set numerically if possible.
 
             if (
                 this.data.sets[dataMapping].every(function(value) {
@@ -1286,7 +1286,7 @@
                     })
                 )
                 .values()
-                .sort(); //Sort set numerically if possible.
+                .sort(); // Sort set numerically if possible.
 
             if (
                 this.data.sets[dataMapping].every(function(value) {
@@ -1307,7 +1307,7 @@
     function defineVisitSet() {
         var _this = this;
 
-        //visit order/name/abbreviation set
+        // visit order/name/abbreviation set
         this.data.sets.visit_col = d3
             .set(
                 this.data.analysis.map(function(d) {
@@ -1333,7 +1333,7 @@
             })
             .sort(function(a, b) {
                 return a.order - b.order ? a.order - b.order : a.name < b.name ? -1 : 1;
-            }); //scheduled visit set
+            }); // scheduled visit set
 
         this.data.sets.scheduledVisits = this.data.sets.visit_col
             .filter(function(visit) {
@@ -1343,7 +1343,7 @@
             })
             .map(function(visit) {
                 return visit.name;
-            }); //unscheduled visit set
+            }); // unscheduled visit set
 
         this.data.sets.unscheduledVisits = d3
             .set(
@@ -1625,7 +1625,11 @@
     function addResetButton() {
         var _this2 = this;
 
-        // Add reset button to DOM.
+        this.containers.controlsLabel = this.containers.legend
+            .append('span')
+            .classed('pvl-controls__label', true)
+            .text('Filters:'); // Add reset button to DOM.
+
         this.controls.reset = {
             button: this.controls.wrap
                 .insert('button', ':first-child')
@@ -1730,7 +1734,7 @@
                     context.containers[d.property].classed('pvl-hidden', false);
 
                     if (d.name === 'Listing') {
-                        //Initialize or draw listing.
+                        // Initialize or draw listing.
                         if (context.listing.initialized)
                             context.listing.draw(context.data.transposed);
                         else {
@@ -1745,7 +1749,7 @@
                             true
                         );
                     } else if (d.name === 'Visit Chart') {
-                        //Initialize or draw ordinal chart.
+                        // Initialize or draw ordinal chart.
                         if (context.ordinalChart.initialized)
                             context.ordinalChart.draw(context.data.filtered);
                         else {
@@ -1768,7 +1772,7 @@
                             false
                         );
                     } else if (d.name === 'Study Day Chart') {
-                        //Initialize or draw linear chart.
+                        // Initialize or draw linear chart.
                         if (context.linearChart.initialized)
                             context.linearChart.draw(context.data.filtered);
                         else {
@@ -1792,12 +1796,12 @@
                             true
                         );
                     } else if (d.name === 'Charts') {
-                        //Initialize or draw ordinal chart.
+                        // Initialize or draw ordinal chart.
                         if (context.ordinalChart.initialized)
                             context.ordinalChart.draw(context.data.filtered);
                         else {
                             context.ordinalChart.init(context.data.filtered, context.test);
-                        } //Initialize or draw linear chart.
+                        } // Initialize or draw linear chart.
 
                         if (context.linearChart.initialized)
                             context.linearChart.draw(context.data.filtered);
@@ -1858,7 +1862,7 @@
 
         this.containers.lowerRow = this.containers.main
             .append('div')
-            .classed('pvl-row pvl-row--lower', true); //tabs
+            .classed('pvl-row pvl-row--lower', true); // tabs
 
         var selectedTabs = tabs.filter(function(tab) {
             return _this.settings.chart_layout === 'tabbed'
@@ -1900,19 +1904,32 @@
             })
             .text(function(d) {
                 return d.name;
-            }); //display containers
+            }); // display containers
 
         if (this.settings.chart_layout === 'tabbed') {
             this.containers.ordinalChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full', true);
+                .classed(
+                    'pvl-display pvl-chart pvl-chart--ordinal pvl-chart--full'.concat(
+                        this.settings.active_tab === 'Visit Chart' ? '' : ' pvl-hidden'
+                    ),
+                    true
+                );
             this.containers.linearChart = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-display pvl-chart pvl-chart--linear pvl-chart--full', true);
+                .classed(
+                    'pvl-display pvl-chart pvl-chart--linear pvl-chart--full'.concat(
+                        this.settings.active_tab === 'Study Day Chart' ? '' : ' pvl-hidden'
+                    ),
+                    true
+                );
         } else {
             this.containers.charts = this.containers.lowerRow
                 .append('div')
-                .classed('pvl-charts', true);
+                .classed(
+                    'pvl-charts'.concat(this.settings.active_tab === 'Charts' ? '' : ' pvl-hidden'),
+                    true
+                );
             this.containers.ordinalChart = this.containers.charts
                 .append('div')
                 .classed('pvl-display pvl-chart pvl-chart--ordinal pvl-chart--side-by-side', true);
@@ -1923,7 +1940,12 @@
 
         this.containers.listing = this.containers.lowerRow
             .append('div')
-            .classed('pvl-display pvl-listing', true);
+            .classed(
+                'pvl-display pvl-listing'.concat(
+                    this.settings.active_tab === 'Listing' ? '' : ' pvl-hidden'
+                ),
+                true
+            );
         /**-------------------------------------------------------------------------------------------\
       Functionality
     \-------------------------------------------------------------------------------------------**/
@@ -1950,11 +1972,7 @@
             /****---------------------------------------------------------------------------------\
       Legend
     \---------------------------------------------------------------------------------****/
-            '.pvl-legend {' +
-                '    width: 35%;' +
-                '    float: left;' +
-                '    position: relative;' +
-                '}',
+            '.pvl-legend {' + '    float: left;' + '    position: relative;' + '}',
             '.pvl-legend:after {' +
                 '    content: "";' +
                 '    display: inline-block;' +
@@ -1962,10 +1980,12 @@
                 '    vertical-align: bottom;' +
                 '}' +
                 '.pvl-legend__label {' +
+                '    width: 99%;' +
                 '    font-size: 24px;' +
                 '    font-weight: lighter;' +
                 '    position: absolute;' +
-                '    top: 0;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    top: 11px;' +
                 '    left: 0;' +
                 '}',
             '.pvl-legend__ul {' +
@@ -1981,6 +2001,7 @@
                 '    float: left;' +
                 '    margin-right: 1%;' +
                 '    text-align: center;' +
+                '    line-height: 1.4;' +
                 '}',
             '.pvl-legend-item-info-icon {' +
                 '    margin-left: 4px;' +
@@ -1990,10 +2011,13 @@
             /****---------------------------------------------------------------------------------\
       Controls
     \---------------------------------------------------------------------------------****/
-            '.pvl-controls {' +
-                '    width: 64%;' +
-                '    float: right;' +
-                '    position: relative;' +
+            '.pvl-controls {' + '    float: right;' + '    position: relative;' + '}',
+            '.pvl-controls__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 11px;' +
+                '    right: 1%;' +
                 '}',
             '.pvl-controls .pvl-reset-button {' +
                 '    position: absolute;' +
@@ -2013,9 +2037,15 @@
             '.pvl-controls .wc-controls .control-group:last-child {' + '    margin-right: 0;' + '}',
             '.pvl-controls .wc-controls .control-group > * {' + '    width: 100%;' + '}',
             '.pvl-controls .wc-controls .control-group .wc-control-label {' +
-                '    margin-right: 5px;' +
                 '    text-align: right;' +
-                '    font-size: 14px;' +
+                '    font-size: 12px;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group .span-description {' +
+                '    display: none;' +
+                '}',
+            '.pvl-controls .wc-controls .control-group .changer {' + '}',
+            '.pvl-controls .wc-controls .control-group select.changer {' +
+                '    overflow-y: auto;' +
                 '}',
             /***--------------------------------------------------------------------------------------\
       Lower row
@@ -2243,7 +2273,7 @@
                 '    flex: 1 auto;' +
                 '    width: 100px;' +
                 '}'
-        ]; //Attach styles to DOM.
+        ]; // Attach styles to DOM.
 
         this.style = this.document.createElement('style');
         this.style.type = 'text/css';
@@ -2377,7 +2407,7 @@
     function clearSort() {
         var _this = this;
 
-        //Clear sort if visit is not in analysis subset.
+        // Clear sort if visit is not in analysis subset.
         if (
             this.sortable.order.some(function(item) {
                 return (
@@ -2389,9 +2419,9 @@
                 );
             })
         ) {
-            this.sortable.order = []; //Remove sort buttons.
+            this.sortable.order = []; // Remove sort buttons.
 
-            this.sortable.wrap.selectAll('.wc-button.sort-box').remove(); //Display sorting instruction.
+            this.sortable.wrap.selectAll('.wc-button.sort-box').remove(); // Display sorting instruction.
 
             this.sortable.wrap.select('.instruction').classed('hidden', false);
         }
@@ -2455,7 +2485,7 @@
     }
 
     function addHeaderHover() {
-        //Highlight column when hovering over column header.
+        // Highlight column when hovering over column header.
         this.thead
             .selectAll('th')
             .on('mouseover', function(d, i) {
@@ -2475,7 +2505,7 @@
     }
 
     function addCellFormatting() {
-        var context = this; //Formatting cells via .css.
+        var context = this; // Formatting cells via .css.
 
         this.tbody.selectAll('tr').each(function(d) {
             var visitCells = d3
@@ -2628,11 +2658,11 @@
     function onClick(th, header) {
         var context = this;
         var selection = d3.select(th);
-        var col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, ''); //Check if column is already a part of current sort order.
+        var col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, ''); // Check if column is already a part of current sort order.
 
         var sortItem = this.sortable.order.find(function(item) {
             return item.col === col;
-        }); //If it isn't, add it to sort order.
+        }); // If it isn't, add it to sort order.
 
         if (!sortItem) {
             sortItem = {
@@ -2656,19 +2686,19 @@
                 .html('&#10060;');
             this.sortable.order.push(sortItem);
         } else {
-            //Otherwise reverse its sort direction.
+            // Otherwise reverse its sort direction.
             sortItem.direction = sortItem.direction === 'ascending' ? 'descending' : 'ascending';
             sortItem.wrap
                 .select('span.sort-direction')
                 .html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
-        } //Hide sort instructions.
+        } // Hide sort instructions.
 
-        this.sortable.wrap.select('.instruction').classed('hidden', true); //Add sort container deletion functionality.
+        this.sortable.wrap.select('.instruction').classed('hidden', true); // Add sort container deletion functionality.
 
         this.sortable.order.forEach(function(item, i) {
             item.wrap.on('click', function(d) {
-                //Remove column's sort container.
-                d3.select(this).remove(); //Remove column from sort.
+                // Remove column's sort container.
+                d3.select(this).remove(); // Remove column from sort.
 
                 context.sortable.order.splice(
                     context.sortable.order
@@ -2677,17 +2707,17 @@
                         })
                         .indexOf(d.key),
                     1
-                ); //Display sorting instruction.
+                ); // Display sorting instruction.
 
                 context.sortable.wrap
                     .select('.instruction')
-                    .classed('hidden', context.sortable.order.length); //Redraw chart.
+                    .classed('hidden', context.sortable.order.length); // Redraw chart.
 
                 if (context.sortable.order.length) sortData.call(context);
                 else context.data.raw = context.data.initial.slice();
                 context.draw();
             });
-        }); //Redraw chart.
+        }); // Redraw chart.
 
         sortData.call(this);
         this.draw();
@@ -2767,15 +2797,15 @@
     }
 
     function clone(obj) {
-        var copy; //boolean, number, string, null, undefined
+        var copy; // boolean, number, string, null, undefined
 
-        if ('object' != _typeof(obj) || null == obj) return obj; //date
+        if ('object' != _typeof(obj) || null == obj) return obj; // date
 
         if (obj instanceof Date) {
             copy = new Date();
             copy.setTime(obj.getTime());
             return copy;
-        } //array
+        } // array
 
         if (obj instanceof Array) {
             copy = [];
@@ -2785,7 +2815,7 @@
             }
 
             return copy;
-        } //object
+        } // object
 
         if (obj instanceof Object) {
             copy = {};
@@ -2825,11 +2855,11 @@
         var filterRange =
             'A1:' +
             String.fromCharCode(64 + this.config.cols.length) +
-            (this.data.filtered.length + 1); //Header row
+            (this.data.filtered.length + 1); // Header row
 
         this.config.headers.forEach(function(header, col) {
             addCell(wb, ws, header, 'c', clone(headerStyle), range, 0, col);
-        }); //Data rows
+        }); // Data rows
 
         this.data.filtered.forEach(function(d, row) {
             _this.config.cols.forEach(function(variable, col) {
@@ -2853,7 +2883,7 @@
 
                 addCell(wb, ws, d[variable] || '', 'c', cellStyle, range, row + 1, col);
             });
-        }); //Define column widths.
+        }); // Define column widths.
 
         var tr = this.tbody.selectAll('tr').filter(function(d, i) {
             return i === 0;
@@ -2867,7 +2897,7 @@
         ws['!cols'] = cols;
         ws['!autofilter'] = {
             ref: filterRange
-        }; //ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
+        }; // ws['!freeze'] = { xSplit: '1', ySplit: '1', topLeftCell: 'B2', activePane: 'bottomRight', state: 'frozen' };
 
         wb.SheetNames.push(name);
         wb.Sheets[name] = ws;
@@ -3056,7 +3086,7 @@
                 return navigator.msSaveOrOpenBlob(blob, name);
             };
         } // todo: detect chrome extensions & packaged apps
-        //save_link.target = "_blank";
+        // save_link.target = "_blank";
 
         FS_proto.abort = function() {};
 
@@ -3065,9 +3095,9 @@
         FS_proto.DONE = 2;
         FS_proto.error = FS_proto.onwritestart = FS_proto.onprogress = FS_proto.onwrite = FS_proto.onabort = FS_proto.onerror = FS_proto.onwriteend = null;
         return saveAs;
-    } //)((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));
+    } // )((typeof self !== 'undefined' && self) || (typeof window !== 'undefined' && window));
 
-    //Convert XLSX file for download.
+    // Convert XLSX file for download.
     function s2ab(s) {
         var i;
 
@@ -3093,16 +3123,16 @@
 
     function exportXLSX() {
         if (!this.pvl.test) {
+            var fileName = 'participant-visit-listing-'.concat(
+                d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()),
+                '.xlsx'
+            );
+
             try {
-                FileSaver(window)(
-                    new Blob([s2ab(this.XLSX)], {
-                        type: 'application/octet-stream'
-                    }),
-                    'participant-visit-listing-'.concat(
-                        d3.time.format('%Y-%m-%dT%H-%M-%S')(new Date()),
-                        '.xlsx'
-                    )
-                );
+                var blob = new Blob([s2ab(this.XLSX)], {
+                    type: 'application/octet-stream'
+                });
+                FileSaver(window)(blob, fileName);
             } catch (error) {
                 if (typeof console !== 'undefined') console.log(error);
             }
@@ -3140,7 +3170,7 @@
     }
 
     function download(fileType, data) {
-        //transform blob array into a blob of characters
+        // transform blob array into a blob of characters
         var blob = new Blob(data, {
             type:
                 fileType === 'csv'
@@ -3154,10 +3184,10 @@
             .concat(fileType);
         var link = this.wrap.select('.export#'.concat(fileType));
         if (navigator.msSaveBlob)
-            //IE
+            // IE
             navigator.msSaveBlob(blob, fileName);
         else if (link.node().download !== undefined) {
-            //21st century browsers
+            // 21st century browsers
             var url = URL.createObjectURL(blob);
             link.node().setAttribute('href', url);
             link.node().setAttribute('download', fileName);
@@ -3169,13 +3199,13 @@
 
         if (this.config.exportable)
             this.wrap.select('.export#csv').on('click', function() {
-                var CSVarray = []; //add headers to CSV array
+                var CSVarray = []; // add headers to CSV array
 
                 var headers = _this.config.headers.map(function(header) {
                     return '"'.concat(header.replace(/"/g, '""'), '"');
                 });
 
-                CSVarray.push(headers); //add rows to CSV array
+                CSVarray.push(headers); // add rows to CSV array
 
                 _this.data.filtered.forEach(function(d, i) {
                     var row = _this.config.cols.map(function(col) {
@@ -3185,27 +3215,27 @@
                     });
 
                     CSVarray.push(row);
-                }); //Download .csv file.
+                }); // Download .csv file.
 
                 download.call(_this, 'csv', [CSVarray.join('\n')]);
             });
     }
 
     function onDraw() {
-        //Sync top and bottom scroll bars.
-        syncScrollBars.call(this); //Highlight column when hovering over column header.
+        // Sync top and bottom scroll bars.
+        syncScrollBars.call(this); // Highlight column when hovering over column header.
 
-        addHeaderHover.call(this); //Sort columns on click chronologically.
+        addHeaderHover.call(this); // Sort columns on click chronologically.
 
-        sortChronologically.call(this); //Add row and column summaries.
+        sortChronologically.call(this); // Add row and column summaries.
 
-        addSummaries.call(this); //Add data-driven cell formatting.
+        addSummaries.call(this); // Add data-driven cell formatting.
 
-        addCellFormatting.call(this); //Add styled export to .xlsx.
+        addCellFormatting.call(this); // Add styled export to .xlsx.
 
-        exportToXLSX.call(this); //Add styled (eventually) export to .pdf.
+        exportToXLSX.call(this); // Add styled (eventually) export to .pdf.
 
-        exportToPDF.call(this); //Add export to .csv.
+        exportToPDF.call(this); // Add export to .csv.
 
         exportToCSV.call(this);
         if (this.pvl.settings.active_tab === 'Listing')
@@ -3340,7 +3370,7 @@
     function addButtons() {
         var _this = this;
 
-        //Add minimize chart button.
+        // Add minimize chart button.
         this.topXAxis.minimize = this.topXAxis.svg
             .append('text')
             .classed('pvl-chart-button pvl-chart-button--minimize', true)
@@ -3348,7 +3378,7 @@
             .on('click', function() {
                 return minimize.call(_this);
             });
-        this.topXAxis.minimize.append('title').text('MinimizeChart'); //Add split chart button.
+        this.topXAxis.minimize.append('title').text('MinimizeChart'); // Add split chart button.
 
         this.topXAxis.split = this.topXAxis.svg
             .append('text')
@@ -3357,7 +3387,7 @@
             .on('click', function() {
                 return split.call(_this);
             });
-        this.topXAxis.split.append('title').text('View both charts'); //Add maximize chart button.
+        this.topXAxis.split.append('title').text('View both charts'); // Add maximize chart button.
 
         this.topXAxis.maximize = this.topXAxis.svg
             .append('text')
@@ -3391,18 +3421,18 @@
     }
 
     function hideCharts() {
-        //Hide Charts container if the Listing tab is active.
+        // Hide Charts container if the Listing tab is active.
         if (
             this.pvl.settings.chart_layout === 'side-by-side' &&
             this.pvl.settings.active_tab !== 'Charts' &&
             this.property === 'linearChart'
         )
-            this.pvl.containers.charts.classed('pvl-hidden', true); //Hide the other chart container if its tab is not active.
+            this.pvl.containers.charts.classed('pvl-hidden', true); // Hide the other chart container if its tab is not active.
 
         if (this.pvl.settings.chart_layout === 'tabbed') {
             var otherProperty = this.property === 'ordinalChart' ? 'linearChart' : 'ordinalChart';
             this.pvl.containers[otherProperty].classed('pvl-hidden', true);
-        } //Hide listing.
+        } // Hide listing.
 
         if (this.pvl.settings.active_tab !== 'Listing')
             this.pvl.containers.listing.classed('pvl-hidden', true);
@@ -3438,11 +3468,11 @@
     }
 
     function drawTopXAxis() {
-        //Set width and height of floating x-axis.
+        // Set width and height of floating x-axis.
         this.topXAxis.container.select('svg').attr({
             width: this.wrap.select('.wc-svg').attr('width'),
             height: '100px'
-        }); //Draw top x-axis.
+        }); // Draw top x-axis.
 
         this.topXAxis.axis = d3.svg
             .axis()
@@ -3492,11 +3522,11 @@
     }
 
     function rotateXAxisTickLabels() {
-        //Rotate top x-axis tick labels.
+        // Rotate top x-axis tick labels.
         this.topXAxis.svg
             .selectAll('.tick text')
             .attr('transform', 'rotate(-45)')
-            .style('text-anchor', 'start'); //Rotate bottom x-axis tick labels.
+            .style('text-anchor', 'start'); // Rotate bottom x-axis tick labels.
 
         this.bottomXAxis.svg
             .selectAll('.tick text')
@@ -3559,7 +3589,7 @@
     function mousemove(mouse) {
         var _this = this;
 
-        var coords = d3.mouse(mouse); //x
+        var coords = d3.mouse(mouse); // x
 
         var x = coords[0];
 
@@ -3598,7 +3628,7 @@
                         'font-weight': 'bold'
                     })
                     .text(Math.round(this.x.invert(x)));
-        } //y
+        } // y
 
         var y = coords[1];
         var y_coord = this.y_coords.find(function(y_coord) {
@@ -3621,7 +3651,7 @@
     }
 
     function mousemove$1(mouse) {
-        //x
+        // x
         if (this.config.x.type === 'ordinal') {
             this.wrap.selectAll('.x.axis .tick line').style({
                 stroke: '#eee',
@@ -3630,7 +3660,7 @@
             this.wrap.selectAll('.x.axis .tick text').attr('font-weight', 'normal');
         } else {
             this.topXAxis.svg.select('.tick--highlight').remove();
-        } //y
+        } // y
 
         this.wrap.selectAll('.y.axis .tick line').style({
             stroke: '#eee',
@@ -3805,13 +3835,13 @@
             arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
         if (this.highlight) {
-            //Remove highlight lines and visit annotation.
+            // Remove highlight lines and visit annotation.
             if (deleteHighlight) {
                 this.highlight.container.remove();
                 delete this.highlight;
             } else {
                 this.highlight.container.selectAll('*').remove();
-            } //De-class highlighted circles and reset their opacity.
+            } // De-class highlighted circles and reset their opacity.
 
             this.points
                 .classed('pvl-highlighted-visit', false)
@@ -3819,7 +3849,7 @@
                 .attr({
                     'fill-opacity': 1,
                     'stroke-opacity': 1
-                }); //Reset annotation opacity.
+                }); // Reset annotation opacity.
 
             this.annotations.selectAll('text').attr({
                 'fill-opacity': 1,
@@ -3846,7 +3876,7 @@
         stroke: 'black',
         'stroke-width': '2px',
         'stroke-opacity': 0.5,
-        //'stroke-dasharray': '2,2',
+        // 'stroke-dasharray': '2,2',
         'stroke-linecap': 'butt'
     };
 
@@ -3893,7 +3923,7 @@
     function addHighlightLines() {
         var context = this;
         this.highlight.points.each(function(di) {
-            var point = d3.select(this); //Add a horizontal line to the reference line.
+            var point = d3.select(this); // Add a horizontal line to the reference line.
 
             var line = context.highlight.container
                 .append('line')
@@ -3917,7 +3947,7 @@
                     di.values.x - context.highlight.referenceDay,
                     '\nClick to clear highlighting.'
                 )
-            ); //Increase opacity.
+            ); // Increase opacity.
 
             point.selectAll('circle').attr({
                 'fill-opacity': 1,
@@ -3929,7 +3959,7 @@
     function click(element, d) {
         var _this = this;
 
-        clearHighlight.call(this, !!d); //Capture selected visit value.
+        clearHighlight.call(this, !!d); // Capture selected visit value.
 
         if (d) {
             this.highlight = {
@@ -3947,20 +3977,20 @@
                 this.highlight.statistics.tooltip,
                 '\nClick to remove highlighting.'
             );
-        } //Reduce opacity of all circles.
+        } // Reduce opacity of all circles.
 
-        deemphasizeMarks.call(this); //Select points representing selected visit value.
+        deemphasizeMarks.call(this); // Select points representing selected visit value.
 
         this.highlight.points = this.svg
             .selectAll('.point')
             .filter(function(di) {
                 return di.values.raw[0][_this.pvl.settings.visit_col] === _this.highlight.visit;
             })
-            .classed('pvl-highlighted-visit', true); //Add a reference line of the median study day of the selected visit.
+            .classed('pvl-highlighted-visit', true); // Add a reference line of the median study day of the selected visit.
 
-        addReferenceLine.call(this); //Add reference text annotation.
+        addReferenceLine.call(this); // Add reference text annotation.
 
-        addReferenceText.call(this); //Highlight points representing selected visit value.
+        addReferenceText.call(this); // Highlight points representing selected visit value.
 
         addHighlightLines.call(this);
     }
@@ -4102,7 +4132,7 @@
     function recordLevel() {
         var _this = this;
 
-        //Derive record-level variables.
+        // Derive record-level variables.
         this.data.raw.forEach(function(d) {
             d.visitDate = d[_this.settings.visit_date_col];
             d.visitCharacter = d[_this.settings.visit_col].substring(0, 1);
@@ -4140,7 +4170,7 @@
             .values()
             .sort(function(a, b) {
                 return +a.split(':|:')[0] - +b.split(':|:')[0];
-            }); //Update ordinal chart settings.
+            }); // Update ordinal chart settings.
 
         this.ordinalChart.config.color_dom = this.data.sets.visit_status_col.map(function(
             visit_status
@@ -4156,7 +4186,7 @@
             visit_status
         ) {
             return visit_status.split(':|:')[1];
-        }); //Update linear chart settings.
+        }); // Update linear chart settings.
 
         this.linearChart.config.color_dom = this.data.sets.visit_status_col.map(function(
             visit_status
@@ -4297,8 +4327,8 @@
                             })
                         )
                     )
-                    .join('\n'); //visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
-                //visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
+                    .join('\n'); // visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
+                // visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
             });
     }
 
@@ -4307,7 +4337,7 @@
             .map(function(visit_status) {
                 var split = visit_status.split(':|:');
                 var order = split[0];
-                var status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); //.replace(/ /g, '.');
+                var status = split[1].toLowerCase().replace(/[^_a-z-]/g, '-'); // .replace(/ /g, '.');
 
                 var color = split[2];
                 var styles = [
@@ -4572,7 +4602,7 @@
     function init(data) {
         var _this = this;
 
-        //Data manipulation
+        // Data manipulation
         loading.call(this, 'Data manipulation', function() {
             _this.data = {
                 raw: data,
@@ -4592,37 +4622,21 @@
             addVisitStatusStyles.call(_this);
             transposeData.call(_this);
             addLegends.call(_this);
-            updateNParticipants.call(_this); //Display initialization
+            updateNParticipants.call(_this); // Display initialization
 
             loading.call(_this, 'Display initialization', function() {
                 if (_this.settings.active_tab === 'Listing') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', true);
-
-                    _this.containers.linearChart.classed('pvl-hidden', true);
-
-                    _this.containers.listing.classed('pvl-hidden', false); //initialize listing
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', true); // initialize listing
 
                     _this.listing.init(_this.data.transposed, _this.test);
                 } else if (_this.settings.active_tab === 'Charts') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-
-                    _this.containers.charts.classed('pvl-hidden', false);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //initialize charts
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false); // initialize charts
 
                     _this.ordinalChart.init(_this.data.raw, _this.test);
 
                     _this.linearChart.init(_this.data.raw, _this.test);
                 } else if (_this.settings.active_tab === 'Visit Chart') {
-                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', false);
-
-                    _this.containers.linearChart.classed('pvl-hidden', true);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //initialize ordinal chart
+                    _this.containers.visitExpectationLegendContainer.classed('pvl-hidden', false); // initialize ordinal chart
 
                     _this.ordinalChart.init(_this.data.raw, _this.test);
                 } else if (_this.settings.active_tab === 'Study Day Chart') {
@@ -4630,13 +4644,7 @@
 
                     _this.containers.visitExpectationLegend.past.rect.classed('pvl-hidden', true);
 
-                    _this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true);
-
-                    _this.containers.ordinalChart.classed('pvl-hidden', true);
-
-                    _this.containers.linearChart.classed('pvl-hidden', false);
-
-                    _this.containers.listing.classed('pvl-hidden', true); //initialize linear chart
+                    _this.containers.visitExpectationLegend.future.rect.classed('pvl-hidden', true); // initialize linear chart
 
                     _this.linearChart.init(_this.data.raw, _this.test);
                 }
@@ -4644,7 +4652,7 @@
                 updateMultiSelects$1.call(_this);
                 update$1.call(_this);
                 _this.controls.ready = true;
-                addResetButton.call(_this); //indicate that loading has completed
+                addResetButton.call(_this); // indicate that loading has completed
 
                 if (_this.test) _this.loaded = true;
             });
@@ -4652,12 +4660,12 @@
     }
 
     function destroy() {
-        //Remove displays.
+        // Remove displays.
         this.ordinalChart.destroy();
         this.linearChart.destroy();
-        this.listing.destroy(); //Remove stylesheet.
+        this.listing.destroy(); // Remove stylesheet.
 
-        this.style.remove(); //Clear container, removing one child node at a time.
+        this.style.remove(); // Clear container, removing one child node at a time.
 
         var node = d3.select(this.element).node();
 

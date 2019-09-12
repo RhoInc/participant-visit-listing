@@ -2,7 +2,7 @@
     "title": "settings",
     "description": "JSON schema for the configuration of the participant-visit-listing",
     "overview": "The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays. The Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects. Refer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.\nIn addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.",
-    "version": "1.2.0",
+    "version": "1.5.0",
     "type": "object",
     "data-guidelines": "The Participant Visit Listing accepts [JSON](https://en.wikipedia.org/wiki/JSON) data of the format returned by [`d3.csv()`](https://github.com/d3/d3-3.x-api-reference/blob/master/CSV.md). The collection of displays visualizes clinical schedule of events data with **one row per participant per visit** plus the required variables specified below.",
     "data-structure": "one record per participant per visit",
@@ -235,23 +235,40 @@
         },
         "filter_cols": {
             "title": "Custom Filter Variables",
-            "description": "custom filter variables, in addition to site and participant status",
-            "defaults": [
-                "subset1",
-                "subset2",
-                "subset3",
-                "overdue2"
-            ],
-            "descriptions": {
-                "subset1": "Analysis Subset 1",
-                "subset2": "Analysis Subset 2",
-                "subset3": "Analysis Subset 3",
-                "overdue2": ">1 Overdue Visits"
-            },
+            "description": "custom filter variables in addition to site, participant status, and number of overdue visits",
             "type": "array",
             "items": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                    "value_col": {
+                        "title": "Name of Variable",
+                        "type": "string"
+                    },
+                    "label": {
+                        "title": "Description of Variable",
+                        "type": "string"
+                    },
+                    "multiple": {
+                        "title": "Multiselect?",
+                        "type": "boolean",
+                        "default": false
+                    }
+                }
             },
+            "default": [
+                {
+                    "value_col": "subset1",
+                    "label": "Analysis Subset 1"
+                },
+                {
+                    "value_col": "subset2",
+                    "label": "Analysis Subset 2"
+                },
+                {
+                    "value_col": "subset3",
+                    "label": "Analysis Subset 3"
+                }
+            ],
             "data-mapping": true,
             "data-type": "string",
             "required": false

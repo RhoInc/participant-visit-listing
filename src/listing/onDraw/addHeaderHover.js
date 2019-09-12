@@ -1,7 +1,7 @@
 import { select, selectAll } from 'd3';
 
 export default function addHeaderHover() {
-    //Highlight column when hovering over column header.
+    // Highlight column when hovering over column header.
     this.thead
         .selectAll('th')
         .on('mouseover', function(d, i) {

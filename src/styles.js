@@ -37,7 +37,6 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-legend {' +
-                '    width: 35%;' +
                 '    float: left;' +
                 '    position: relative;' +
                 '}',
@@ -48,10 +47,12 @@ export default function styles() {
                 '    vertical-align: bottom;' +
                 '}' +
                 '.pvl-legend__label {' +
+                '    width: 99%;' +
                 '    font-size: 24px;' +
                 '    font-weight: lighter;' +
                 '    position: absolute;' +
-                '    top: 0;' +
+                '    border-bottom: 1px solid lightgray;' +
+                '    top: 11px;' +
                 '    left: 0;' +
                 '}',
                 '.pvl-legend__ul {' +
@@ -67,6 +68,7 @@ export default function styles() {
                 '    float: left;' +
                 '    margin-right: 1%;' +
                 '    text-align: center;' +
+                '    line-height: 1.4;' +
                 '}',
                 '.pvl-legend-item-info-icon {' +
                 '    margin-left: 4px;' +
@@ -79,9 +81,15 @@ export default function styles() {
             \---------------------------------------------------------------------------------****/
 
                 '.pvl-controls {' +
-                '    width: 64%;' +
                 '    float: right;' +
                 '    position: relative;' +
+                '}',
+                '.pvl-controls__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 11px;' +
+                '    right: 1%;' +
                 '}',
                 '.pvl-controls .pvl-reset-button {' +
                 '    position: absolute;' +
@@ -107,9 +115,16 @@ export default function styles() {
                 '    width: 100%;' +
                 '}',
                 '.pvl-controls .wc-controls .control-group .wc-control-label {' +
-                '    margin-right: 5px;' +
                 '    text-align: right;' +
-                '    font-size: 14px;' +
+                '    font-size: 12px;' +
+                '}',
+                '.pvl-controls .wc-controls .control-group .span-description {' +
+                '    display: none;' +
+                '}',
+                '.pvl-controls .wc-controls .control-group .changer {' +
+                '}',
+                '.pvl-controls .wc-controls .control-group select.changer {' +
+                '    overflow-y: auto;' +
                 '}',
 
         /***--------------------------------------------------------------------------------------\
@@ -383,20 +398,20 @@ export default function styles() {
                     '    flex: 1 auto;' +
                     '    width: 100px;' +
                     '}',
-                    //'.pvl-listing .wc-table table tr th.pvl-header-hover,' +
-                    //'.pvl-listing .wc-table table tr td.pvl-header-hover {' +
-                    //'    border-right: 1px solid black;' +
-                    //'    border-left: 1px solid black;' +
-                    //'}',
-                    //'.pvl-listing .wc-table table tr th.pvl-header-hover {' +
-                    //'    border-top: 1px solid #aaa;' +
-                    //'}',
-                    //'.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
-                    //'    border-bottom: 1px solid #aaa !important;' +
-                    //'}',
+                    // '.pvl-listing .wc-table table tr th.pvl-header-hover,' +
+                    // '.pvl-listing .wc-table table tr td.pvl-header-hover {' +
+                    // '    border-right: 1px solid black;' +
+                    // '    border-left: 1px solid black;' +
+                    // '}',
+                    // '.pvl-listing .wc-table table tr th.pvl-header-hover {' +
+                    // '    border-top: 1px solid #aaa;' +
+                    // '}',
+                    // '.pvl-listing .wc-table table tbody tr:last-child td.pvl-header-hover {' +
+                    // '    border-bottom: 1px solid #aaa !important;' +
+                    // '}',
     ];
 
-    //Attach styles to DOM.
+    // Attach styles to DOM.
     this.style = this.document.createElement('style');
     this.style.type = 'text/css';
     this.style.innerHTML = this.styles.join('\n');

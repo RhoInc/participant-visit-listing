@@ -30,7 +30,7 @@ export default function addTabFunctionality() {
                 context.containers[d.property].classed('pvl-hidden', false);
 
                 if (d.name === 'Listing') {
-                    //Initialize or draw listing.
+                    // Initialize or draw listing.
                     if (context.listing.initialized) context.listing.draw(context.data.transposed);
                     else {
                         context.listing.init(context.data.transposed, context.test);
@@ -41,7 +41,7 @@ export default function addTabFunctionality() {
                     }
                     context.containers.visitExpectationLegendContainer.classed('pvl-hidden', true);
                 } else if (d.name === 'Visit Chart') {
-                    //Initialize or draw ordinal chart.
+                    // Initialize or draw ordinal chart.
                     if (context.ordinalChart.initialized)
                         context.ordinalChart.draw(context.data.filtered);
                     else {
@@ -61,7 +61,7 @@ export default function addTabFunctionality() {
                         false
                     );
                 } else if (d.name === 'Study Day Chart') {
-                    //Initialize or draw linear chart.
+                    // Initialize or draw linear chart.
                     if (context.linearChart.initialized)
                         context.linearChart.draw(context.data.filtered);
                     else {
@@ -79,14 +79,14 @@ export default function addTabFunctionality() {
                         true
                     );
                 } else if (d.name === 'Charts') {
-                    //Initialize or draw ordinal chart.
+                    // Initialize or draw ordinal chart.
                     if (context.ordinalChart.initialized)
                         context.ordinalChart.draw(context.data.filtered);
                     else {
                         context.ordinalChart.init(context.data.filtered, context.test);
                     }
 
-                    //Initialize or draw linear chart.
+                    // Initialize or draw linear chart.
                     if (context.linearChart.initialized)
                         context.linearChart.draw(context.data.filtered);
                     else {

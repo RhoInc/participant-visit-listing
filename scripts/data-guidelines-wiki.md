@@ -25,4 +25,3 @@ required and optional variables:
 |**filter_cols[0]**|subset1|array|Analysis Subset 1||
 |**filter_cols[1]**|subset2|array|Analysis Subset 2||
 |**filter_cols[2]**|subset3|array|Analysis Subset 3||
-|**filter_cols[3]**|overdue2|array|>1 Overdue Visits||

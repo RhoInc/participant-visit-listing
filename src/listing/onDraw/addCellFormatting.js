@@ -3,7 +3,7 @@ import { select } from 'd3';
 export default function addCellFormatting() {
     const context = this;
 
-    //Formatting cells via .css.
+    // Formatting cells via .css.
     this.tbody.selectAll('tr').each(function(d) {
         const visitCells = select(this)
             .selectAll('td:nth-child(n + 4)')

@@ -2,7 +2,7 @@ export default function syncOrdinalChartSettings() {
     const listingSettings = this.settings.listingSynced;
     const ordinalChartSettings = this.settings.ordinalChartMerged;
 
-    //Update ordinal chart settings.
+    // Update ordinal chart settings.
     ordinalChartSettings.x.column = listingSettings.visit_col;
     ordinalChartSettings.y.column = listingSettings.id_col;
     const circles = ordinalChartSettings.marks[0];
@@ -21,6 +21,6 @@ export default function syncOrdinalChartSettings() {
     ordinalChartSettings.margin.top = 0;
     ordinalChartSettings.margin.right = ordinalChartSettings.margin.right || 40;
 
-    //Assign settings to settings object.
+    // Assign settings to settings object.
     this.settings.ordinalChartSynced = ordinalChartSettings;
 }

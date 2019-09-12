@@ -1,5 +1,5 @@
 export default function clearSort() {
-    //Clear sort if visit is not in analysis subset.
+    // Clear sort if visit is not in analysis subset.
     if (
         this.sortable.order.some(
             item =>
@@ -8,10 +8,10 @@ export default function clearSort() {
     ) {
         this.sortable.order = [];
 
-        //Remove sort buttons.
+        // Remove sort buttons.
         this.sortable.wrap.selectAll('.wc-button.sort-box').remove();
 
-        //Display sorting instruction.
+        // Display sorting instruction.
         this.sortable.wrap.select('.instruction').classed('hidden', false);
     }
 }

@@ -32,7 +32,7 @@ export default function calculateVisitStatistics() {
                         }`
                 )
             ].join('\n');
-            //visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
-            //visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
+            // visit.uniqueDays = d3.nest().key(d => d).rollup(d => d.length).entries(visit.days);
+            // visit.mode = visit.uniqueDays.filter(d => d.values === d3.max(visit.uniqueDays, di => di.values));
         });
 }

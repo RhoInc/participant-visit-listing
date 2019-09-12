@@ -3,7 +3,7 @@ import { mouse as d3mouse } from 'd3';
 export default function mousemove(mouse) {
     const coords = d3mouse(mouse);
 
-    //x
+    // x
     const x = coords[0];
     if (this.config.x.type === 'ordinal') {
         const x_coord = this.x_coords.find(
@@ -37,7 +37,7 @@ export default function mousemove(mouse) {
                 .text(Math.round(this.x.invert(x)));
     }
 
-    //y
+    // y
     const y = coords[1];
     const y_coord = this.y_coords.find(
         y_coord => y_coord.coord <= y && y < y_coord.coord + this.y.rangeBand()

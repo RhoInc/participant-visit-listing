@@ -173,7 +173,7 @@ if (!Array.prototype.findIndex) {
     });
 }
 
-//Symbol polyfill because babel does weird things with for-of loops
+// Symbol polyfill because babel does weird things with for-of loops
 !(function(global, factory) {
     'use strict';
     'object' == typeof module && 'object' == typeof module.exports

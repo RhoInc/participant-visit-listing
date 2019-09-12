@@ -1,5 +1,5 @@
 export default function recordLevel() {
-    //Derive record-level variables.
+    // Derive record-level variables.
     this.data.raw.forEach(d => {
         d.visitDate = d[this.settings.visit_date_col];
         d.visitCharacter = d[this.settings.visit_col].substring(0, 1);

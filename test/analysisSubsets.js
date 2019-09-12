@@ -10,7 +10,7 @@ import util from 'util';
 
 describe('An analysis subset is in place.', () => {
     const { JSDOM } = jsdom;
-    global.window = (new JSDOM(``, { runScripts: "dangerously" })).window;
+    global.window = new JSDOM(``, { runScripts: 'dangerously' }).window;
     let dom, container, instance;
 
     before(() => {
@@ -18,14 +18,12 @@ describe('An analysis subset is in place.', () => {
         container = dom.window.document.createElement('div');
     });
 
-    after(() => {
-    });
+    after(() => {});
 
     beforeEach(() => {
-        instance = participantVisitListing(container, {exportable: false}, {dom,performance});
+        instance = participantVisitListing(container, { exportable: false }, { dom, performance });
         instance.init(data, true);
     });
-
 
     afterEach(() => {
         instance.destroy();
@@ -36,10 +34,17 @@ describe('An analysis subset is in place.', () => {
             const loadingIndicated = instance.loaded;
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
-                const scheduledVisits = d3.set(data.map(d => d[instance.settings.visit_col]).filter(visit => !instance.settings.visit_exclusion_regex.test(visit))).values();
-                instance.data.filters.find(filter => filter.col === 'subset2').value = 'On Treatment';
+                const scheduledVisits = d3
+                    .set(
+                        data
+                            .map(d => d[instance.settings.visit_col])
+                            .filter(visit => !instance.settings.visit_exclusion_regex.test(visit))
+                    )
+                    .values();
+                instance.data.filters.find(filter => filter.col === 'subset2').value =
+                    'On Treatment';
                 filterData.call(instance);
                 defineVisitSet.call(instance);
                 const analysisVisits = instance.data.sets.scheduledVisits;
@@ -53,10 +58,17 @@ describe('An analysis subset is in place.', () => {
             const loadingIndicated = instance.loaded;
 
             if (loadingIndicated) {
-                //Handle loading indicator.
+                // Handle loading indicator.
                 clearInterval(loading);
-                const scheduledVisits = d3.set(data.map(d => d[instance.settings.visit_col]).filter(visit => !instance.settings.visit_exclusion_regex.test(visit))).values();
-                instance.data.filters.find(filter => filter.col === 'subset2').value = 'On Treatment';
+                const scheduledVisits = d3
+                    .set(
+                        data
+                            .map(d => d[instance.settings.visit_col])
+                            .filter(visit => !instance.settings.visit_exclusion_regex.test(visit))
+                    )
+                    .values();
+                instance.data.filters.find(filter => filter.col === 'subset2').value =
+                    'On Treatment';
                 filterData.call(instance);
                 defineVisitSet.call(instance);
                 const analysisVisits = instance.data.sets.scheduledVisits;

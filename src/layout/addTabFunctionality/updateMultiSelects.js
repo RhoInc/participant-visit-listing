@@ -9,9 +9,7 @@ export default function updateMultiSelects() {
         .selectAll('select')
         .each(function(d) {
             const filter = context.data.filters.find(filter => filter.col === d.value_col);
-            const options = select(this)
-                .attr('size', 2)
-                .selectAll('option');
+            const options = select(this).selectAll('option');
             options.property(
                 'selected',
                 d => filter.value === 'All' || filter.value.indexOf(d) > -1

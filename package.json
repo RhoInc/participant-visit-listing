@@ -36,8 +36,8 @@
         "format-src": "prettier --print-width=100 --tab-width=4 --single-quote --write \"./src/**/!(*layout|*styles).js\"",
         "format-bundle": "prettier --print-width=100 --tab-width=4 --single-quote --write ./participantVisitListing.js",
         "save-data": "node ./scripts/save-data.js",
-        "test": "mocha --require @babel/register ./test/*.js",
-        "test-one": "mocha --require @babel/register ./test/layout.js",
+        "test": "mocha --timeout 5000 --require @babel/register ./test/*.js",
+        "test-one": "mocha --timeout 5000 --require @babel/register ./test/layout.js",
         "test-page": "start chrome ./test-page/index.html && start firefox ./test-page/index.html && start iexplore file://%CD%/test-page/index.html",
         "watch": "rollup -c -w"
     },

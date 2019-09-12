@@ -195,6 +195,52 @@
         });
     }
 
+    if (!Array.prototype.includes) {
+        Object.defineProperty(Array.prototype, 'includes', {
+            value: function value(valueToFind, fromIndex) {
+                if (this == null) {
+                    throw new TypeError('"this" is null or not defined');
+                } // 1. Let O be ? ToObject(this value).
+
+                var o = Object(this); // 2. Let len be ? ToLength(? Get(O, "length")).
+
+                var len = o.length >>> 0; // 3. If len is 0, return false.
+
+                if (len === 0) {
+                    return false;
+                } // 4. Let n be ? ToInteger(fromIndex).
+                //        (If fromIndex is undefined, this step produces the value 0.)
+
+                var n = fromIndex | 0; // 5. If n = 0, then
+                //    a. Let k be n.
+                // 6. Else n < 0,
+                //    a. Let k be len + n.
+                //    b. If k < 0, let k be 0.
+
+                var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+                function sameValueZero(x, y) {
+                    return (
+                        x === y ||
+                        (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y))
+                    );
+                } // 7. Repeat, while k < len
+
+                while (k < len) {
+                    // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+                    // b. If SameValueZero(valueToFind, elementK) is true, return true.
+                    if (sameValueZero(o[k], valueToFind)) {
+                        return true;
+                    } // c. Increase k by 1.
+
+                    k++;
+                } // 8. Return false
+
+                return false;
+            }
+        });
+    }
+
     if (!Array.prototype.findIndex) {
         Object.defineProperty(Array.prototype, 'findIndex', {
             value: function value(predicate) {
@@ -1207,28 +1253,55 @@
             });
     }
 
-    function defineDefaultSet(col) {
-        var _this = this;
+    function defineDefaultSet(dataMapping) {
+        var variable = this.settings[dataMapping];
 
-        this.data.sets[col] = d3
-            .set(
-                this.data.filtered.map(function(d) {
-                    return d[_this.settings[col]];
+        if (variable !== undefined) {
+            this.data.sets[dataMapping] = d3
+                .set(
+                    this.data.filtered.map(function(d) {
+                        return d[variable];
+                    })
+                )
+                .values()
+                .sort(); //Sort set numerically if possible.
+
+            if (
+                this.data.sets[dataMapping].every(function(value) {
+                    return !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')));
                 })
             )
-            .values()
-            .sort(); //Sort set numerically if possible.
+                this.data.sets[dataMapping].sort(function(a, b) {
+                    return (
+                        parseFloat(a.replace(/[^0-9.]/g, '')) -
+                        parseFloat(b.replace(/[^0-9.]/g, ''))
+                    );
+                });
+        } else {
+            variable = dataMapping;
+            this.data.sets[variable] = d3
+                .set(
+                    this.data.filtered.map(function(d) {
+                        return d[variable];
+                    })
+                )
+                .values()
+                .sort(); //Sort set numerically if possible.
 
-        if (
-            this.data.sets[col].every(function(value) {
-                return !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')));
-            })
-        )
-            this.data.sets[col].sort(function(a, b) {
-                return (
-                    parseFloat(a.replace(/[^0-9.]/g, '')) - parseFloat(b.replace(/[^0-9.]/g, ''))
-                );
-            });
+            if (
+                this.data.sets[dataMapping].every(function(value) {
+                    return !isNaN(parseFloat(value.replace(/[^0-9.]/g, '')));
+                })
+            )
+                this.data.sets[dataMapping].sort(function(a, b) {
+                    return (
+                        parseFloat(a.replace(/[^0-9.]/g, '')) -
+                        parseFloat(b.replace(/[^0-9.]/g, ''))
+                    );
+                });
+        }
+
+        return this.data.sets[variable];
     }
 
     function defineVisitSet() {
@@ -1439,14 +1512,14 @@
     }
 
     function update$1() {
-        var context = this; //Capture all data filter dropdowns.
+        var context = this; // Capture all data filter dropdowns.
 
         var filters = this.controls.wrap
             .selectAll('.control-group')
             .filter(function(d) {
                 return d.type === 'subsetter';
             })
-            .selectAll('select'); //Remove extra 'All' options; not sure where they're coming from.
+            .selectAll('select'); // Remove extra 'All' options; not sure where they're coming from.
 
         filters
             .selectAll('option')
@@ -1456,14 +1529,27 @@
             .filter(function(d, i) {
                 return i > 0;
             })
-            .remove(); //Redefine the event listener.
+            .remove(); // Redefine the event listener.
 
         filters.on('change', function(d) {
             var _this = this;
 
             loading.call(context, ''.concat(d.label, ' filter change'), function() {
-                filterData.call(context, d, _this);
-                defineDefaultSet.call(context, 'id_col'); //Update visit set and listing columns if the changed filter controls an analysis subset.
+                // Apply current state of filters to data.
+                filterData.call(context, d, _this); // Enable/disable reset button given state of filters.
+
+                context.controls.reset.button.property(
+                    'disabled',
+                    context.data.filters.every(function(filter) {
+                        return (
+                            filter.value === 'All' ||
+                            (Array.isArray(filter.value) &&
+                                filter.value.join('') === filter.set.join(''))
+                        );
+                    })
+                ); // Define updated set of participant IDs.
+
+                defineDefaultSet.call(context, 'id_col'); // Update visit set and listing columns if the changed filter controls an analysis subset.
 
                 if (/^Analysis Subset \d$/.test(d.label)) {
                     defineVisitSet.call(context);
@@ -1471,7 +1557,7 @@
 
                 transposeData.call(context);
                 update.call(context);
-                updateNParticipants.call(context);
+                updateNParticipants.call(context); // Update data arrays attached to displays, because state maintenance pays dividends for days.
 
                 if (context.listing.initialized) {
                     context.listing.data.initial = context.data.transposed;
@@ -1481,7 +1567,7 @@
                 if (context.ordinalChart.initialized)
                     context.ordinalChart.raw_data = context.data.filtered;
                 if (context.linearChart.initialized)
-                    context.linearChart.raw_data = context.data.filtered; //Redraw displays.
+                    context.linearChart.raw_data = context.data.filtered; // Redraw displays.
 
                 if (context.settings.active_tab === 'Listing') {
                     context.listing.draw();
@@ -1529,14 +1615,92 @@
                 var filter = context.data.filters.find(function(filter) {
                     return filter.col === d.value_col;
                 });
-                var options = d3
-                    .select(this)
-                    .attr('size', 2)
-                    .selectAll('option');
+                var options = d3.select(this).selectAll('option');
                 options.property('selected', function(d) {
                     return filter.value === 'All' || filter.value.indexOf(d) > -1;
                 });
             });
+    }
+
+    function addResetButton() {
+        var _this2 = this;
+
+        // Add reset button to DOM.
+        this.controls.reset = {
+            button: this.controls.wrap
+                .insert('button', ':first-child')
+                .classed('pvl-reset-button', true)
+                .property(
+                    'disabled',
+                    this.data.filters.every(function(filter) {
+                        return (
+                            filter.value === 'All' ||
+                            (Array.isArray(filter.value) &&
+                                filter.value.join('') === filter.set.join(''))
+                        );
+                    })
+                )
+                .text('Reset Filters'),
+            action: function action() {
+                var _this = this;
+
+                this.controls.reset.button.property('disabled', true);
+                loading.call(this, 'Reset controls', function() {
+                    _this.data.analysis = _this.data.raw;
+                    _this.data.filtered = _this.data.raw; // Define updated set of participant IDs.
+
+                    defineDefaultSet.call(_this, 'id_col'); // Update visit set and listing columns if the changed filter controls an analysis subset.
+
+                    defineVisitSet.call(_this);
+                    transposeData.call(_this);
+                    update.call(_this);
+                    updateNParticipants.call(_this); // Update data arrays attached to displays, because state maintenance pays dividends for days.
+
+                    if (_this.listing.initialized) {
+                        _this.listing.data.initial = _this.data.transposed;
+                        _this.listing.data.raw = _this.data.transposed;
+                    }
+
+                    if (_this.ordinalChart.initialized)
+                        _this.ordinalChart.raw_data = _this.data.raw;
+                    if (_this.linearChart.initialized) _this.linearChart.raw_data = _this.data.raw; // Update filter objects.
+
+                    _this.data.filters.forEach(function(filter) {
+                        filter.value = 'All';
+
+                        _this.displays.forEach(function(display) {
+                            var displayFilter = display.module.filters.find(function(filter1) {
+                                return filter1.col === filter.col;
+                            });
+                            if (displayFilter)
+                                displayFilter.val = displayFilter.all
+                                    ? 'All'
+                                    : displayFilter.choices.slice();
+                        });
+                    }); // Update selected dropdown options.
+
+                    _this.controls.wrap.selectAll('.control-group select').each(function(d) {
+                        d3.select(this)
+                            .selectAll('option')
+                            .property('selected', function(di) {
+                                return di === 'All' || d.multiple;
+                            });
+                    }); // Redraw active display(s).
+
+                    _this.displays
+                        .filter(function(display) {
+                            return display.active;
+                        })
+                        .forEach(function(display) {
+                            display.module.draw();
+                        });
+                });
+            }
+        }; // Add click event listener to reset button.
+
+        this.controls.reset.button.on('click', function() {
+            _this2.controls.reset.action.call(_this2);
+        });
     }
 
     function addTabFunctionality() {
@@ -1547,7 +1711,11 @@
             loading.call(context, 'this.containers.tabs.'.concat(d.property, ' click'), function() {
                 context.settings.active_tab = d.name;
                 var tab = d3.select(_this);
-                var active = tab.classed('pvl-tab--active');
+                var active = tab.classed('pvl-tab--active'); // Update active display(s).
+
+                context.displays.forEach(function(display) {
+                    display.active = display.tabs.includes(d.name);
+                });
 
                 if (!active) {
                     context.containers.tabs.classed('pvl-tab--active', false);
@@ -1570,6 +1738,7 @@
                             update$1.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
+                            addResetButton.call(context);
                         }
                         context.containers.visitExpectationLegendContainer.classed(
                             'pvl-hidden',
@@ -1584,6 +1753,7 @@
                             update$1.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
+                            addResetButton.call(context);
                         }
                         context.containers.visitExpectationLegendContainer.classed(
                             'pvl-hidden',
@@ -1606,11 +1776,13 @@
                             update$1.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
+                            addResetButton.call(context);
                         }
                         context.containers.visitExpectationLegendContainer.classed(
                             'pvl-hidden',
                             false
                         );
+                        console.log(context.containers.visitExpectationLegend.past.rect);
                         context.containers.visitExpectationLegend.past.rect.classed(
                             'pvl-hidden',
                             true
@@ -1634,6 +1806,7 @@
                             update$1.call(context);
                             updateSelects.call(context);
                             updateMultiSelects.call(context);
+                            addResetButton.call(context);
                         }
                         context.containers.visitExpectationLegendContainer.classed(
                             'pvl-hidden',
@@ -1675,10 +1848,10 @@
         this.containers.upperRow = this.containers.main
             .append('div')
             .classed('pvl-row pvl-row--upper', true);
+        this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
         this.containers.controls = this.containers.upperRow
             .append('div')
             .classed('pvl-controls', true);
-        this.containers.legend = this.containers.upperRow.append('div').classed('pvl-legend', true);
         /**-------------------------------------------------------------------------------------------\
       Lower row
     \-------------------------------------------------------------------------------------------**/
@@ -1768,28 +1941,41 @@
                 '    line-height: normal;' +
                 '}',
             '.pvl-hidden {' + '    display: none !important;' + '}',
-            '.participant-visit-listing > * {' +
-                '    width: 100%;' +
-                '    display: inline-block;' +
-                '}',
+            '.participant-visit-listing > * {' + '    width: 100%;' + '}',
             /***--------------------------------------------------------------------------------------\
       Upper row
     \--------------------------------------------------------------------------------------***/
-            '.pvl-row--upper {' + '    padding-bottom: 12px;' + '}',
-            '.pvl-row--upper > * {' +
-                '    vertical-align: bottom;' +
-                '    display: inline-block;' +
-                '}',
+            '.pvl-row--upper {' + '    padding-bottom: 12px;' + '    display: flex;' + '}',
+            '.pvl-row--upper > div {' + '    flex: 1;' + '}',
             /****---------------------------------------------------------------------------------\
       Legend
     \---------------------------------------------------------------------------------****/
-            '.pvl-legend {' + '    width: 35%;' + '    float: left;' + '}',
-            '.pvl-legend__label {' + '    font-size: 24px;' + '    font-weight: lighter;' + '}',
+            '.pvl-legend {' +
+                '    width: 35%;' +
+                '    float: left;' +
+                '    position: relative;' +
+                '}',
+            '.pvl-legend:after {' +
+                '    content: "";' +
+                '    display: inline-block;' +
+                '    height: 100%;' +
+                '    vertical-align: bottom;' +
+                '}' +
+                '.pvl-legend__label {' +
+                '    font-size: 24px;' +
+                '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 0;' +
+                '    left: 0;' +
+                '}',
             '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
                 '    margin: 0;' +
                 '    padding: 0;' +
                 '    overflow: hidden;' +
+                '    display: inline-block;' +
+                '    vertical-align: bottom;' +
+                '    width: 100%;' +
                 '}',
             '.pvl-legend__li {' +
                 '    float: left;' +
@@ -1804,7 +1990,16 @@
             /****---------------------------------------------------------------------------------\
       Controls
     \---------------------------------------------------------------------------------****/
-            '.pvl-controls {' + '    width: 64%;' + '    float: right;' + '}',
+            '.pvl-controls {' +
+                '    width: 64%;' +
+                '    float: right;' +
+                '    position: relative;' +
+                '}',
+            '.pvl-controls .pvl-reset-button {' +
+                '    position: absolute;' +
+                '    bottom: 0;' +
+                '    left: 0;' +
+                '}',
             '.pvl-controls .wc-controls {' +
                 '    float: right;' +
                 '    margin-bottom: 0;' +
@@ -3020,19 +3215,27 @@
     function onDestroy() {}
 
     function listing() {
-        //Define listing.
+        // Define listing (Listing).
         this.listing = new webcharts.createTable(
             this.containers.listing.node(),
             this.settings.listingSynced,
             this.controls
         );
-        this.listing.pvl = this; //Define callbacks.
+        this.listing.pvl = this; // Define callbacks.
 
         this.listing.on('init', onInit);
         this.listing.on('layout', onLayout);
         this.listing.on('preprocess', onPreprocess);
         this.listing.on('draw', onDraw);
-        this.listing.on('destroy', onDestroy);
+        this.listing.on('destroy', onDestroy); // Attach display to central object ([ pvl ]).
+
+        this.displays.push({
+            name: 'listing',
+            title: 'Listing',
+            module: this.listing,
+            tabs: ['Listing'],
+            active: ['Listing'].includes(this.settings.active_tab)
+        });
     }
 
     function setXDomain() {
@@ -3497,13 +3700,13 @@
     function onDestroy$1() {}
 
     function ordinalChart() {
-        //Define listing.
+        // Define ordinal chart (Visit Chart).
         this.ordinalChart = new webcharts.createChart(
             this.containers.ordinalChart.node(),
             this.settings.ordinalChartSynced,
             this.controls
         );
-        this.ordinalChart.pvl = this; //Define callbacks.
+        this.ordinalChart.pvl = this; // Define callbacks.
 
         this.ordinalChart.on('init', onInit$1);
         this.ordinalChart.on('layout', onLayout$1);
@@ -3511,7 +3714,15 @@
         this.ordinalChart.on('datatransform', onDataTransform);
         this.ordinalChart.on('draw', onDraw$1);
         this.ordinalChart.on('resize', onResize);
-        this.ordinalChart.on('destroy', onDestroy$1);
+        this.ordinalChart.on('destroy', onDestroy$1); // Attach display to central object ([ pvl ]).
+
+        this.displays.push({
+            name: 'ordinalChart',
+            title: 'Visit Chart',
+            module: this.ordinalChart,
+            tabs: ['Visit Chart', 'Charts'],
+            active: ['Visit Chart', 'Charts'].includes(this.settings.active_tab)
+        });
     }
 
     function onInit$2() {
@@ -3812,13 +4023,13 @@
     function onDestroy$2() {}
 
     function linearChart() {
-        //Define listing.
+        // Define linear chart (Study Day chart).
         this.linearChart = new webcharts.createChart(
             this.containers.linearChart.node(),
             this.settings.linearChartSynced,
             this.controls
         );
-        this.linearChart.pvl = this; //Define callbacks.
+        this.linearChart.pvl = this; // Define callbacks.
 
         this.linearChart.on('init', onInit$2);
         this.linearChart.on('layout', onLayout$2);
@@ -3826,7 +4037,15 @@
         this.linearChart.on('datatransform', onDataTransform$1);
         this.linearChart.on('draw', onDraw$2);
         this.linearChart.on('resize', onResize$1);
-        this.linearChart.on('destroy', onDestroy$2);
+        this.linearChart.on('destroy', onDestroy$2); // Attach display to central object ([ pvl ]).
+
+        this.displays.push({
+            name: 'linearChart',
+            title: 'Study Day Chart',
+            module: this.linearChart,
+            tabs: ['Study Day Chart', 'Charts'],
+            active: ['Study Day Chart', 'Charts'].includes(this.settings.active_tab)
+        });
     }
 
     var charts = {
@@ -3862,7 +4081,8 @@
         } else {
             this.data.filters.push({
                 col: filterCol,
-                value: 'All'
+                value: 'All',
+                set: defineDefaultSet.call(this, filterCol)
             });
         }
     }
@@ -4234,7 +4454,7 @@
                 })
                 .append('g')
                 .classed('pvl-mark-legend', true)
-        }; //past visits
+        }; // past visits
 
         this.containers.visitExpectationLegend.past = {
             g: this.containers.visitExpectationLegend.g
@@ -4246,12 +4466,15 @@
         };
         this.containers.visitExpectationLegend.past.rect = this.containers.visitExpectationLegend.past.g
             .append('rect')
+            .classed('pvl-legend-rect pvl-legend-rect--past', true)
             .attr(rectAttributes.call(this));
         this.containers.visitExpectationLegend.past.outerCircle = this.containers.visitExpectationLegend.past.g
             .append('circle')
+            .classed('pvl-legend-circle pvl-legend-circle--outer pvl-legend-circle--past', true)
             .attr(outerCircleAttributes.call(this));
         this.containers.visitExpectationLegend.past.text = this.containers.visitExpectationLegend.past.g
             .append('text')
+            .classed('pvl-legend-text pvl-legend-text--past', true)
             .attr(textAttributes.call(this).attr)
             .style(textAttributes.call(this).style);
         this.containers.visitExpectationLegend.past.text
@@ -4259,6 +4482,7 @@
             .data(this.data.sets.past_visits)
             .enter()
             .append('tspan')
+            .classed('pvl-legend-tspan pvl-legend-tspan--past', true)
             .attr('fill', function(d) {
                 return _this.data.sets.visit_status_col
                     .find(function(visit_status) {
@@ -4268,12 +4492,7 @@
             })
             .text(function(d, i) {
                 return d;
-            });
-        this.containers.visitExpectationLegend.past.text.html(
-            this.containers.visitExpectationLegend.past.text
-                .html()
-                .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
-        ); //future visits
+            }); // future visits
 
         this.containers.visitExpectationLegend.future = {
             g: this.containers.visitExpectationLegend.g
@@ -4288,15 +4507,19 @@
         };
         this.containers.visitExpectationLegend.future.rect = this.containers.visitExpectationLegend.future.g
             .append('rect')
+            .classed('pvl-legend-rect pvl-legend-rect--future', true)
             .attr(rectAttributes.call(this));
         this.containers.visitExpectationLegend.future.outerCircle = this.containers.visitExpectationLegend.future.g
             .append('circle')
+            .classed('pvl-legend-circle pvl-legend-circle--outer pvl-legend-circle--future', true)
             .attr(outerCircleAttributes.call(this));
         this.containers.visitExpectationLegend.future.innerCircle = this.containers.visitExpectationLegend.future.g
             .append('circle')
+            .classed('pvl-legend-circle pvl-legend-circle--inner pvl-legend-circle--future', true)
             .attr(innerCircleAttributes.call(this));
         this.containers.visitExpectationLegend.future.text = this.containers.visitExpectationLegend.future.g
             .append('text')
+            .classed('pvl-legend-text pvl-legend-text--future', true)
             .attr(textAttributes.call(this).attr)
             .style(textAttributes.call(this).style);
         this.containers.visitExpectationLegend.future.text
@@ -4304,6 +4527,7 @@
             .data(this.data.sets.future_visits)
             .enter()
             .append('tspan')
+            .classed('pvl-legend-tspan pvl-legend-tspan--future', true)
             .attr('fill', function(d) {
                 return _this.data.sets.visit_status_col
                     .find(function(visit_status) {
@@ -4313,11 +4537,19 @@
             })
             .text(function(d, i) {
                 return d;
-            });
-        this.containers.visitExpectationLegend.future.text.html(
-            this.containers.visitExpectationLegend.future.text
-                .html()
-                .replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
+            }); // Insert forward slashes (/) between each tspan.
+        // We edit the inner HTML of a div because IE doesn't allow editing the inner HTML of an SVG element.
+
+        var innerHTML = this.containers.visitExpectationLegendContainer.html();
+        this.containers.visitExpectationLegendContainer.text('');
+        this.containers.visitExpectationLegendContainer.html(
+            innerHTML.replace(/<\/tspan><tspan/g, '</tspan>/<tspan')
+        );
+        this.containers.visitExpectationLegend.past.rect = this.containers.visitExpectationLegendContainer.select(
+            'rect.pvl-legend-rect--past'
+        );
+        this.containers.visitExpectationLegend.future.rect = this.containers.visitExpectationLegendContainer.select(
+            'rect.pvl-legend-rect--future'
         );
     }
 
@@ -4333,7 +4565,6 @@
                 return d.multiple;
             })
             .selectAll('select')
-            .attr('size', 2)
             .selectAll('option')
             .property('selected', true);
     }
@@ -4411,7 +4642,9 @@
                 }
 
                 updateMultiSelects$1.call(_this);
-                update$1.call(_this); //indicate that loading has completed
+                update$1.call(_this);
+                _this.controls.ready = true;
+                addResetButton.call(_this); //indicate that loading has completed
 
                 if (_this.test) _this.loaded = true;
             });
@@ -4437,7 +4670,7 @@
         var element = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'body';
         var settings = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
         var testingUtilities = arguments.length > 2 ? arguments[2] : undefined;
-        //Instantiate central object.
+        // Instantiate central object.
         var pvl = {
             element: element,
             settings: {
@@ -4448,12 +4681,13 @@
                 linearChartSettings: configuration.linearChartSettings(),
                 listingSettings: configuration.listingSettings()
             },
+            displays: [],
             document: testingUtilities ? testingUtilities.dom.window.document : document,
             performance: testingUtilities ? testingUtilities.performance : performance,
             test: !!testingUtilities,
             init: init,
             destroy: destroy
-        }; //Merge and sync user settings with default settings.
+        }; // Merge and sync user settings with default settings.
 
         pvl.settings.listingMerged = Object.assign(
             {},
@@ -4480,17 +4714,17 @@
             pvl.settings.user
         );
         configuration.syncControlsSettings.call(pvl);
-        layout.call(pvl); // attaches containers object to central object ([pvl])
+        layout.call(pvl); // attaches containers object to central object ([ pvl ])
 
-        styles.call(pvl); // attaches styles object to central object ([pvl])
+        styles.call(pvl); // attaches styles object to central object ([ pvl ])
 
-        controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
+        controls.call(pvl); // attaches Webcharts controls object to central object ([ pvl ])
 
-        charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([ pvl ])
 
-        charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
+        charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([ pvl ])
 
-        listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
+        listing.call(pvl); // attaches Webcharts table object to central object ([ pvl ])
 
         return pvl;
     }

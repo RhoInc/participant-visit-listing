@@ -18,7 +18,6 @@ export default function styles() {
         '}',
         '.participant-visit-listing > * {' +
         '    width: 100%;' +
-        '    display: inline-block;' +
         '}',
 
         /***--------------------------------------------------------------------------------------\
@@ -27,10 +26,10 @@ export default function styles() {
 
             '.pvl-row--upper {' +
             '    padding-bottom: 12px;' +
+            '    display: flex;' +
             '}',
-            '.pvl-row--upper > * {' +
-            '    vertical-align: bottom;' +
-            '    display: inline-block;' +
+            '.pvl-row--upper > div {' +
+            '    flex: 1;' +
             '}',
 
             /****---------------------------------------------------------------------------------\
@@ -40,16 +39,29 @@ export default function styles() {
                 '.pvl-legend {' +
                 '    width: 35%;' +
                 '    float: left;' +
+                '    position: relative;' +
                 '}',
+                '.pvl-legend:after {' +
+                '    content: "";' +
+                '    display: inline-block;' +
+                '    height: 100%;' +
+                '    vertical-align: bottom;' +
+                '}' +
                 '.pvl-legend__label {' +
                 '    font-size: 24px;' +
                 '    font-weight: lighter;' +
+                '    position: absolute;' +
+                '    top: 0;' +
+                '    left: 0;' +
                 '}',
                 '.pvl-legend__ul {' +
                 '    list-style-type: none;' +
                 '    margin: 0;' +
                 '    padding: 0;' +
                 '    overflow: hidden;' +
+                '    display: inline-block;' +
+                '    vertical-align: bottom;' +
+                '    width: 100%;' +
                 '}',
                 '.pvl-legend__li {' +
                 '    float: left;' +
@@ -69,6 +81,12 @@ export default function styles() {
                 '.pvl-controls {' +
                 '    width: 64%;' +
                 '    float: right;' +
+                '    position: relative;' +
+                '}',
+                '.pvl-controls .pvl-reset-button {' +
+                '    position: absolute;' +
+                '    bottom: 0;' +
+                '    left: 0;' +
                 '}',
                 '.pvl-controls .wc-controls {' +
                 '    float: right;' +

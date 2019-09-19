@@ -3,15 +3,15 @@ import stringToRegExp from '../util/stringToRegExp';
 export default function syncListingSettings() {
     const settings = this.settings.listingMerged;
 
-    //Define regular expressions.
+    // Define regular expressions.
     settings.visit_expectation_regex = stringToRegExp(settings.visit_expectation_pattern);
     settings.visit_exclusion_regex = stringToRegExp(settings.visit_exclusion_pattern);
     settings.visit_overdue_regex = stringToRegExp(settings.visit_overdue_pattern);
 
-    //Check filter_cols.
+    // Check filter_cols.
     settings.filter_cols = Array.isArray(settings.filter_cols) ? settings.filter_cols : [];
 
-    //Check active_tab and chart_layout settings.
+    // Check active_tab and chart_layout settings.
     if (['tabbed', 'side-by-side'].indexOf(settings.chart_layout) < 0) {
         console.warn(
             `[ chart_layout ] must be "tabbed" or "side-by-side", not "${
@@ -41,7 +41,7 @@ export default function syncListingSettings() {
         }
     }
 
-    //Assign settings to settings object.
+    // Assign settings to settings object.
     this.settings.listingSynced = settings;
     Object.assign(this.settings, settings);
 }

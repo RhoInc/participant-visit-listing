@@ -6,10 +6,10 @@ export default function onClick(th, header) {
     const selection = select(th);
     const col = this.config.cols[this.config.headers.indexOf(header)].replace(/-date$/, '');
 
-    //Check if column is already a part of current sort order.
+    // Check if column is already a part of current sort order.
     let sortItem = this.sortable.order.find(item => item.col === col);
 
-    //If it isn't, add it to sort order.
+    // If it isn't, add it to sort order.
     if (!sortItem) {
         sortItem = {
             col: col,
@@ -30,38 +30,38 @@ export default function onClick(th, header) {
             .html('&#10060;');
         this.sortable.order.push(sortItem);
     } else {
-        //Otherwise reverse its sort direction.
+        // Otherwise reverse its sort direction.
         sortItem.direction = sortItem.direction === 'ascending' ? 'descending' : 'ascending';
         sortItem.wrap
             .select('span.sort-direction')
             .html(sortItem.direction === 'ascending' ? '&darr;' : '&uarr;');
     }
 
-    //Hide sort instructions.
+    // Hide sort instructions.
     this.sortable.wrap.select('.instruction').classed('hidden', true);
 
-    //Add sort container deletion functionality.
+    // Add sort container deletion functionality.
     this.sortable.order.forEach((item, i) => {
         item.wrap.on('click', function(d) {
-            //Remove column's sort container.
+            // Remove column's sort container.
             select(this).remove();
 
-            //Remove column from sort.
+            // Remove column from sort.
             context.sortable.order.splice(context.sortable.order.map(d => d.col).indexOf(d.key), 1);
 
-            //Display sorting instruction.
+            // Display sorting instruction.
             context.sortable.wrap
                 .select('.instruction')
                 .classed('hidden', context.sortable.order.length);
 
-            //Redraw chart.
+            // Redraw chart.
             if (context.sortable.order.length) sortData.call(context);
             else context.data.raw = context.data.initial.slice();
             context.draw();
         });
     });
 
-    //Redraw chart.
+    // Redraw chart.
     sortData.call(this);
     this.draw();
 }

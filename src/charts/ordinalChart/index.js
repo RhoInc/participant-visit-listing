@@ -8,7 +8,7 @@ import onResize from './onResize';
 import onDestroy from './onDestroy';
 
 export default function ordinalChart() {
-    //Define listing.
+    // Define ordinal chart (Visit Chart).
     this.ordinalChart = new createChart(
         this.containers.ordinalChart.node(),
         this.settings.ordinalChartSynced,
@@ -16,7 +16,7 @@ export default function ordinalChart() {
     );
     this.ordinalChart.pvl = this;
 
-    //Define callbacks.
+    // Define callbacks.
     this.ordinalChart.on('init', onInit);
     this.ordinalChart.on('layout', onLayout);
     this.ordinalChart.on('preprocess', onPreprocess);
@@ -24,4 +24,13 @@ export default function ordinalChart() {
     this.ordinalChart.on('draw', onDraw);
     this.ordinalChart.on('resize', onResize);
     this.ordinalChart.on('destroy', onDestroy);
+
+    // Attach display to central object ([ pvl ]).
+    this.displays.push({
+        name: 'ordinalChart',
+        title: 'Visit Chart',
+        module: this.ordinalChart,
+        tabs: ['Visit Chart', 'Charts'],
+        active: ['Visit Chart', 'Charts'].includes(this.settings.active_tab)
+    });
 }

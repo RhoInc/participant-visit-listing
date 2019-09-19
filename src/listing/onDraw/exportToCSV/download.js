@@ -1,7 +1,7 @@
 import { time } from 'd3';
 
 export default function download(fileType, data) {
-    //transform blob array into a blob of characters
+    // transform blob array into a blob of characters
     const blob = new Blob(data, {
         type:
             fileType === 'csv'
@@ -16,10 +16,10 @@ export default function download(fileType, data) {
     const link = this.wrap.select(`.export#${fileType}`);
 
     if (navigator.msSaveBlob)
-        //IE
+        // IE
         navigator.msSaveBlob(blob, fileName);
     else if (link.node().download !== undefined) {
-        //21st century browsers
+        // 21st century browsers
         var url = URL.createObjectURL(blob);
         link.node().setAttribute('href', url);
         link.node().setAttribute('download', fileName);

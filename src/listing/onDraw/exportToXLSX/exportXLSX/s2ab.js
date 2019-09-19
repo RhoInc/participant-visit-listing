@@ -1,4 +1,4 @@
-//Convert XLSX file for download.
+// Convert XLSX file for download.
 export default function s2ab(s) {
     let i;
     if (typeof ArrayBuffer !== 'undefined') {

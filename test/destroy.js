@@ -5,7 +5,7 @@ import d3 from 'd3';
 
 describe('The destroy method is called.', () => {
     const { JSDOM } = jsdom;
-    global.window = (new JSDOM(``, { runScripts: "dangerously" })).window;
+    global.window = new JSDOM(``, { runScripts: 'dangerously' }).window;
     let dom, container, instance;
 
     before(() => {
@@ -13,15 +13,13 @@ describe('The destroy method is called.', () => {
         container = dom.window.document.createElement('div');
     });
 
-    after(() => {
-    });
+    after(() => {});
 
     beforeEach(() => {
-        instance = participantVisitListing(container, {}, {dom});
+        instance = participantVisitListing(container, {}, { dom });
     });
 
-    afterEach(() => {
-    });
+    afterEach(() => {});
 
     it('should remove the stylesheet', function() {
         instance.destroy();

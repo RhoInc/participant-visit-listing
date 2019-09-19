@@ -7,7 +7,7 @@ import { createChart, createTable, createControls } from 'webcharts';
 
 describe('The participantVisitListing function is called.', () => {
     const { JSDOM } = jsdom;
-    global.window = (new JSDOM(``, { runScripts: "dangerously" })).window;
+    global.window = new JSDOM(``, { runScripts: 'dangerously' }).window;
     let dom, container, instance;
 
     before(() => {
@@ -15,21 +15,16 @@ describe('The participantVisitListing function is called.', () => {
         container = dom.window.document.createElement('div');
     });
 
-    after(() => {
-    });
+    after(() => {});
 
     beforeEach(() => {
-        instance = participantVisitListing(container, {}, {dom,performance});
+        instance = participantVisitListing(container, {}, { dom, performance });
     });
 
-    afterEach(() => {
-    });
+    afterEach(() => {});
 
     it('should return the Performance interface object and the document object', () => {
-        const utilities = [
-            'performance',
-            'document',
-        ];
+        const utilities = ['performance', 'document'];
         expect(Object.keys(instance)).toEqual(expect.arrayContaining(utilities));
     });
 
@@ -46,13 +41,13 @@ describe('The participantVisitListing function is called.', () => {
             'tabs',
             'ordinalChart',
             'linearChart',
-            'listing',
+            'listing'
         ];
-        const d3selections = Object.keys(instance.containers)
-            .filter(key => (
+        const d3selections = Object.keys(instance.containers).filter(
+            key =>
                 Object.keys(Object.getPrototypeOf(instance.containers[key])).join(',') ===
                 Object.keys(Object.getPrototypeOf(d3.select())).join(',')
-            ));
+        );
         expect(d3selections).toEqual(expect.arrayContaining(properties));
     });
 
@@ -61,7 +56,9 @@ describe('The participantVisitListing function is called.', () => {
     });
 
     it('should return a webcharts controls object', () => {
-        const controlsProperties = Object.keys(createControls(dom.window.document.createElement('div')));
+        const controlsProperties = Object.keys(
+            createControls(dom.window.document.createElement('div'))
+        );
         expect(Object.keys(instance.controls)).toEqual(expect.arrayContaining(controlsProperties));
     });
 

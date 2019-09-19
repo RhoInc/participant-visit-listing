@@ -9,7 +9,7 @@ import init from './init';
 import destroy from './destroy';
 
 export default function participantVisitListing(element = 'body', settings = {}, testingUtilities) {
-    //Instantiate central object.
+    // Instantiate central object.
     const pvl = {
         element,
         settings: {
@@ -20,6 +20,7 @@ export default function participantVisitListing(element = 'body', settings = {},
             linearChartSettings: configuration.linearChartSettings(),
             listingSettings: configuration.listingSettings()
         },
+        displays: [],
         document: testingUtilities ? testingUtilities.dom.window.document : document,
         performance: testingUtilities ? testingUtilities.performance : performance,
         test: !!testingUtilities,
@@ -27,7 +28,7 @@ export default function participantVisitListing(element = 'body', settings = {},
         destroy
     };
 
-    //Merge and sync user settings with default settings.
+    // Merge and sync user settings with default settings.
     pvl.settings.listingMerged = Object.assign(
         {},
         pvl.settings.listingSettings,
@@ -57,12 +58,12 @@ export default function participantVisitListing(element = 'body', settings = {},
     );
     configuration.syncControlsSettings.call(pvl);
 
-    layout.call(pvl); // attaches containers object to central object ([pvl])
-    styles.call(pvl); // attaches styles object to central object ([pvl])
-    controls.call(pvl); // attaches Webcharts controls object to central object ([pvl])
-    charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
-    charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([pvl])
-    listing.call(pvl); // attaches Webcharts table object to central object ([pvl])
+    layout.call(pvl); // attaches containers object to central object ([ pvl ])
+    styles.call(pvl); // attaches styles object to central object ([ pvl ])
+    controls.call(pvl); // attaches Webcharts controls object to central object ([ pvl ])
+    charts.ordinalChart.call(pvl); // attaches Webcharts chart object to central object ([ pvl ])
+    charts.linearChart.call(pvl); // attaches Webcharts chart object to central object ([ pvl ])
+    listing.call(pvl); // attaches Webcharts table object to central object ([ pvl ])
 
     return pvl;
 }

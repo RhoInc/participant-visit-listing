@@ -1,5 +1,5 @@
 export default function mousemove(mouse) {
-    //x
+    // x
     if (this.config.x.type === 'ordinal') {
         this.wrap.selectAll('.x.axis .tick line').style({
             stroke: '#eee',
@@ -10,7 +10,7 @@ export default function mousemove(mouse) {
         this.topXAxis.svg.select('.tick--highlight').remove();
     }
 
-    //y
+    // y
     this.wrap.selectAll('.y.axis .tick line').style({
         stroke: '#eee',
         'stroke-width': 1

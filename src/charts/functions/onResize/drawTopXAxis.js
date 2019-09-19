@@ -1,13 +1,13 @@
 import { svg, format } from 'd3';
 
 export default function drawTopXAxis() {
-    //Set width and height of floating x-axis.
+    // Set width and height of floating x-axis.
     this.topXAxis.container.select('svg').attr({
         width: this.wrap.select('.wc-svg').attr('width'),
         height: '100px'
     });
 
-    //Draw top x-axis.
+    // Draw top x-axis.
     this.topXAxis.axis = svg
         .axis()
         .scale(this.x)

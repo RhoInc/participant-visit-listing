@@ -7,7 +7,7 @@ export default function addHighlightLines() {
     this.highlight.points.each(function(di) {
         const point = select(this);
 
-        //Add a horizontal line to the reference line.
+        // Add a horizontal line to the reference line.
         const line = context.highlight.container
             .append('line')
             .classed('pvl-highlighted-visit-mark pvl-highlighted-visit-mark--highlight-line', true)
@@ -23,7 +23,7 @@ export default function addHighlightLines() {
                 context.highlight.referenceDay}\nClick to clear highlighting.`
         );
 
-        //Increase opacity.
+        // Increase opacity.
         point.selectAll('circle').attr({
             'fill-opacity': 1,
             'stroke-opacity': 1

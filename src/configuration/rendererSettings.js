@@ -1,11 +1,11 @@
 export default function rendererSettings() {
     return {
-        //ID-level variables
+        // ID-level variables
         site_col: 'site_name',
         id_col: 'subjectnameoridentifier',
         id_status_col: 'subject_status',
 
-        //Visit-level variables
+        // Visit-level variables
         visit_col: 'visit_name',
         visit_abbreviation_col: 'visit_abbreviation',
         visit_order_col: 'visit_number',
@@ -22,7 +22,7 @@ export default function rendererSettings() {
         visit_status_exclusion_col: 'plot_exclude',
         visit_status_exclusion_value: 'Yes',
 
-        //Miscellaneous
+        // Miscellaneous
         filter_cols: ['subset1', 'subset2', 'subset3'], // default filter variables
         chart_layout: 'tabbed', // ['tabbed', 'side-by-side']
         active_tab: 'Visit Chart', // ['Visit Chart', 'Study Day Chart', 'Listing', 'Charts']

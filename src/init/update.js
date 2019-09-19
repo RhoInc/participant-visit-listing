@@ -9,26 +9,40 @@ import updateNParticipants from './updateNParticipants';
 export default function update() {
     const context = this;
 
-    //Capture all data filter dropdowns.
+    // Capture all data filter dropdowns.
     const filters = this.controls.wrap
         .selectAll('.control-group')
         .filter(d => d.type === 'subsetter')
         .selectAll('select');
 
-    //Remove extra 'All' options; not sure where they're coming from.
+    // Remove extra 'All' options; not sure where they're coming from.
     filters
         .selectAll('option')
         .filter(d => d === 'All')
         .filter((d, i) => i > 0)
         .remove();
 
-    //Redefine the event listener.
+    // Redefine the event listener.
     filters.on('change', function(d) {
         loading.call(context, `${d.label} filter change`, () => {
+            // Apply current state of filters to data.
             filterData.call(context, d, this);
+
+            // Enable/disable reset button given state of filters.
+            context.controls.reset.button.property(
+                'disabled',
+                context.data.filters.every(
+                    filter =>
+                        filter.value === 'All' ||
+                        (Array.isArray(filter.value) &&
+                            filter.value.join('') === filter.set.join(''))
+                )
+            );
+
+            // Define updated set of participant IDs.
             defineIDSet.call(context, 'id_col');
 
-            //Update visit set and listing columns if the changed filter controls an analysis subset.
+            // Update visit set and listing columns if the changed filter controls an analysis subset.
             if (/^Analysis Subset \d$/.test(d.label)) {
                 defineVisitSet.call(context);
             }
@@ -37,6 +51,7 @@ export default function update() {
             updateLegend.call(context);
             updateNParticipants.call(context);
 
+            // Update data arrays attached to displays, because state maintenance pays dividends for days.
             if (context.listing.initialized) {
                 context.listing.data.initial = context.data.transposed;
                 context.listing.data.raw = context.data.transposed;
@@ -46,7 +61,7 @@ export default function update() {
             if (context.linearChart.initialized)
                 context.linearChart.raw_data = context.data.filtered;
 
-            //Redraw displays.
+            // Redraw displays.
             if (context.settings.active_tab === 'Listing') {
                 context.listing.draw();
             } else if (context.settings.active_tab === 'Charts') {

@@ -14,7 +14,7 @@ export default function filterData(d, select) {
                 : select.value;
     }
 
-    //Apply analysis filters to raw data.
+    // Apply analysis filters to raw data.
     this.data.analysis = this.data.raw;
     this.data.filters
         .filter(filter => /^subset\d$/i.test(filter.col))
@@ -26,13 +26,13 @@ export default function filterData(d, select) {
             );
         });
 
-    //Derive ID-level variables on analysis data.
+    // Derive ID-level variables on analysis data.
     idLevel.call(this);
 
-    //Update options in # of Overdue Visits dropdown.
+    // Update options in # of Overdue Visits dropdown.
     updateNOverdueOptions.call(this);
 
-    //Apply other filters to analysis data.
+    // Apply other filters to analysis data.
     this.data.filtered = this.data.analysis;
     this.data.filters
         .filter(filter => !/^subset\d$/i.test(filter.col))

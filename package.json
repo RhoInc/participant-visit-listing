@@ -57,7 +57,7 @@
         "rollup-plugin-babel": "^4.3.2"
     },
     "optionalDependencies": {
-        "jspdf": "^1.4.1",
+        "jspdf": "^2.3.1",
         "jspdf-autotable": "^2.3.5",
         "xlsx-style": "^0.8.13"
     }

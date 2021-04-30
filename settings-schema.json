@@ -2,7 +2,7 @@
     "title": "settings",
     "description": "JSON schema for the configuration of the participant-visit-listing",
     "overview": "The most straightforward way to customize the Participant Visit Listing is by using a configuration object whose properties describe the behavior and appearance of the displays. The Participant Visit Listing object contains Webcharts both `table` and `chart` objects, and the user settings will overwrite the default settings of each of those objects. Refer to the Webcharts [table](https://github.com/RhoInc/Webcharts/wiki/Table-Configuration) and [chart](https://github.com/RhoInc/Webcharts/wiki/Chart-Configuration) configuration wikis for more details on these settings.\nIn addition to the standard Webcharts settings several custom settings not available in the base Webcharts library have been added to the Participant Visit Listing to facilitate data mapping and other custom functionality. These custom settings are described in detail below. All defaults can be overwritten by users.",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "type": "object",
     "data-guidelines": "The Participant Visit Listing accepts [JSON](https://en.wikipedia.org/wiki/JSON) data of the format returned by [`d3.csv()`](https://github.com/d3/d3-3.x-api-reference/blob/master/CSV.md). The collection of displays visualizes clinical schedule of events data with **one row per participant per visit** plus the required variables specified below.",
     "data-structure": "one record per participant per visit",
@@ -14,7 +14,7 @@
             "type": "string",
             "data-mapping": true,
             "data-type": "string",
-            "required": true
+            "required": t
         },
         "id_col": {
             "title": "Participant ID",
